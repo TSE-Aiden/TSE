@@ -219,29 +219,6 @@
       margin:10px 0;
     }
 
-    /* Auth overlay */
-    .overlay{
-      position:fixed;inset:0;
-      display:flex;align-items:center;justify-content:center;
-      padding:18px;
-      background: rgba(0,0,0,.65);
-      backdrop-filter: blur(8px);
-      z-index:999;
-    }
-    .auth{
-      width:min(520px, 100%);
-      border:1px solid var(--border);
-      border-radius:22px;
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-      box-shadow: var(--shadow);
-      padding:18px;
-    }
-    .auth h1{margin:0 0 6px 0;font-size:20px}
-    .auth p{margin:0 0 14px 0;color:var(--muted);font-size:13px;line-height:1.35}
-    .auth .row{gap:10px}
-    .error{color: #fecaca; font-size:12px; margin-top:10px; display:none}
-    .success{color: #bbf7d0; font-size:12px; margin-top:10px; display:none}
-
     @media (max-width: 980px){
       .grid{grid-template-columns:1fr}
       .split{grid-template-columns:1fr}
@@ -249,55 +226,19 @@
   </style>
 </head>
 <body>
-  <!-- AUTH OVERLAY -->
-  <div id="authOverlay" class="overlay" style="display:none">
-    <div class="auth">
-      <h1>TSE Access</h1>
-      <p>Enter the site password to continue.</p>
-
-      <div class="row">
-        <div class="field" style="min-width:240px">
-          <label for="pw">Password</label>
-          <input id="pw" type="password" placeholder="Enter password..." autocomplete="current-password" />
-          <div class="hint">Prototype gate (client-side). For real protection, use server-side auth.</div>
-        </div>
-        <div class="field" style="min-width:160px;align-self:flex-end">
-          <button class="btn-primary" id="loginBtn">Unlock</button>
-        </div>
-      </div>
-
-      <div class="error" id="authError">Incorrect password.</div>
-      <div class="success" id="authOk">Unlocked.</div>
-
-      <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">
-
-      <div class="row">
-        <div class="field">
-          <label>Admin: change password (local to this browser)</label>
-          <input id="newPw" type="password" placeholder="New password..." />
-        </div>
-        <div class="field" style="align-self:flex-end;min-width:160px">
-          <button id="setPwBtn">Set Password</button>
-        </div>
-      </div>
-      <div class="hint">Tip: set it once, then share the same browser/profile if you want quick access.</div>
-    </div>
-  </div>
-
-  <div class="wrap" id="app" style="display:none">
+  <div class="wrap" id="app">
     <div class="topbar">
       <div class="brand">
         <div class="logo" aria-hidden="true"></div>
         <div>
           <div style="font-size:18px">TSE</div>
-          <small>Videos + Notes (private prototype)</small>
+          <small>Videos + Notes</small>
         </div>
       </div>
       <div class="actions">
-        <span class="pill" id="statusPill">Local mode</span>
+        <span class="pill" id="statusPill">GitHub Pages</span>
         <button id="exportBtn">Export Data</button>
         <button id="clearBtn">Clear Local Data</button>
-        <button id="lockBtn">Lock</button>
       </div>
     </div>
 
@@ -339,7 +280,7 @@
                   <div class="field" style="min-width:100%">
                     <label for="videoFile">Video file</label>
                     <input id="videoFile" type="file" accept="video/*" />
-                    <div class="hint">Stored as a local file reference (not uploaded anywhere in this prototype).</div>
+                    <div class="hint">Prototype: videos are not uploaded anywhere. Object URLs won’t survive a refresh.</div>
                   </div>
                 </div>
 
@@ -440,51 +381,24 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 
 <script>
 /**
- * TSE Prototype
- * - Client-side password gate (NOT true security)
- * - Videos: upload list + hover preview
+ * TSE (No password screen)
+ * - Static GitHub Pages friendly
+ * - Videos: upload list + hover preview (session-only object URLs)
  * - Notes: contenteditable doc with image insert + autosave
  */
 
 // ---------- Basic storage keys ----------
-const KEY_AUTH = "tse_auth_ok";
-const KEY_PW = "tse_password";
 const KEY_VIDEOS = "tse_videos";
 const KEY_DOC = "tse_doc";
 
-// ---------- Password gate ----------
-const DEFAULT_PASSWORD = "tse123"; // change this after first run
-function getPassword() {
-  return localStorage.getItem(KEY_PW) || DEFAULT_PASSWORD;
-}
-function setPassword(pw) {
-  localStorage.setItem(KEY_PW, pw);
-}
-function isAuthed() {
-  return localStorage.getItem(KEY_AUTH) === "true";
-}
-function setAuthed(v) {
-  localStorage.setItem(KEY_AUTH, v ? "true" : "false");
-}
-
 // ---------- App elements ----------
-const authOverlay = document.getElementById("authOverlay");
-const app = document.getElementById("app");
-
-const pwInput = document.getElementById("pw");
-const loginBtn = document.getElementById("loginBtn");
-const authError = document.getElementById("authError");
-const authOk = document.getElementById("authOk");
-const newPw = document.getElementById("newPw");
-const setPwBtn = document.getElementById("setPwBtn");
-
-const lockBtn = document.getElementById("lockBtn");
 const clearBtn = document.getElementById("clearBtn");
 const exportBtn = document.getElementById("exportBtn");
 
@@ -514,66 +428,16 @@ const imageInsert = document.getElementById("imageInsert");
 const downloadHtmlBtn = document.getElementById("downloadHtmlBtn");
 
 // ---------- Init ----------
-function showAuth() {
-  authOverlay.style.display = "flex";
-  app.style.display = "none";
-  authError.style.display = "none";
-  authOk.style.display = "none";
-  pwInput.value = "";
-  pwInput.focus();
-}
-function showApp() {
-  authOverlay.style.display = "none";
-  app.style.display = "block";
-}
-function boot() {
-  authOverlay.style.display = "none";
-  app.style.display = "none";
-  if (isAuthed()) showApp();
-  else showAuth();
+let videos = [];
+let docSaveTimer = null;
 
+function boot() {
   loadVideos();
   renderVideos();
   loadDoc();
   setTab("videos");
 }
 boot();
-
-// ---------- Auth events ----------
-function attemptLogin() {
-  authError.style.display = "none";
-  authOk.style.display = "none";
-
-  const input = (pwInput.value || "").trim();
-  if (input && input === getPassword()) {
-    setAuthed(true);
-    authOk.style.display = "block";
-    showApp();
-  } else {
-    authError.style.display = "block";
-  }
-}
-loginBtn.addEventListener("click", attemptLogin);
-pwInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") attemptLogin();
-});
-
-setPwBtn.addEventListener("click", () => {
-  const np = (newPw.value || "").trim();
-  if (!np) return;
-  setPassword(np);
-  newPw.value = "";
-  // small confirmation
-  authOk.textContent = "Password updated (local to this browser).";
-  authOk.style.display = "block";
-  authError.style.display = "none";
-});
-
-// Lock
-lockBtn.addEventListener("click", () => {
-  setAuthed(false);
-  showAuth();
-});
 
 // ---------- Tabs ----------
 function setTab(tab) {
@@ -587,8 +451,6 @@ tabVideos.addEventListener("click", () => setTab("videos"));
 tabNotes.addEventListener("click", () => setTab("notes"));
 
 // ---------- Videos storage ----------
-let videos = [];
-
 function loadVideos() {
   try {
     videos = JSON.parse(localStorage.getItem(KEY_VIDEOS) || "[]");
@@ -602,12 +464,10 @@ function saveVideos() {
   videoCount.textContent = String(videos.length);
 }
 
-// Convert selected video file to an object URL (session-based)
 function createVideoObjectURL(file) {
   return URL.createObjectURL(file);
 }
 
-// Add video
 addVideoBtn.addEventListener("click", () => {
   videoFormHint.textContent = "";
   const file = videoFile.files?.[0];
@@ -621,8 +481,6 @@ addVideoBtn.addEventListener("click", () => {
   if (!title) return (videoFormHint.textContent = "Add a title.");
   if (!owner) return (videoFormHint.textContent = "Select Aiden or Landon.");
 
-  // NOTE: object URLs won't persist across reloads.
-  // For persistent videos, you'd upload to storage (server) and store the hosted URL.
   const objectURL = createVideoObjectURL(file);
 
   const item = {
@@ -643,7 +501,6 @@ addVideoBtn.addEventListener("click", () => {
   saveVideos();
   renderVideos();
 
-  // reset
   videoFile.value = "";
   videoTitle.value = "";
   videoOwner.value = "";
@@ -694,10 +551,8 @@ function renderVideos() {
     `;
 
     const video = el.querySelector("video");
-    // Best effort: objectURL is only valid for this session (unless you keep it alive).
     if (v.objectURL) video.src = v.objectURL;
 
-    // Hover behavior: play/pause
     el.addEventListener("mouseenter", () => {
       try { video.currentTime = 0; video.play(); } catch {}
     });
@@ -706,8 +561,7 @@ function renderVideos() {
     });
 
     el.querySelector('[data-action="open"]').addEventListener("click", () => {
-      // Open in a simple modal window (new tab)
-      if (!v.objectURL) return alert("This video link isn't available after reload in this prototype. For persistence, upload to cloud storage.");
+      if (!v.objectURL) return alert("This video link isn't available after refresh in this prototype. For persistence, you’ll want cloud storage.");
       window.open(v.objectURL, "_blank");
     });
 
@@ -722,8 +576,6 @@ function renderVideos() {
 }
 
 // ---------- Notes (doc) ----------
-let docSaveTimer = null;
-
 function loadDoc() {
   let data;
   try {
@@ -744,7 +596,7 @@ function loadDoc() {
   `;
 }
 
-function saveDoc(statusText = "Saved") {
+function saveDoc(statusText = "saved") {
   const payload = {
     title: docTitle.value || "TSE Notes",
     html: editor.innerHTML,
@@ -763,7 +615,6 @@ function scheduleDocSave() {
 docTitle.addEventListener("input", scheduleDocSave);
 editor.addEventListener("input", scheduleDocSave);
 
-// Paste images into editor
 editor.addEventListener("paste", async (e) => {
   const items = e.clipboardData?.items;
   if (!items) return;
@@ -781,7 +632,6 @@ editor.addEventListener("paste", async (e) => {
   }
 });
 
-// Toolbar commands
 document.querySelectorAll(".tool[data-cmd]").forEach(btn => {
   btn.addEventListener("click", () => {
     const cmd = btn.getAttribute("data-cmd");
@@ -817,7 +667,6 @@ document.getElementById("clearFormatBtn").addEventListener("click", () => {
   scheduleDocSave();
 });
 
-// Insert image via picker
 imageInsert.addEventListener("change", async () => {
   const file = imageInsert.files?.[0];
   if (!file) return;
@@ -827,7 +676,6 @@ imageInsert.addEventListener("change", async () => {
   scheduleDocSave();
 });
 
-// Download doc as HTML file
 downloadHtmlBtn.addEventListener("click", () => {
   const title = (docTitle.value || "TSE Notes").trim();
   const html = `
@@ -860,16 +708,13 @@ ${editor.innerHTML}
 
 // ---------- Clear + Export ----------
 clearBtn.addEventListener("click", () => {
-  const ok = confirm("Clear ALL local TSE data (videos list + notes + password on this browser)?");
+  const ok = confirm("Clear ALL local TSE data (videos list + notes) on this browser?");
   if (!ok) return;
   localStorage.removeItem(KEY_VIDEOS);
   localStorage.removeItem(KEY_DOC);
-  localStorage.removeItem(KEY_PW);
-  localStorage.removeItem(KEY_AUTH);
   videos = [];
   renderVideos();
   loadDoc();
-  showAuth();
 });
 
 exportBtn.addEventListener("click", () => {
@@ -939,7 +784,6 @@ function insertImageAtCursor(dataUrl) {
   range.collapse(false);
   range.insertNode(img);
 
-  // Move cursor after image
   range.setStartAfter(img);
   range.setEndAfter(img);
   sel.removeAllRanges();
