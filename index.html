@@ -1,1139 +1,1097 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>TSE</title>
   <style>
     :root{
-      --bg:#0b0f14;
-      --text:#e7eef7;
-      --muted:#9db0c6;
-      --border:rgba(255,255,255,.08);
-      --shadow: 0 12px 40px rgba(0,0,0,.55);
-      --accent:#6ee7ff;
-      --accent2:#7c3aed;
-      --good:#22c55e;
-      --bad:#ef4444;
+      --bg:#0b0f17;
+      --panel:#0f1626;
+      --panel2:#0c1220;
+      --muted:#8fa1c7;
+      --text:#e7eefc;
+      --line:rgba(255,255,255,.09);
+      --accent:#6aa6ff;
+      --good:#46e39a;
+      --bad:#ff5d7a;
+      --warn:#ffd166;
+      --shadow: 0 10px 40px rgba(0,0,0,.45);
+      --radius: 16px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 700px at 20% -10%, rgba(106,166,255,.18), transparent 60%),
+                  radial-gradient(900px 600px at 90% 0%, rgba(70,227,154,.12), transparent 55%),
+                  var(--bg);
       color:var(--text);
-      background:
-        radial-gradient(1200px 600px at 15% 10%, rgba(124,58,237,.18), transparent 60%),
-        radial-gradient(900px 500px at 85% 20%, rgba(110,231,255,.12), transparent 55%),
-        linear-gradient(180deg, #06090d 0%, var(--bg) 100%);
     }
-
-    .wrap{max-width:1240px;margin:0 auto;padding:24px}
+    a{color:inherit}
+    .wrap{max-width:1180px;margin:0 auto;padding:22px}
     .topbar{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:16px 18px;border:1px solid var(--border);border-radius:18px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);
       background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      box-shadow:var(--shadow);
+      box-shadow: var(--shadow);
+      position:sticky; top:14px; z-index:20;
       backdrop-filter: blur(10px);
     }
-    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.5px}
+    .brand{display:flex;align-items:center;gap:10px}
     .logo{
       width:38px;height:38px;border-radius:12px;
-      background: radial-gradient(circle at 30% 30%, rgba(110,231,255,.9), rgba(124,58,237,.9));
-      box-shadow: 0 12px 35px rgba(124,58,237,.25);
+      background: radial-gradient(circle at 30% 30%, rgba(106,166,255,.8), rgba(70,227,154,.35) 45%, rgba(255,255,255,.06) 70%);
+      border:1px solid var(--line);
+      box-shadow: 0 10px 30px rgba(106,166,255,.12);
     }
-    .brand small{display:block;color:var(--muted);font-weight:600;letter-spacing:0}
-    .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-    button,.btn{
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      padding:10px 12px;border-radius:12px;
-      cursor:pointer;
-      transition: transform .08s ease, background .2s ease, border-color .2s ease;
-      user-select:none;
-      white-space:nowrap;
+    .brand h1{font-size:16px;margin:0;letter-spacing:.5px}
+    .brand p{margin:0;color:var(--muted);font-size:12px}
+    .tabs{display:flex;gap:8px;align-items:center}
+    .tab{
+      cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.04);
+      color:var(--text);padding:10px 12px;border-radius:999px;font-weight:600;font-size:13px;
+      transition: transform .08s ease, background .2s ease;
     }
-    button:hover,.btn:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.14)}
-    button:active,.btn:active{transform: translateY(1px)}
-    .btn-primary{
-      border-color: rgba(110,231,255,.35);
-      background: linear-gradient(180deg, rgba(110,231,255,.18), rgba(124,58,237,.14));
+    .tab:hover{transform: translateY(-1px);background:rgba(255,255,255,.07)}
+    .tab.active{background:rgba(106,166,255,.16);border-color:rgba(106,166,255,.3)}
+    .right{
+      display:flex; gap:10px; align-items:center;
     }
     .pill{
-      padding:8px 10px;border-radius:999px;
-      border:1px solid var(--border);
-      color:var(--muted);
-      font-size:12px;
-      background:rgba(0,0,0,.18);
+      font-size:12px;color:var(--muted);border:1px solid var(--line);
+      padding:8px 10px;border-radius:999px;background:rgba(0,0,0,.18);
+      display:flex; align-items:center; gap:8px;
     }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 290px 1fr;
-      gap:18px;
-      margin-top:18px;
+    .dot{width:8px;height:8px;border-radius:50%}
+    .dot.ok{background:var(--good)}
+    .dot.bad{background:var(--bad)}
+    .btn{
+      cursor:pointer; border:1px solid var(--line); background:rgba(255,255,255,.06);
+      padding:10px 12px;border-radius:12px; color:var(--text); font-weight:700; font-size:13px;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      display:inline-flex; align-items:center; gap:8px;
+      user-select:none;
     }
-    .sidebar,.panel{
-      border:1px solid var(--border);
-      border-radius:18px;
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+    .btn:hover{transform: translateY(-1px); background:rgba(255,255,255,.09)}
+    .btn.primary{background: rgba(106,166,255,.16); border-color: rgba(106,166,255,.35)}
+    .btn.danger{background: rgba(255,93,122,.12); border-color: rgba(255,93,122,.28)}
+    .btn:disabled{opacity:.55; cursor:not-allowed; transform:none}
+    .grid{display:grid; grid-template-columns: 420px 1fr; gap:16px; margin-top:16px}
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} .topbar{position:relative; top:auto}}
+    .card{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border-radius:var(--radius);
       box-shadow: var(--shadow);
       overflow:hidden;
-      backdrop-filter: blur(10px);
     }
-    .sidebar{padding:14px}
-    .nav{display:flex;flex-direction:column;gap:8px}
-    .nav button{
+    .card .hd{
+      padding:14px 14px 10px;
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.12);
+    }
+    .card .hd h2{margin:0;font-size:14px}
+    .card .hd span{color:var(--muted);font-size:12px}
+    .card .bd{padding:14px}
+    .field{display:flex; flex-direction:column; gap:6px; margin-bottom:10px}
+    .field label{font-size:12px;color:var(--muted)}
+    input[type="text"], textarea, select{
       width:100%;
-      display:flex;justify-content:space-between;align-items:center;
-      padding:12px 12px;border-radius:14px;
-      background:rgba(0,0,0,.12);
-    }
-    .nav button.active{
-      border-color: rgba(110,231,255,.35);
-      background: linear-gradient(180deg, rgba(110,231,255,.15), rgba(124,58,237,.12));
-    }
-
-    .panel-header{
-      display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
-      padding:16px 16px 0 16px;
-    }
-    .panel-header h2{margin:0;font-size:18px}
-    .panel-header p{margin:6px 0 0 0;color:var(--muted);font-size:13px;line-height:1.35}
-    .panel-body{padding:16px}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    .field{
-      display:flex;flex-direction:column;gap:6px;
-      min-width: 180px;
-      flex:1;
-    }
-    label{font-size:12px;color:var(--muted)}
-    input, select, textarea{
-      width:100%;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:rgba(0,0,0,.20);
+      background: rgba(0,0,0,.22);
+      border:1px solid var(--line);
       color:var(--text);
       padding:10px 10px;
+      border-radius:12px;
       outline:none;
     }
-    textarea{min-height:92px;resize:vertical}
-    .hint{font-size:12px;color:var(--muted)}
-    .split{
-      display:grid;
-      grid-template-columns: 420px 1fr;
-      gap:16px;
-      align-items:start;
+    textarea{min-height:90px;resize:vertical}
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    .hint{font-size:12px;color:var(--muted);line-height:1.3}
+    .sep{height:1px;background:var(--line);margin:12px 0}
+    .toolbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+    .toolbar .spacer{flex:1}
+    .search{
+      display:flex; gap:10px; align-items:center;
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.10);
     }
-
-    .cards{
+    .search input{
+      flex:1; background: rgba(0,0,0,.22);
+      border:1px solid var(--line); border-radius:12px;
+      padding:10px 10px; color:var(--text);
+    }
+    .selectSmall{width:170px}
+    .list{
+      padding:14px;
       display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap:12px;
-      margin-top:12px;
     }
-    .card{
-      border:1px solid var(--border);
-      border-radius:16px;
-      padding:12px;
-      background:rgba(0,0,0,.12);
-      transition: transform .12s ease, border-color .2s ease, background .2s ease;
+    @media (max-width: 980px){ .list{grid-template-columns: 1fr} }
+    .vcard{
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      border-radius:14px;
+      overflow:hidden;
       position:relative;
-      overflow:hidden;
+      transition: transform .12s ease, border-color .2s ease, background .2s ease;
     }
-    .card:hover{transform: translateY(-2px);border-color:rgba(110,231,255,.28);background:rgba(0,0,0,.16)}
-    .card h3{margin:0 0 6px 0;font-size:14px}
-    .meta{color:var(--muted);font-size:12px;display:flex;gap:10px;flex-wrap:wrap}
-    .card .desc{margin:10px 0 0 0;color:rgba(231,238,247,.85);font-size:13px;line-height:1.35}
-    .card .footer{
-      display:flex;justify-content:space-between;align-items:center;
-      margin-top:10px;
+    .vcard:hover{
+      transform: translateY(-2px);
+      border-color: rgba(106,166,255,.35);
+      background: rgba(0,0,0,.26);
     }
-    .tag{
-      font-size:12px;
-      padding:6px 10px;border-radius:999px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.05);
-      color:var(--text);
+    .thumb{
+      height:150px;
+      background: radial-gradient(circle at 30% 20%, rgba(106,166,255,.25), transparent 55%),
+                  radial-gradient(circle at 70% 40%, rgba(70,227,154,.18), transparent 55%),
+                  rgba(255,255,255,.04);
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:center; justify-content:center;
+      position:relative;
     }
-    .tag.accent{border-color:rgba(110,231,255,.28)}
-    .mini{display:flex;gap:8px;align-items:center}
-    .mini button{padding:8px 10px;border-radius:12px}
-
-    video{
-      width:100%;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:#000;
-      display:none;
-      margin-top:10px;
+    .thumb .play{
+      width:52px;height:52px;border-radius:50%;
+      border:1px solid rgba(255,255,255,.18);
+      display:flex; align-items:center; justify-content:center;
+      background: rgba(0,0,0,.25);
+      box-shadow: 0 10px 25px rgba(0,0,0,.35);
+      font-size:18px;
     }
-    .card:hover video{display:block}
-
-    /* Small controls row */
-    .controls{
-      display:flex;gap:10px;flex-wrap:wrap;align-items:end;
-      border:1px solid var(--border);
-      background:rgba(0,0,0,.10);
+    .vmeta{padding:12px}
+    .vtitle{
+      margin:0 0 8px;
+      font-size:14px;
+      line-height:1.25;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .chips{display:flex; gap:6px; flex-wrap:wrap; align-items:center}
+    .chip{
+      font-size:11px;
+      padding:6px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+    }
+    .chip.owner{
+      color: rgba(255,255,255,.9);
+      border-color: rgba(106,166,255,.25);
+      background: rgba(106,166,255,.14);
+    }
+    .vactions{
       padding:12px;
-      border-radius:16px;
-    }
-    .controls .field{min-width:180px}
-
-    /* Notes editor */
-    .editor-shell{
-      border:1px solid var(--border);
-      border-radius:18px;
-      overflow:hidden;
+      display:flex; gap:8px; align-items:center;
+      border-top:1px solid var(--line);
       background: rgba(0,0,0,.14);
     }
-    .toolbar{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
+    .preview{
+      position:absolute; inset:0;
+      opacity:0; pointer-events:none;
+      transition: opacity .15s ease;
+      background: rgba(0,0,0,.75);
+      display:flex; align-items:center; justify-content:center;
       padding:10px;
-      border-bottom:1px solid var(--border);
-      background: rgba(0,0,0,.10);
-      align-items:center;
     }
-    .tool{
-      padding:8px 10px;border-radius:12px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      cursor:pointer;
-      font-size:12px;
-    }
-    .tool:hover{background: rgba(255,255,255,.08)}
-    .editor{
-      min-height:460px;
-      padding:14px 16px;
-      outline:none;
-      line-height:1.55;
-    }
-
-    /* Drag/drop hint */
-    .drop-hint{
-      border:1px dashed rgba(110,231,255,.28);
-      background: rgba(110,231,255,.06);
-      border-radius:14px;
-      padding:10px 12px;
-      color: rgba(231,238,247,.9);
-      font-size:12px;
-      display:none;
-      margin-bottom:10px;
-    }
-
-    /* Resizable image wrapper */
-    .img-wrap{
-      display:inline-block;
-      resize: both;
-      overflow: auto;
-      border:1px solid var(--border);
-      border-radius:14px;
-      background: rgba(255,255,255,.03);
-      padding:6px;
-      margin:10px 0;
-      max-width:100%;
-    }
-    .img-wrap img{
-      display:block;
+    .vcard:hover .preview{opacity:1; pointer-events:auto}
+    .preview video{
       width:100%;
-      height:auto;
-      border-radius:10px;
-      border:1px solid var(--border);
-      pointer-events:none;
-    }
-    .img-selected{
-      outline:2px solid rgba(110,231,255,.35);
-      box-shadow: 0 0 0 6px rgba(110,231,255,.08);
+      max-height:220px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.16);
+      background:#000;
     }
 
-    /* Modal player */
-    .modal{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.7);
-      backdrop-filter: blur(8px);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      z-index:999;
+    /* Modal */
+    .modalBack{
+      position:fixed; inset:0; background: rgba(0,0,0,.62);
+      display:none; align-items:center; justify-content:center; padding:20px; z-index:50;
     }
-    .modal .box{
-      width:min(980px, 100%);
-      border:1px solid var(--border);
-      border-radius:20px;
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    .modalBack.show{display:flex}
+    .modal{
+      width:min(960px, 100%);
+      border:1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       box-shadow: var(--shadow);
       overflow:hidden;
     }
-    .modal .head{
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:12px 14px;
-      border-bottom:1px solid var(--border);
+    .modal .mhd{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:12px 14px; border-bottom:1px solid var(--line); background: rgba(0,0,0,.14);
     }
-    .modal .head strong{font-size:14px}
-    .modal .body{padding:14px}
-    .modal video{display:block; width:100%; margin:0; border-radius:14px}
+    .modal .mhd .title{font-weight:900}
+    .modal .mbd{padding:12px}
+    .modal video{width:100%; border-radius:14px; border:1px solid rgba(255,255,255,.14); background:#000}
+    .toast{
+      position:fixed; left:50%; bottom:18px; transform: translateX(-50%);
+      background: rgba(0,0,0,.75);
+      border:1px solid rgba(255,255,255,.14);
+      padding:10px 12px; border-radius:12px;
+      color: var(--text);
+      display:none;
+      z-index:60;
+      box-shadow: var(--shadow);
+      max-width: min(820px, 92vw);
+    }
+    .toast.show{display:block}
 
-    @media (max-width: 980px){
-      .grid{grid-template-columns:1fr}
-      .split{grid-template-columns:1fr}
+    /* Notes */
+    .notesWrap{display:grid; grid-template-columns: 280px 1fr; gap:16px; margin-top:16px}
+    @media (max-width: 980px){ .notesWrap{grid-template-columns:1fr} }
+    .noteList{padding:12px; display:flex; flex-direction:column; gap:10px}
+    .noteItem{
+      cursor:pointer;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background: rgba(0,0,0,.18);
+      padding:10px;
+      transition: transform .12s ease, border-color .2s ease, background .2s ease;
     }
+    .noteItem:hover{transform: translateY(-1px); border-color: rgba(106,166,255,.32); background: rgba(0,0,0,.24)}
+    .noteItem.active{border-color: rgba(106,166,255,.45); background: rgba(106,166,255,.12)}
+    .noteItem .t{font-weight:900; font-size:13px; margin:0 0 4px}
+    .noteItem .s{color:var(--muted); font-size:12px; margin:0}
+    .docTop{
+      display:flex; gap:10px; align-items:center; padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.10);
+    }
+    .docTitle{flex:1; font-weight:900}
+    .docToolbar{display:flex; gap:8px; flex-wrap:wrap}
+    .doc{
+      min-height: 520px;
+      padding:16px;
+      outline:none;
+      line-height:1.45;
+    }
+    .dropHint{
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:14px;
+      padding:10px 12px;
+      color: var(--muted);
+      font-size:12px;
+      background: rgba(0,0,0,.14);
+    }
+
+    /* Resizable images in editor */
+    .imgWrap{
+      display:inline-block;
+      position:relative;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:12px;
+      overflow:hidden;
+      background:#000;
+      margin:6px 0;
+      max-width: 100%;
+    }
+    .imgWrap img{display:block; width:100%; height:auto}
+    .handle{
+      position:absolute; width:12px; height:12px; border-radius:3px;
+      background: rgba(106,166,255,.9);
+      border:1px solid rgba(0,0,0,.35);
+      right:8px; bottom:8px; cursor:nwse-resize;
+      box-shadow: 0 8px 18px rgba(0,0,0,.35);
+    }
+
+    .progressRow{display:flex; gap:10px; align-items:center}
+    progress{width:100%; height:12px; border-radius:999px; overflow:hidden}
+    progress::-webkit-progress-bar{background: rgba(255,255,255,.08)}
+    progress::-webkit-progress-value{background: rgba(106,166,255,.75)}
+    .small{font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
-  <div class="wrap" id="app">
+  <div class="wrap">
     <div class="topbar">
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
+        <div class="logo"></div>
         <div>
-          <div style="font-size:18px">TSE</div>
-          <small>Videos + Notes (Local)</small>
+          <h1>TSE</h1>
+          <p>Videos + Notes • Shared via Cloudflare (R2 + D1)</p>
         </div>
       </div>
-      <div class="actions">
-        <span class="pill" id="statusPill">Local (IndexedDB + localStorage)</span>
-        <button id="exportBtn">Export Data</button>
-        <button id="clearBtn">Clear Local Data</button>
+
+      <div class="tabs">
+        <button class="tab active" id="tabVideos">Videos</button>
+        <button class="tab" id="tabNotes">Notes</button>
+      </div>
+
+      <div class="right">
+        <div class="pill" title="API connection status">
+          <span class="dot bad" id="apiDot"></span>
+          <span id="apiText">API: not checked</span>
+        </div>
+        <button class="btn" id="btnCheckApi">Check API</button>
+        <button class="btn primary" id="btnRefresh">Refresh</button>
       </div>
     </div>
 
-    <div class="grid">
-      <div class="sidebar">
-        <div class="nav">
-          <button class="active" id="tabVideos">
-            <span>🎬 Videos</span>
-            <span class="pill" id="videoCount">0</span>
-          </button>
-          <button id="tabNotes">
-            <span>📝 Notes</span>
-            <span class="pill" id="notesPill">Doc</span>
-          </button>
+    <!-- VIDEOS VIEW -->
+    <div id="viewVideos">
+      <div class="grid">
+        <div class="card">
+          <div class="hd">
+            <div>
+              <h2>Upload video</h2>
+              <span>Shared — appears for everyone with Access</span>
+            </div>
+            <span class="small" id="uploadMax">Max 500MB</span>
+          </div>
+          <div class="bd">
+            <div class="field">
+              <label>Video file</label>
+              <input type="file" id="file" accept="video/*" />
+              <div class="hint">Tip: keep clips under 500MB for fastest uploads.</div>
+            </div>
+
+            <div class="field">
+              <label>Title</label>
+              <input type="text" id="title" placeholder="e.g., NQ Scalps – Jan 4" />
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label>Owner (Aiden or Landon)</label>
+                <select id="owner">
+                  <option value="Aiden">Aiden</option>
+                  <option value="Landon">Landon</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Sort tag</label>
+                <select id="tag">
+                  <option value="Trade Review">Trade Review</option>
+                  <option value="Strategy">Strategy</option>
+                  <option value="Journal">Journal</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="sep"></div>
+
+            <div class="field">
+              <label>Description Q1</label>
+              <input type="text" id="q1" placeholder="What was the setup?" />
+            </div>
+            <div class="field">
+              <label>Description Q2</label>
+              <input type="text" id="q2" placeholder="What did you learn?" />
+            </div>
+            <div class="field">
+              <label>Notes (optional)</label>
+              <textarea id="vnotes" placeholder="Write notes attached to this video..."></textarea>
+            </div>
+
+            <div class="progressRow" style="margin-top:10px;">
+              <button class="btn primary" id="btnUpload">Upload</button>
+              <button class="btn" id="btnClearForm">Clear</button>
+            </div>
+
+            <div style="margin-top:10px;">
+              <progress id="prog" value="0" max="100"></progress>
+              <div class="small" id="progText" style="margin-top:6px;">Idle</div>
+            </div>
+
+            <div class="sep"></div>
+
+            <div class="hint">
+              If upload/list calls fail with 401/403, open <b>api.tseapp.com</b> once so Access can set your session, then refresh.
+            </div>
+          </div>
         </div>
 
-        <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
-          <div class="hint">
-            Videos persist locally now (even after refresh).<br/>
-            Notes autosave + images drag/drop and resizable.
+        <div class="card">
+          <div class="search">
+            <input id="search" placeholder="Search videos by title, owner, notes..." />
+            <select id="sort" class="selectSmall">
+              <option value="new">Newest</option>
+              <option value="old">Oldest</option>
+              <option value="aiden">Owner: Aiden</option>
+              <option value="landon">Owner: Landon</option>
+            </select>
+            <button class="btn" id="btnLoad">Load</button>
           </div>
+          <div class="list" id="videoList"></div>
         </div>
       </div>
+    </div>
 
-      <div class="panel">
-
-        <!-- VIDEOS VIEW -->
-        <div id="videosView">
-          <div class="panel-header">
-            <div>
-              <h2>Videos</h2>
-              <p>Local library backed by <b>IndexedDB</b>. Upload a video, fill details (includes <b>Aiden or Landon</b>), and it will remain available after reload.</p>
-            </div>
-          </div>
-
-          <div class="panel-body">
-            <div class="split">
-              <div>
-                <div class="row">
-                  <div class="field" style="min-width:100%">
-                    <label for="videoFile">Video file</label>
-                    <input id="videoFile" type="file" accept="video/*" />
-                    <div class="hint">Stored locally on this device/browser (IndexedDB). Not shared with other visitors.</div>
-                  </div>
-                </div>
-
-                <div class="row" style="margin-top:10px">
-                  <div class="field">
-                    <label for="videoTitle">Title</label>
-                    <input id="videoTitle" placeholder="Ex: SPY scalp review" />
-                  </div>
-                  <div class="field">
-                    <label for="videoOwner">Aiden or Landon</label>
-                    <select id="videoOwner">
-                      <option value="" selected disabled>Choose...</option>
-                      <option value="Aiden">Aiden</option>
-                      <option value="Landon">Landon</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="row" style="margin-top:10px">
-                  <div class="field">
-                    <label for="videoQ1">Description Q1</label>
-                    <input id="videoQ1" placeholder="What was the setup?" />
-                  </div>
-                </div>
-
-                <div class="row" style="margin-top:10px">
-                  <div class="field">
-                    <label for="videoQ2">Description Q2</label>
-                    <input id="videoQ2" placeholder="What was the mistake / lesson?" />
-                  </div>
-                </div>
-
-                <div class="row" style="margin-top:10px">
-                  <div class="field" style="min-width:100%">
-                    <label for="videoDesc">Notes / extra details</label>
-                    <textarea id="videoDesc" placeholder="Write any additional context..."></textarea>
-                  </div>
-                </div>
-
-                <div class="row" style="margin-top:10px">
-                  <button class="btn-primary" id="addVideoBtn">Add Video</button>
-                  <div class="hint" id="videoFormHint" style="align-self:center"></div>
-                </div>
-
-                <div class="hint" style="margin-top:12px">
-                  Tip: very large videos can hit browser storage limits. If uploads fail, try smaller clips or export your data first.
-                </div>
-              </div>
-
-              <div>
-                <div class="controls">
-                  <div class="field" style="flex:2;min-width:240px">
-                    <label for="videoSearch">Search</label>
-                    <input id="videoSearch" placeholder="Search title, Q1/Q2, notes..." />
-                  </div>
-                  <div class="field">
-                    <label for="videoFilterOwner">Filter</label>
-                    <select id="videoFilterOwner">
-                      <option value="All" selected>All</option>
-                      <option value="Aiden">Aiden</option>
-                      <option value="Landon">Landon</option>
-                    </select>
-                  </div>
-                  <div class="field">
-                    <label for="videoSort">Sort</label>
-                    <select id="videoSort">
-                      <option value="newest" selected>Newest</option>
-                      <option value="oldest">Oldest</option>
-                      <option value="title">Title</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="hint" style="margin-top:12px">Library</div>
-                <div class="cards" id="videoCards"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- NOTES VIEW -->
-        <div id="notesView" style="display:none">
-          <div class="panel-header">
+    <!-- NOTES VIEW -->
+    <div id="viewNotes" style="display:none;">
+      <div class="notesWrap">
+        <div class="card">
+          <div class="hd">
             <div>
               <h2>Notes</h2>
-              <p>Google-Doc style editor. Supports formatting + <b>drag & drop images</b> + paste images + click-to-resize images.</p>
+              <span>Google-doc style • drag & drop images • resizable</span>
             </div>
           </div>
-
-          <div class="panel-body">
-            <div class="drop-hint" id="dropHint">Drop images to insert them into the doc…</div>
-
-            <div class="row" style="margin-bottom:10px">
-              <div class="field" style="min-width:260px;flex:0">
-                <label for="docTitle">Document title</label>
-                <input id="docTitle" placeholder="TSE Notes" />
-              </div>
-              <div class="field" style="align-self:flex-end;flex:1">
-                <div class="hint" id="saveStatus">Autosave: idle</div>
-              </div>
-              <div class="field" style="align-self:flex-end;flex:0;min-width:220px">
-                <input id="imageInsert" type="file" accept="image/*" />
-              </div>
-              <div class="field" style="align-self:flex-end;flex:0;min-width:140px">
-                <button id="downloadHtmlBtn">Download Doc</button>
-              </div>
+          <div class="noteList">
+            <button class="btn primary" id="btnNewNote">New note</button>
+            <button class="btn danger" id="btnDeleteNote">Delete note</button>
+            <div class="dropHint">
+              Drop images into the doc area → they’ll insert where your cursor is.
+              Drag the blue corner to resize.
             </div>
-
-            <div class="editor-shell">
-              <div class="toolbar">
-                <button class="tool" data-cmd="bold"><b>B</b></button>
-                <button class="tool" data-cmd="italic"><i>I</i></button>
-                <button class="tool" data-cmd="underline"><u>U</u></button>
-                <button class="tool" data-cmd="insertUnorderedList">• List</button>
-                <button class="tool" data-cmd="insertOrderedList">1. List</button>
-                <button class="tool" id="h2Btn">H2</button>
-                <button class="tool" id="quoteBtn">Quote</button>
-                <button class="tool" id="linkBtn">Link</button>
-                <button class="tool" id="clearFormatBtn">Clear</button>
-                <span class="pill">Drag & drop images • Click image to resize</span>
-              </div>
-              <div id="editor" class="editor" contenteditable="true" spellcheck="true"></div>
-            </div>
-
-            <div class="hint" style="margin-top:10px">
-              Images are embedded into the doc (base64) and stored locally.
-            </div>
+            <div class="sep"></div>
+            <div id="noteItems"></div>
           </div>
         </div>
 
+        <div class="card">
+          <div class="docTop">
+            <div class="docTitle" id="docTitle">Untitled</div>
+            <div class="docToolbar">
+              <button class="btn" id="btnBold"><b>B</b></button>
+              <button class="btn" id="btnItalic"><i>I</i></button>
+              <button class="btn" id="btnUnderline"><u>U</u></button>
+              <button class="btn" id="btnH2">H2</button>
+              <button class="btn" id="btnBullets">• List</button>
+              <button class="btn" id="btnInsertImage">Insert image</button>
+              <button class="btn" id="btnSaveNote">Save</button>
+            </div>
+          </div>
+          <div class="bd">
+            <input type="text" id="noteTitleInput" placeholder="Note title..." style="margin-bottom:12px;" />
+            <div class="doc card" id="doc" contenteditable="true"></div>
+            <div class="small" id="noteStatus" style="margin-top:10px;">Autosave on typing.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Video modal -->
+  <div class="modalBack" id="modalBack">
+    <div class="modal">
+      <div class="mhd">
+        <div class="title" id="modalTitle">Video</div>
+        <button class="btn" id="btnCloseModal">Close</button>
+      </div>
+      <div class="mbd">
+        <video id="modalVideo" controls playsinline></video>
+        <div class="sep"></div>
+        <div class="small" id="modalMeta"></div>
       </div>
     </div>
   </div>
 
-  <!-- Modal player -->
-  <div class="modal" id="playerModal" aria-hidden="true">
-    <div class="box">
-      <div class="head">
-        <strong id="playerTitle">Player</strong>
-        <button id="closePlayerBtn">Close</button>
-      </div>
-      <div class="body">
-        <video id="playerVideo" controls playsinline></video>
-        <div class="hint" id="playerMeta" style="margin-top:10px"></div>
-      </div>
-    </div>
-  </div>
+  <div class="toast" id="toast"></div>
 
-<script>
-/**
- * TSE Local
- * - Video blobs stored in IndexedDB (persists across refresh)
- * - Metadata stored in localStorage
- * - Notes: drag&drop images + paste + file picker
- * - Images scalable via resizable wrapper (click image to select, resize handles)
- */
+  <script>
+    // =========================
+    // CONFIG
+    // =========================
+    // If your API is on api.tseapp.com:
+    const API_BASE = "https://api.tseapp.com";
 
-// =============== Storage keys ===============
-const KEY_VIDEOS_META = "tse_videos_meta";
-const KEY_DOC = "tse_doc";
-
-// =============== IndexedDB (video blobs) ===============
-const DB_NAME = "tse_db";
-const DB_VERSION = 1;
-const STORE_VIDEOS = "videos"; // key: id, value: { id, blob, type, name, createdAt }
-
-function openDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = () => {
-      const db = req.result;
-      if (!db.objectStoreNames.contains(STORE_VIDEOS)) {
-        db.createObjectStore(STORE_VIDEOS, { keyPath: "id" });
-      }
+    // =========================
+    // UTIL
+    // =========================
+    const $ = (id) => document.getElementById(id);
+    const toast = (msg, ms=2600) => {
+      const t = $("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(window.__t_toast);
+      window.__t_toast = setTimeout(() => t.classList.remove("show"), ms);
     };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
-}
-
-async function idbPutVideo({ id, blob, type, name, createdAt }) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_VIDEOS, "readwrite");
-    tx.objectStore(STORE_VIDEOS).put({ id, blob, type, name, createdAt });
-    tx.oncomplete = () => { db.close(); resolve(true); };
-    tx.onerror = () => { const e = tx.error; db.close(); reject(e); };
-  });
-}
-
-async function idbGetVideo(id) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_VIDEOS, "readonly");
-    const req = tx.objectStore(STORE_VIDEOS).get(id);
-    req.onsuccess = () => { db.close(); resolve(req.result || null); };
-    req.onerror = () => { const e = req.error; db.close(); reject(e); };
-  });
-}
-
-async function idbDeleteVideo(id) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_VIDEOS, "readwrite");
-    tx.objectStore(STORE_VIDEOS).delete(id);
-    tx.oncomplete = () => { db.close(); resolve(true); };
-    tx.onerror = () => { const e = tx.error; db.close(); reject(e); };
-  });
-}
-
-async function idbClearAllVideos() {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_VIDEOS, "readwrite");
-    tx.objectStore(STORE_VIDEOS).clear();
-    tx.oncomplete = () => { db.close(); resolve(true); };
-    tx.onerror = () => { const e = tx.error; db.close(); reject(e); };
-  });
-}
-
-// =============== Elements ===============
-const clearBtn = document.getElementById("clearBtn");
-const exportBtn = document.getElementById("exportBtn");
-
-const tabVideos = document.getElementById("tabVideos");
-const tabNotes = document.getElementById("tabNotes");
-const videosView = document.getElementById("videosView");
-const notesView = document.getElementById("notesView");
-
-const videoFile = document.getElementById("videoFile");
-const videoTitle = document.getElementById("videoTitle");
-const videoOwner = document.getElementById("videoOwner");
-const videoQ1 = document.getElementById("videoQ1");
-const videoQ2 = document.getElementById("videoQ2");
-const videoDesc = document.getElementById("videoDesc");
-const addVideoBtn = document.getElementById("addVideoBtn");
-const videoCards = document.getElementById("videoCards");
-const videoCount = document.getElementById("videoCount");
-const videoFormHint = document.getElementById("videoFormHint");
-
-const videoSearch = document.getElementById("videoSearch");
-const videoFilterOwner = document.getElementById("videoFilterOwner");
-const videoSort = document.getElementById("videoSort");
-
-const docTitle = document.getElementById("docTitle");
-const editor = document.getElementById("editor");
-const saveStatus = document.getElementById("saveStatus");
-const imageInsert = document.getElementById("imageInsert");
-const downloadHtmlBtn = document.getElementById("downloadHtmlBtn");
-const dropHint = document.getElementById("dropHint");
-
-// Modal player
-const playerModal = document.getElementById("playerModal");
-const closePlayerBtn = document.getElementById("closePlayerBtn");
-const playerVideo = document.getElementById("playerVideo");
-const playerTitle = document.getElementById("playerTitle");
-const playerMeta = document.getElementById("playerMeta");
-
-// =============== State ===============
-let videosMeta = []; // [{id,title,owner,q1,q2,desc,createdAt,fileName,fileType,fileSize}]
-let activeObjectURLs = new Map(); // id -> objectURL (for cleanup)
-let docSaveTimer = null;
-
-// =============== Boot ===============
-function boot() {
-  loadVideosMeta();
-  renderVideos();
-  loadDoc();
-  setTab("videos");
-}
-boot();
-
-// =============== Tabs ===============
-function setTab(tab) {
-  const isVideos = tab === "videos";
-  tabVideos.classList.toggle("active", isVideos);
-  tabNotes.classList.toggle("active", !isVideos);
-  videosView.style.display = isVideos ? "block" : "none";
-  notesView.style.display = !isVideos ? "block" : "none";
-}
-tabVideos.addEventListener("click", () => setTab("videos"));
-tabNotes.addEventListener("click", () => setTab("notes"));
-
-// =============== Videos Meta (localStorage) ===============
-function loadVideosMeta() {
-  try {
-    videosMeta = JSON.parse(localStorage.getItem(KEY_VIDEOS_META) || "[]");
-  } catch {
-    videosMeta = [];
-  }
-  videoCount.textContent = String(videosMeta.length);
-}
-function saveVideosMeta() {
-  localStorage.setItem(KEY_VIDEOS_META, JSON.stringify(videosMeta));
-  videoCount.textContent = String(videosMeta.length);
-}
-
-// =============== Add Video (store blob in IndexedDB) ===============
-addVideoBtn.addEventListener("click", async () => {
-  videoFormHint.textContent = "";
-  const file = videoFile.files?.[0];
-  const title = (videoTitle.value || "").trim();
-  const owner = (videoOwner.value || "").trim();
-  const q1 = (videoQ1.value || "").trim();
-  const q2 = (videoQ2.value || "").trim();
-  const desc = (videoDesc.value || "").trim();
-
-  if (!file) return (videoFormHint.textContent = "Pick a video file.");
-  if (!title) return (videoFormHint.textContent = "Add a title.");
-  if (!owner) return (videoFormHint.textContent = "Select Aiden or Landon.");
-
-  const id = crypto.randomUUID();
-  const createdAt = new Date().toISOString();
-
-  try {
-    // Store blob in IndexedDB
-    await idbPutVideo({
-      id,
-      blob: file,
-      type: file.type || "video/mp4",
-      name: file.name || "video",
-      createdAt
-    });
-
-    // Store metadata in localStorage
-    const meta = {
-      id,
-      title,
-      owner,
-      q1,
-      q2,
-      desc,
-      createdAt,
-      fileName: file.name || "video",
-      fileType: file.type || "",
-      fileSize: file.size || 0
+    const fmtDate = (iso) => {
+      try{
+        const d = new Date(iso);
+        return d.toLocaleString(undefined, {year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit"});
+      }catch{return iso || ""}
     };
-    videosMeta.unshift(meta);
-    saveVideosMeta();
 
-    // Reset form
-    videoFile.value = "";
-    videoTitle.value = "";
-    videoOwner.value = "";
-    videoQ1.value = "";
-    videoQ2.value = "";
-    videoDesc.value = "";
-
-    videoFormHint.textContent = "Added (saved locally).";
-    setTimeout(() => (videoFormHint.textContent = ""), 1500);
-
-    renderVideos();
-  } catch (e) {
-    console.error(e);
-    videoFormHint.textContent = "Upload failed (storage limit?). Try a smaller clip.";
-  }
-});
-
-// =============== Search / Filter / Sort listeners ===============
-[videoSearch, videoFilterOwner, videoSort].forEach(el => {
-  el.addEventListener("input", renderVideos);
-  el.addEventListener("change", renderVideos);
-});
-
-// =============== Render Videos ===============
-async function renderVideos() {
-  // Cleanup old object URLs to prevent leaks
-  for (const [id, url] of activeObjectURLs.entries()) {
-    try { URL.revokeObjectURL(url); } catch {}
-  }
-  activeObjectURLs.clear();
-
-  videoCards.innerHTML = "";
-
-  const query = (videoSearch.value || "").trim().toLowerCase();
-  const ownerFilter = videoFilterOwner.value || "All";
-  const sortMode = videoSort.value || "newest";
-
-  let list = [...videosMeta];
-
-  if (ownerFilter !== "All") {
-    list = list.filter(v => v.owner === ownerFilter);
-  }
-
-  if (query) {
-    list = list.filter(v => {
-      const hay = [
-        v.title, v.owner, v.q1, v.q2, v.desc, v.fileName
-      ].join(" ").toLowerCase();
-      return hay.includes(query);
-    });
-  }
-
-  if (sortMode === "newest") {
-    list.sort((a,b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
-  } else if (sortMode === "oldest") {
-    list.sort((a,b) => (a.createdAt || "").localeCompare(b.createdAt || ""));
-  } else if (sortMode === "title") {
-    list.sort((a,b) => (a.title || "").localeCompare(b.title || ""));
-  }
-
-  if (!list.length) {
-    videoCards.innerHTML = `<div class="hint">No videos match your filters.</div>`;
-    return;
-  }
-
-  for (const v of list) {
-    const el = document.createElement("div");
-    el.className = "card";
-
-    const date = new Date(v.createdAt);
-    const dateStr = isNaN(date) ? "" : date.toLocaleString();
-
-    // Load blob from IndexedDB and create an object URL (persisted)
-    let objectURL = "";
-    let missing = false;
-    try {
-      const stored = await idbGetVideo(v.id);
-      if (!stored?.blob) missing = true;
-      else {
-        objectURL = URL.createObjectURL(stored.blob);
-        activeObjectURLs.set(v.id, objectURL);
+    // =========================
+    // API HELPERS
+    // =========================
+    async function apiFetch(path, options = {}) {
+      const url = path.startsWith("http") ? path : (API_BASE + path);
+      const res = await fetch(url, {
+        credentials: "include",
+        ...options,
+      });
+      // If Access blocks, you might get 403/401 or an HTML login response.
+      const ctype = res.headers.get("content-type") || "";
+      if (!res.ok) {
+        let body = "";
+        try { body = ctype.includes("application/json") ? JSON.stringify(await res.json()) : await res.text(); } catch {}
+        throw new Error(`API ${res.status}: ${body.slice(0, 160)}`);
       }
-    } catch {
-      missing = true;
+      if (ctype.includes("application/json")) return await res.json();
+      return await res.text();
     }
 
-    el.innerHTML = `
-      <h3>${escapeHtml(v.title)}</h3>
-      <div class="meta">
-        <span class="tag accent">${escapeHtml(v.owner)}</span>
-        <span>${escapeHtml(v.fileName || "video")}</span>
-        <span>${escapeHtml(dateStr)}</span>
-      </div>
+    async function checkApi() {
+      try{
+        const data = await apiFetch("/api/videos");
+        $("apiDot").className = "dot ok";
+        $("apiText").textContent = "API: connected";
+        return data;
+      }catch(e){
+        $("apiDot").className = "dot bad";
+        $("apiText").textContent = "API: blocked/offline";
+        toast("API not reachable. If using Access: open api.tseapp.com once, login, then retry.");
+        return null;
+      }
+    }
 
-      <video muted playsinline preload="metadata"></video>
+    // =========================
+    // VIDEOS
+    // =========================
+    let allVideos = [];
 
-      <p class="desc">
-        <b>Q1:</b> ${escapeHtml(v.q1 || "-")}<br/>
-        <b>Q2:</b> ${escapeHtml(v.q2 || "-")}<br/>
-        ${v.desc ? `<span style="opacity:.9"><b>Notes:</b> ${escapeHtml(v.desc)}</span>` : ""}
-      </p>
+    function videoCard(v){
+      const streamUrl = v.streamUrl || `${API_BASE}/v/${v.id}`;
+      const owner = v.owner || "—";
+      const created = fmtDate(v.created_at);
+      const title = v.title || "Untitled";
+      const q1 = v.q1 || "";
+      const q2 = v.q2 || "";
+      const notes = v.notes || "";
 
-      <div class="footer">
-        <span class="pill">${missing ? "Missing file" : "Hover to preview"}</span>
-        <div class="mini">
-          <button data-action="play"${missing ? " disabled" : ""}>Play</button>
-          <button data-action="del">Delete</button>
+      const el = document.createElement("div");
+      el.className = "vcard";
+      el.innerHTML = `
+        <div class="thumb">
+          <div class="play">▶</div>
+          <div class="preview">
+            <video muted playsinline preload="metadata"></video>
+          </div>
         </div>
-      </div>
-    `;
+        <div class="vmeta">
+          <p class="vtitle"></p>
+          <div class="chips">
+            <span class="chip owner"></span>
+            <span class="chip">${created}</span>
+          </div>
+          ${(q1 || q2) ? `<div style="margin-top:10px;color:var(--muted);font-size:12px;line-height:1.35">
+            ${q1 ? `<div><b style="color:var(--text)">Q1:</b> ${escapeHtml(q1)}</div>` : ""}
+            ${q2 ? `<div><b style="color:var(--text)">Q2:</b> ${escapeHtml(q2)}</div>` : ""}
+          </div>` : ""}
+          ${notes ? `<div style="margin-top:10px;color:var(--muted);font-size:12px;line-height:1.35">
+            <b style="color:var(--text)">Notes:</b> ${escapeHtml(notes).slice(0, 140)}${escapeHtml(notes).length>140?"…":""}
+          </div>` : ""}
+        </div>
+        <div class="vactions">
+          <button class="btn primary btnPlay">Play</button>
+          <button class="btn btnCopy">Copy link</button>
+          <span class="spacer"></span>
+          <button class="btn danger btnDelete">Delete</button>
+        </div>
+      `;
 
-    const video = el.querySelector("video");
-    if (!missing && objectURL) video.src = objectURL;
+      el.querySelector(".vtitle").textContent = title;
+      el.querySelector(".chip.owner").textContent = owner;
 
-    // Hover preview play/pause
-    el.addEventListener("mouseenter", () => {
-      if (missing) return;
-      try { video.currentTime = 0; video.play(); } catch {}
+      const preview = el.querySelector(".preview video");
+      preview.src = streamUrl;
+
+      // Hover preview: play silently
+      el.addEventListener("mouseenter", () => {
+        preview.currentTime = 0;
+        preview.play().catch(()=>{});
+      });
+      el.addEventListener("mouseleave", () => {
+        preview.pause();
+      });
+
+      el.querySelector(".btnPlay").onclick = () => openModal(v, streamUrl);
+      el.querySelector(".btnCopy").onclick = async () => {
+        try{
+          await navigator.clipboard.writeText(streamUrl);
+          toast("Link copied");
+        }catch{
+          toast("Couldn’t copy. Here it is: " + streamUrl, 4200);
+        }
+      };
+      el.querySelector(".btnDelete").onclick = () => deleteVideo(v.id, title);
+      return el;
+    }
+
+    function renderVideos(){
+      const q = $("search").value.trim().toLowerCase();
+      const mode = $("sort").value;
+
+      let vids = [...allVideos];
+
+      if (mode === "old") vids.reverse();
+      if (mode === "aiden") vids = vids.filter(v => (v.owner||"").toLowerCase() === "aiden");
+      if (mode === "landon") vids = vids.filter(v => (v.owner||"").toLowerCase() === "landon");
+
+      if (q){
+        vids = vids.filter(v => {
+          const hay = [
+            v.title, v.owner, v.q1, v.q2, v.notes
+          ].filter(Boolean).join(" ").toLowerCase();
+          return hay.includes(q);
+        });
+      }
+
+      const list = $("videoList");
+      list.innerHTML = "";
+      if (!vids.length){
+        const empty = document.createElement("div");
+        empty.className = "hint";
+        empty.style.gridColumn = "1 / -1";
+        empty.textContent = "No videos yet. Upload one on the left.";
+        list.appendChild(empty);
+        return;
+      }
+      vids.forEach(v => list.appendChild(videoCard(v)));
+    }
+
+    async function loadVideos(){
+      $("btnLoad").disabled = true;
+      try{
+        const data = await apiFetch("/api/videos");
+        allVideos = (data && data.videos) ? data.videos : [];
+        // Ensure streamUrl exists
+        allVideos = allVideos.map(v => ({
+          ...v,
+          streamUrl: v.streamUrl || `${API_BASE}/v/${v.id}`,
+        }));
+        $("apiDot").className = "dot ok";
+        $("apiText").textContent = "API: connected";
+        renderVideos();
+        toast("Loaded videos");
+      }catch(e){
+        $("apiDot").className = "dot bad";
+        $("apiText").textContent = "API: blocked/offline";
+        toast("Load failed. If Access: open api.tseapp.com, login, then retry.", 4200);
+        console.error(e);
+      }finally{
+        $("btnLoad").disabled = false;
+      }
+    }
+
+    async function deleteVideo(id, title){
+      if (!confirm(`Delete "${title}"?\nThis removes it for everyone.`)) return;
+      try{
+        await apiFetch(`/api/videos/${encodeURIComponent(id)}`, { method:"DELETE" });
+        allVideos = allVideos.filter(v => v.id !== id);
+        renderVideos();
+        toast("Deleted");
+      }catch(e){
+        toast("Delete failed. Check Access / permissions.");
+        console.error(e);
+      }
+    }
+
+    function openModal(v, url){
+      $("modalTitle").textContent = v.title || "Video";
+      $("modalMeta").innerHTML = `
+        <div><b>Owner:</b> ${escapeHtml(v.owner || "")}</div>
+        <div><b>Created:</b> ${escapeHtml(fmtDate(v.created_at || ""))}</div>
+        ${v.q1 ? `<div style="margin-top:6px"><b>Q1:</b> ${escapeHtml(v.q1)}</div>` : ""}
+        ${v.q2 ? `<div style="margin-top:6px"><b>Q2:</b> ${escapeHtml(v.q2)}</div>` : ""}
+        ${v.notes ? `<div style="margin-top:6px"><b>Notes:</b> ${escapeHtml(v.notes)}</div>` : ""}
+      `;
+      const mv = $("modalVideo");
+      mv.src = url;
+      $("modalBack").classList.add("show");
+      mv.play().catch(()=>{});
+    }
+
+    $("btnCloseModal").onclick = () => {
+      const mv = $("modalVideo");
+      mv.pause();
+      mv.src = "";
+      $("modalBack").classList.remove("show");
+    };
+    $("modalBack").addEventListener("click", (e) => {
+      if (e.target === $("modalBack")) $("btnCloseModal").click();
     });
-    el.addEventListener("mouseleave", () => {
-      if (missing) return;
-      try { video.pause(); } catch {}
-    });
 
-    el.querySelector('[data-action="play"]').addEventListener("click", () => {
-      if (missing || !objectURL) return;
-      openPlayer(v, objectURL);
-    });
+    // Upload with progress
+    async function uploadVideo(){
+      const file = $("file").files[0];
+      const title = $("title").value.trim();
+      const owner = $("owner").value;
+      const tag = $("tag").value; // stored into q1 prefix (optional)
+      const q1 = $("q1").value.trim();
+      const q2 = $("q2").value.trim();
+      const notes = $("vnotes").value.trim();
 
-    el.querySelector('[data-action="del"]').addEventListener("click", async () => {
-      const ok = confirm("Delete this video from local storage?");
-      if (!ok) return;
+      if (!file) return toast("Pick a video file first.");
+      if (!title) return toast("Add a title.");
+      const MAX = 500 * 1024 * 1024;
+      if (file.size > MAX) return toast("That file is over 500MB.");
 
-      // Delete blob
-      try { await idbDeleteVideo(v.id); } catch {}
+      $("btnUpload").disabled = true;
+      $("prog").value = 0;
+      $("progText").textContent = "Preparing upload…";
 
-      // Delete meta
-      videosMeta = videosMeta.filter(x => x.id !== v.id);
-      saveVideosMeta();
+      try{
+        // Use XHR so we can show upload progress
+        const form = new FormData();
+        form.append("file", file);
+        form.append("title", title);
+        form.append("owner", owner);
+        // store tag inside q1 if you want, without changing backend schema
+        form.append("q1", tag ? `[${tag}] ${q1}` : q1);
+        form.append("q2", q2);
+        form.append("notes", notes);
 
-      renderVideos();
-    });
+        await xhrUpload(`${API_BASE}/api/upload`, form, (pct) => {
+          $("prog").value = pct;
+          $("progText").textContent = `Uploading… ${pct}%`;
+        });
 
-    videoCards.appendChild(el);
-  }
-}
+        $("prog").value = 100;
+        $("progText").textContent = "Upload complete — refreshing list…";
+        await loadVideos();
+        toast("Uploaded!");
+        clearForm();
+      }catch(e){
+        console.error(e);
+        $("progText").textContent = "Upload failed.";
+        toast("Upload failed. If Access: open api.tseapp.com and login, then try again.", 4500);
+      }finally{
+        $("btnUpload").disabled = false;
+        setTimeout(()=>{ $("prog").value = 0; $("progText").textContent="Idle"; }, 1200);
+      }
+    }
 
-// =============== Modal Player ===============
-function openPlayer(meta, objectURL) {
-  playerTitle.textContent = meta.title || "Player";
-  const date = new Date(meta.createdAt);
-  playerMeta.textContent = `${meta.owner || ""} • ${isNaN(date) ? "" : date.toLocaleString()} • ${meta.fileName || ""}`;
+    function xhrUpload(url, formData, onProgress){
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", url, true);
+        xhr.withCredentials = true;
 
-  playerVideo.pause();
-  playerVideo.src = objectURL;
-  playerVideo.currentTime = 0;
+        xhr.upload.onprogress = (evt) => {
+          if (!evt.lengthComputable) return;
+          const pct = Math.round((evt.loaded / evt.total) * 100);
+          onProgress(Math.min(99, Math.max(1, pct))); // keep 100 for completion
+        };
 
-  playerModal.style.display = "flex";
-  playerModal.setAttribute("aria-hidden", "false");
-  setTimeout(() => { try { playerVideo.play(); } catch {} }, 100);
-}
-function closePlayer() {
-  try { playerVideo.pause(); } catch {}
-  playerVideo.removeAttribute("src");
-  playerModal.style.display = "none";
-  playerModal.setAttribute("aria-hidden", "true");
-}
-closePlayerBtn.addEventListener("click", closePlayer);
-playerModal.addEventListener("click", (e) => {
-  if (e.target === playerModal) closePlayer();
-});
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && playerModal.style.display === "flex") closePlayer();
-});
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(xhr.responseText);
+          } else {
+            reject(new Error(`Upload failed: ${xhr.status} ${xhr.responseText?.slice?.(0,200)}`));
+          }
+        };
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.send(formData);
+      });
+    }
 
-// =============== Notes (doc) ===============
-function loadDoc() {
-  let data;
-  try {
-    data = JSON.parse(localStorage.getItem(KEY_DOC) || "null");
-  } catch {
-    data = null;
-  }
+    function clearForm(){
+      $("file").value = "";
+      $("title").value = "";
+      $("q1").value = "";
+      $("q2").value = "";
+      $("vnotes").value = "";
+      $("owner").value = "Aiden";
+      $("tag").value = "Trade Review";
+    }
 
-  docTitle.value = data?.title || "TSE Notes";
-  editor.innerHTML = data?.html || `
-    <h2>Welcome to TSE Notes</h2>
-    <p>Drag & drop images right into this doc. Click an image to select and resize it.</p>
-    <ul>
-      <li><b>Paste images</b> (Ctrl/Cmd+V)</li>
-      <li><b>Drag & drop images</b> from your desktop</li>
-      <li><b>Click image</b> to enable resize handles</li>
-    </ul>
-  `;
-}
+    $("btnUpload").onclick = uploadVideo;
+    $("btnClearForm").onclick = clearForm;
+    $("btnLoad").onclick = loadVideos;
+    $("btnRefresh").onclick = loadVideos;
+    $("search").addEventListener("input", renderVideos);
+    $("sort").addEventListener("change", renderVideos);
+    $("btnCheckApi").onclick = async () => { await checkApi(); };
 
-function saveDoc(statusText = "saved") {
-  const payload = {
-    title: docTitle.value || "TSE Notes",
-    html: editor.innerHTML,
-    updatedAt: new Date().toISOString()
-  };
-  localStorage.setItem(KEY_DOC, JSON.stringify(payload));
-  saveStatus.textContent = `Autosave: ${statusText}`;
-}
+    // =========================
+    // NOTES (LOCAL — persists across tab closes)
+    // =========================
+    // Notes are stored in localStorage per device for now.
+    // If you want shared notes too, we can add a D1 table + /api/notes endpoints.
+    const NOTES_KEY = "tse_notes_v1";
+    let notes = [];
+    let activeNoteId = null;
 
-function scheduleDocSave() {
-  saveStatus.textContent = "Autosave: typing…";
-  if (docSaveTimer) clearTimeout(docSaveTimer);
-  docSaveTimer = setTimeout(() => saveDoc("saved"), 450);
-}
+    function loadNotesLocal(){
+      try{
+        notes = JSON.parse(localStorage.getItem(NOTES_KEY) || "[]");
+      }catch{ notes = []; }
+      if (!Array.isArray(notes)) notes = [];
+      if (!notes.length) {
+        const id = crypto.randomUUID();
+        notes.push({ id, title: "Welcome", html: "<p>Drop images here. Resize with the blue corner.</p>", updatedAt: Date.now() });
+        activeNoteId = id;
+        saveNotesLocal();
+      } else if (!activeNoteId) {
+        activeNoteId = notes[0].id;
+      }
+    }
 
-docTitle.addEventListener("input", scheduleDocSave);
-editor.addEventListener("input", scheduleDocSave);
+    function saveNotesLocal(){
+      localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+    }
 
-// Toolbar
-document.querySelectorAll(".tool[data-cmd]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const cmd = btn.getAttribute("data-cmd");
-    document.execCommand(cmd, false, null);
-    editor.focus();
-    scheduleDocSave();
-  });
-});
-document.getElementById("h2Btn").addEventListener("click", () => {
-  document.execCommand("formatBlock", false, "h2");
-  editor.focus();
-  scheduleDocSave();
-});
-document.getElementById("quoteBtn").addEventListener("click", () => {
-  document.execCommand("formatBlock", false, "blockquote");
-  editor.focus();
-  scheduleDocSave();
-});
-document.getElementById("linkBtn").addEventListener("click", () => {
-  const url = prompt("Enter URL:");
-  if (!url) return;
-  document.execCommand("createLink", false, url);
-  editor.focus();
-  scheduleDocSave();
-});
-document.getElementById("clearFormatBtn").addEventListener("click", () => {
-  document.execCommand("removeFormat", false, null);
-  editor.focus();
-  scheduleDocSave();
-});
+    function renderNoteList(){
+      const wrap = $("noteItems");
+      wrap.innerHTML = "";
+      notes
+        .slice()
+        .sort((a,b)=> (b.updatedAt||0) - (a.updatedAt||0))
+        .forEach(n => {
+          const item = document.createElement("div");
+          item.className = "noteItem" + (n.id === activeNoteId ? " active" : "");
+          item.innerHTML = `
+            <p class="t"></p>
+            <p class="s"></p>
+          `;
+          item.querySelector(".t").textContent = n.title || "Untitled";
+          item.querySelector(".s").textContent = new Date(n.updatedAt||Date.now()).toLocaleString();
+          item.onclick = () => { setActiveNote(n.id); };
+          wrap.appendChild(item);
+        });
+    }
 
-// Paste images into editor
-editor.addEventListener("paste", async (e) => {
-  const items = e.clipboardData?.items;
-  if (!items) return;
+    function setActiveNote(id){
+      activeNoteId = id;
+      const n = notes.find(x => x.id === id);
+      if (!n) return;
+      $("docTitle").textContent = n.title || "Untitled";
+      $("noteTitleInput").value = n.title || "";
+      $("doc").innerHTML = n.html || "<p></p>";
+      renderNoteList();
+      $("noteStatus").textContent = "Loaded.";
+    }
 
-  for (const item of items) {
-    if (item.type.startsWith("image/")) {
+    function upsertActiveNote(){
+      const title = $("noteTitleInput").value.trim() || "Untitled";
+      const html = $("doc").innerHTML;
+      let n = notes.find(x => x.id === activeNoteId);
+      if (!n){
+        activeNoteId = crypto.randomUUID();
+        n = { id: activeNoteId, title, html, updatedAt: Date.now() };
+        notes.push(n);
+      } else {
+        n.title = title;
+        n.html = html;
+        n.updatedAt = Date.now();
+      }
+      $("docTitle").textContent = title;
+      saveNotesLocal();
+      renderNoteList();
+      $("noteStatus").textContent = "Saved.";
+    }
+
+    function newNote(){
+      activeNoteId = crypto.randomUUID();
+      notes.push({ id: activeNoteId, title: "New note", html: "<p></p>", updatedAt: Date.now() });
+      saveNotesLocal();
+      setActiveNote(activeNoteId);
+      toast("New note created");
+    }
+
+    function deleteNote(){
+      if (!activeNoteId) return;
+      const n = notes.find(x => x.id === activeNoteId);
+      if (!confirm(`Delete note "${n?.title || "Untitled"}"?`)) return;
+      notes = notes.filter(x => x.id !== activeNoteId);
+      if (!notes.length) {
+        activeNoteId = null;
+        newNote();
+        return;
+      }
+      activeNoteId = notes[0].id;
+      saveNotesLocal();
+      setActiveNote(activeNoteId);
+      toast("Note deleted");
+    }
+
+    // Editor formatting
+    function cmd(command, value=null){
+      document.execCommand(command, false, value);
+      $("doc").focus();
+      autosaveSoon();
+    }
+    $("btnBold").onclick = ()=>cmd("bold");
+    $("btnItalic").onclick = ()=>cmd("italic");
+    $("btnUnderline").onclick = ()=>cmd("underline");
+    $("btnH2").onclick = ()=>cmd("formatBlock","h2");
+    $("btnBullets").onclick = ()=>cmd("insertUnorderedList");
+    $("btnSaveNote").onclick = ()=>upsertActiveNote();
+    $("btnNewNote").onclick = newNote;
+    $("btnDeleteNote").onclick = deleteNote;
+
+    // Insert image from file picker
+    $("btnInsertImage").onclick = async () => {
+      const inp = document.createElement("input");
+      inp.type = "file";
+      inp.accept = "image/*";
+      inp.onchange = async () => {
+        const f = inp.files?.[0];
+        if (!f) return;
+        const dataUrl = await readAsDataURL(f);
+        insertResizableImage(dataUrl);
+        autosaveSoon();
+      };
+      inp.click();
+    };
+
+    // Drag/drop images into doc
+    const doc = $("doc");
+    doc.addEventListener("dragover", (e) => {
       e.preventDefault();
-      const file = item.getAsFile();
-      if (file) {
-        const dataUrl = await fileToDataUrl(file);
-        insertResizableImageAtCursor(dataUrl);
-        scheduleDocSave();
+    });
+    doc.addEventListener("drop", async (e) => {
+      e.preventDefault();
+      const files = [...(e.dataTransfer?.files || [])].filter(f => f.type.startsWith("image/"));
+      if (!files.length) return;
+
+      // Insert at caret if possible
+      placeCaretFromPoint(e);
+
+      for (const f of files){
+        const dataUrl = await readAsDataURL(f);
+        insertResizableImage(dataUrl);
       }
+      autosaveSoon();
+      toast(`Inserted ${files.length} image(s)`);
+    });
+
+    // Autosave on typing
+    let autosaveTimer = null;
+    function autosaveSoon(){
+      $("noteStatus").textContent = "Editing…";
+      clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(() => {
+        upsertActiveNote();
+        $("noteStatus").textContent = "Autosaved.";
+      }, 450);
     }
-  }
-});
+    doc.addEventListener("input", autosaveSoon);
+    $("noteTitleInput").addEventListener("input", autosaveSoon);
 
-// Drag & drop images
-function showDropHint(show) {
-  dropHint.style.display = show ? "block" : "none";
-}
-["dragenter","dragover"].forEach(evt => {
-  editor.addEventListener(evt, (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    showDropHint(true);
-  });
-});
-["dragleave","drop"].forEach(evt => {
-  editor.addEventListener(evt, (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    showDropHint(false);
-  });
-});
+    // Make inserted images resizable
+    function insertResizableImage(dataUrl){
+      // Build wrapper
+      const wrap = document.createElement("span");
+      wrap.className = "imgWrap";
+      wrap.contentEditable = "false";
+      wrap.style.width = "320px"; // default size
+      wrap.innerHTML = `<img src="${dataUrl}" alt="image"><span class="handle" title="Drag to resize"></span>`;
 
-editor.addEventListener("drop", async (e) => {
-  const files = Array.from(e.dataTransfer?.files || []);
-  if (!files.length) return;
+      insertNodeAtCaret(wrap);
 
-  const images = files.filter(f => (f.type || "").startsWith("image/"));
-  if (!images.length) return;
+      // Add a trailing space so you can continue typing
+      insertNodeAtCaret(document.createTextNode(" "));
 
-  // Insert each image
-  for (const imgFile of images) {
-    const dataUrl = await fileToDataUrl(imgFile);
-    insertResizableImageAtCursor(dataUrl);
-  }
-  scheduleDocSave();
-});
+      // Hook resize
+      const handle = wrap.querySelector(".handle");
+      let startX = 0, startW = 0;
 
-// Insert image via picker
-imageInsert.addEventListener("change", async () => {
-  const file = imageInsert.files?.[0];
-  if (!file) return;
-  const dataUrl = await fileToDataUrl(file);
-  insertResizableImageAtCursor(dataUrl);
-  imageInsert.value = "";
-  scheduleDocSave();
-});
+      const onMove = (ev) => {
+        const dx = (ev.clientX || (ev.touches && ev.touches[0]?.clientX) || 0) - startX;
+        const newW = Math.max(120, Math.min(doc.clientWidth - 24, startW + dx));
+        wrap.style.width = newW + "px";
+      };
 
-// Click image wrapper to select (shows resize handles more clearly)
-editor.addEventListener("click", (e) => {
-  // Remove selection outline from other images
-  editor.querySelectorAll(".img-wrap").forEach(w => w.classList.remove("img-selected"));
+      const onUp = () => {
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+        window.removeEventListener("touchmove", onMove);
+        window.removeEventListener("touchend", onUp);
+        autosaveSoon();
+      };
 
-  const wrap = e.target?.closest?.(".img-wrap");
-  if (wrap) wrap.classList.add("img-selected");
-});
+      const onDown = (ev) => {
+        ev.preventDefault();
+        startX = (ev.clientX || (ev.touches && ev.touches[0]?.clientX) || 0);
+        startW = wrap.getBoundingClientRect().width;
+        window.addEventListener("mousemove", onMove);
+        window.addEventListener("mouseup", onUp);
+        window.addEventListener("touchmove", onMove, {passive:false});
+        window.addEventListener("touchend", onUp);
+      };
 
-// Download doc as HTML file
-downloadHtmlBtn.addEventListener("click", () => {
-  const title = (docTitle.value || "TSE Notes").trim();
-  const html = `
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>${escapeHtml(title)}</title>
-<style>
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;max-width:900px;margin:40px auto;padding:0 16px;line-height:1.6}
-  .img-wrap{display:inline-block;max-width:100%;border:1px solid #ddd;border-radius:12px;padding:6px;margin:10px 0}
-  .img-wrap img{display:block;width:100%;height:auto;border-radius:10px}
-  blockquote{border-left:4px solid #ddd;padding-left:12px;color:#444}
-</style>
-</head>
-<body>
-<h1>${escapeHtml(title)}</h1>
-${editor.innerHTML}
-</body>
-</html>`.trim();
-
-  const blob = new Blob([html], { type: "text/html" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `${sanitizeFileName(title)}.html`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-});
-
-// =============== Clear + Export ===============
-clearBtn.addEventListener("click", async () => {
-  const ok = confirm("Clear ALL local TSE data (videos + notes) on this browser?");
-  if (!ok) return;
-
-  localStorage.removeItem(KEY_VIDEOS_META);
-  localStorage.removeItem(KEY_DOC);
-
-  videosMeta = [];
-  saveVideosMeta();
-
-  try { await idbClearAllVideos(); } catch {}
-
-  renderVideos();
-  loadDoc();
-});
-
-exportBtn.addEventListener("click", async () => {
-  // Export metadata + notes
-  const payload = {
-    exportedAt: new Date().toISOString(),
-    videos: videosMeta.map(v => ({
-      ...v,
-      note: "Video bytes are NOT included in this JSON export. Use browser storage as the source of truth for blobs."
-    })),
-    doc: {
-      title: docTitle.value || "TSE Notes",
-      html: editor.innerHTML
+      handle.addEventListener("mousedown", onDown);
+      handle.addEventListener("touchstart", onDown, {passive:false});
     }
-  };
 
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type:"application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `tse-export-${new Date().toISOString().slice(0,10)}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-});
+    function readAsDataURL(file){
+      return new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = reject;
+        r.readAsDataURL(file);
+      });
+    }
 
-// =============== Helpers ===============
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-function sanitizeFileName(name) {
-  return String(name).replace(/[\\/:*?"<>|]+/g, "-").trim() || "document";
-}
-function fileToDataUrl(file) {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(r.result);
-    r.onerror = reject;
-    r.readAsDataURL(file);
-  });
-}
+    function insertNodeAtCaret(node){
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0){
+        doc.appendChild(node);
+        return;
+      }
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(node);
+      // Move caret after node
+      range.setStartAfter(node);
+      range.setEndAfter(node);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
 
-function insertResizableImageAtCursor(dataUrl) {
-  editor.focus();
+    function placeCaretFromPoint(e){
+      const x = e.clientX, y = e.clientY;
+      const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(x, y)
+                    : (document.caretPositionFromPoint ? (() => {
+                      const pos = document.caretPositionFromPoint(x, y);
+                      if (!pos) return null;
+                      const r = document.createRange();
+                      r.setStart(pos.offsetNode, pos.offset);
+                      r.collapse(true);
+                      return r;
+                    })() : null);
 
-  const wrap = document.createElement("span");
-  wrap.className = "img-wrap";
-  wrap.setAttribute("contenteditable", "false");
+      if (!range) return;
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
 
-  // default size
-  wrap.style.width = "480px";
-  wrap.style.maxWidth = "100%";
+    function escapeHtml(str){
+      return (str ?? "").toString()
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
 
-  const img = document.createElement("img");
-  img.src = dataUrl;
-  img.alt = "Inserted image";
+    // =========================
+    // NAV
+    // =========================
+    function show(view){
+      const isVideos = view === "videos";
+      $("viewVideos").style.display = isVideos ? "" : "none";
+      $("viewNotes").style.display = isVideos ? "none" : "";
+      $("tabVideos").classList.toggle("active", isVideos);
+      $("tabNotes").classList.toggle("active", !isVideos);
+    }
+    $("tabVideos").onclick = () => show("videos");
+    $("tabNotes").onclick = () => show("notes");
 
-  wrap.appendChild(img);
+    // =========================
+    // INIT
+    // =========================
+    (async function init(){
+      loadNotesLocal();
+      renderNoteList();
+      setActiveNote(activeNoteId);
 
-  const sel = window.getSelection();
-  if (!sel || sel.rangeCount === 0) {
-    editor.appendChild(wrap);
-    editor.appendChild(document.createElement("br"));
-    return;
-  }
-  const range = sel.getRangeAt(0);
-  range.collapse(false);
-  range.insertNode(wrap);
-
-  // Insert a newline after so typing continues cleanly
-  const br = document.createElement("br");
-  wrap.after(br);
-
-  // Move cursor after <br>
-  const newRange = document.createRange();
-  newRange.setStartAfter(br);
-  newRange.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(newRange);
-
-  // Visual selection
-  editor.querySelectorAll(".img-wrap").forEach(w => w.classList.remove("img-selected"));
-  wrap.classList.add("img-selected");
-}
-</script>
+      await checkApi();
+      await loadVideos();
+    })();
+  </script>
 </body>
 </html>
