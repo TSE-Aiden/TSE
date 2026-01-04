@@ -7,8 +7,6 @@
   <style>
     :root{
       --bg:#0b0f14;
-      --panel:#0f1620;
-      --panel2:#0c121a;
       --text:#e7eef7;
       --muted:#9db0c6;
       --border:rgba(255,255,255,.08);
@@ -29,26 +27,23 @@
         radial-gradient(900px 500px at 85% 20%, rgba(110,231,255,.12), transparent 55%),
         linear-gradient(180deg, #06090d 0%, var(--bg) 100%);
     }
-    a{color:inherit}
-    .wrap{max-width:1200px;margin:0 auto;padding:24px}
+
+    .wrap{max-width:1240px;margin:0 auto;padding:24px}
     .topbar{
-      display:flex;align-items:center;justify-content:space-between;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
       padding:16px 18px;border:1px solid var(--border);border-radius:18px;
       background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       box-shadow:var(--shadow);
       backdrop-filter: blur(10px);
     }
-    .brand{
-      display:flex;align-items:center;gap:12px;
-      font-weight:800;letter-spacing:.5px;
-    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.5px}
     .logo{
       width:38px;height:38px;border-radius:12px;
       background: radial-gradient(circle at 30% 30%, rgba(110,231,255,.9), rgba(124,58,237,.9));
       box-shadow: 0 12px 35px rgba(124,58,237,.25);
     }
     .brand small{display:block;color:var(--muted);font-weight:600;letter-spacing:0}
-    .actions{display:flex;gap:10px;align-items:center}
+    .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
     button,.btn{
       border:1px solid var(--border);
       background:rgba(255,255,255,.06);
@@ -57,6 +52,7 @@
       cursor:pointer;
       transition: transform .08s ease, background .2s ease, border-color .2s ease;
       user-select:none;
+      white-space:nowrap;
     }
     button:hover,.btn:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.14)}
     button:active,.btn:active{transform: translateY(1px)}
@@ -74,7 +70,7 @@
 
     .grid{
       display:grid;
-      grid-template-columns: 280px 1fr;
+      grid-template-columns: 290px 1fr;
       gap:18px;
       margin-top:18px;
     }
@@ -87,9 +83,7 @@
       backdrop-filter: blur(10px);
     }
     .sidebar{padding:14px}
-    .nav{
-      display:flex;flex-direction:column;gap:8px;
-    }
+    .nav{display:flex;flex-direction:column;gap:8px}
     .nav button{
       width:100%;
       display:flex;justify-content:space-between;align-items:center;
@@ -101,7 +95,6 @@
       background: linear-gradient(180deg, rgba(110,231,255,.15), rgba(124,58,237,.12));
     }
 
-    .content{padding:16px}
     .panel-header{
       display:flex;justify-content:space-between;align-items:flex-start;gap:10px;
       padding:16px 16px 0 16px;
@@ -136,7 +129,7 @@
 
     .cards{
       display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
       gap:12px;
       margin-top:12px;
     }
@@ -165,21 +158,28 @@
       color:var(--text);
     }
     .tag.accent{border-color:rgba(110,231,255,.28)}
-    .mini{
-      display:flex;gap:8px;align-items:center;
-    }
+    .mini{display:flex;gap:8px;align-items:center}
     .mini button{padding:8px 10px;border-radius:12px}
+
     video{
       width:100%;
       border-radius:12px;
       border:1px solid var(--border);
-      background: #000;
+      background:#000;
       display:none;
       margin-top:10px;
     }
-    .card:hover video{
-      display:block; /* hover preview */
+    .card:hover video{display:block}
+
+    /* Small controls row */
+    .controls{
+      display:flex;gap:10px;flex-wrap:wrap;align-items:end;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,.10);
+      padding:12px;
+      border-radius:16px;
     }
+    .controls .field{min-width:180px}
 
     /* Notes editor */
     .editor-shell{
@@ -195,6 +195,7 @@
       padding:10px;
       border-bottom:1px solid var(--border);
       background: rgba(0,0,0,.10);
+      align-items:center;
     }
     .tool{
       padding:8px 10px;border-radius:12px;
@@ -205,19 +206,76 @@
     }
     .tool:hover{background: rgba(255,255,255,.08)}
     .editor{
-      min-height:420px;
+      min-height:460px;
       padding:14px 16px;
       outline:none;
       line-height:1.55;
     }
-    .editor img{
-      max-width:100%;
-      height:auto;
-      border-radius:12px;
-      border:1px solid var(--border);
-      display:block;
-      margin:10px 0;
+
+    /* Drag/drop hint */
+    .drop-hint{
+      border:1px dashed rgba(110,231,255,.28);
+      background: rgba(110,231,255,.06);
+      border-radius:14px;
+      padding:10px 12px;
+      color: rgba(231,238,247,.9);
+      font-size:12px;
+      display:none;
+      margin-bottom:10px;
     }
+
+    /* Resizable image wrapper */
+    .img-wrap{
+      display:inline-block;
+      resize: both;
+      overflow: auto;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background: rgba(255,255,255,.03);
+      padding:6px;
+      margin:10px 0;
+      max-width:100%;
+    }
+    .img-wrap img{
+      display:block;
+      width:100%;
+      height:auto;
+      border-radius:10px;
+      border:1px solid var(--border);
+      pointer-events:none;
+    }
+    .img-selected{
+      outline:2px solid rgba(110,231,255,.35);
+      box-shadow: 0 0 0 6px rgba(110,231,255,.08);
+    }
+
+    /* Modal player */
+    .modal{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.7);
+      backdrop-filter: blur(8px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:999;
+    }
+    .modal .box{
+      width:min(980px, 100%);
+      border:1px solid var(--border);
+      border-radius:20px;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modal .head{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:12px 14px;
+      border-bottom:1px solid var(--border);
+    }
+    .modal .head strong{font-size:14px}
+    .modal .body{padding:14px}
+    .modal video{display:block; width:100%; margin:0; border-radius:14px}
 
     @media (max-width: 980px){
       .grid{grid-template-columns:1fr}
@@ -232,11 +290,11 @@
         <div class="logo" aria-hidden="true"></div>
         <div>
           <div style="font-size:18px">TSE</div>
-          <small>Videos + Notes</small>
+          <small>Videos + Notes (Local)</small>
         </div>
       </div>
       <div class="actions">
-        <span class="pill" id="statusPill">GitHub Pages</span>
+        <span class="pill" id="statusPill">Local (IndexedDB + localStorage)</span>
         <button id="exportBtn">Export Data</button>
         <button id="clearBtn">Clear Local Data</button>
       </div>
@@ -257,19 +315,20 @@
 
         <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px">
           <div class="hint">
-            Hover a video card to preview.<br/>
-            Notes autosave to this device.
+            Videos persist locally now (even after refresh).<br/>
+            Notes autosave + images drag/drop and resizable.
           </div>
         </div>
       </div>
 
       <div class="panel">
+
         <!-- VIDEOS VIEW -->
         <div id="videosView">
           <div class="panel-header">
             <div>
               <h2>Videos</h2>
-              <p>Upload a video, answer the description questions (including <b>Aiden or Landon</b>), then manage your library.</p>
+              <p>Local library backed by <b>IndexedDB</b>. Upload a video, fill details (includes <b>Aiden or Landon</b>), and it will remain available after reload.</p>
             </div>
           </div>
 
@@ -280,7 +339,7 @@
                   <div class="field" style="min-width:100%">
                     <label for="videoFile">Video file</label>
                     <input id="videoFile" type="file" accept="video/*" />
-                    <div class="hint">Prototype: videos are not uploaded anywhere. Object URLs won’t survive a refresh.</div>
+                    <div class="hint">Stored locally on this device/browser (IndexedDB). Not shared with other visitors.</div>
                   </div>
                 </div>
 
@@ -324,10 +383,37 @@
                   <button class="btn-primary" id="addVideoBtn">Add Video</button>
                   <div class="hint" id="videoFormHint" style="align-self:center"></div>
                 </div>
+
+                <div class="hint" style="margin-top:12px">
+                  Tip: very large videos can hit browser storage limits. If uploads fail, try smaller clips or export your data first.
+                </div>
               </div>
 
               <div>
-                <div class="hint">Library</div>
+                <div class="controls">
+                  <div class="field" style="flex:2;min-width:240px">
+                    <label for="videoSearch">Search</label>
+                    <input id="videoSearch" placeholder="Search title, Q1/Q2, notes..." />
+                  </div>
+                  <div class="field">
+                    <label for="videoFilterOwner">Filter</label>
+                    <select id="videoFilterOwner">
+                      <option value="All" selected>All</option>
+                      <option value="Aiden">Aiden</option>
+                      <option value="Landon">Landon</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="videoSort">Sort</label>
+                    <select id="videoSort">
+                      <option value="newest" selected>Newest</option>
+                      <option value="oldest">Oldest</option>
+                      <option value="title">Title</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="hint" style="margin-top:12px">Library</div>
                 <div class="cards" id="videoCards"></div>
               </div>
             </div>
@@ -339,11 +425,13 @@
           <div class="panel-header">
             <div>
               <h2>Notes</h2>
-              <p>A lightweight Google-Doc style editor. Supports formatting + inserting images into the doc.</p>
+              <p>Google-Doc style editor. Supports formatting + <b>drag & drop images</b> + paste images + click-to-resize images.</p>
             </div>
           </div>
 
           <div class="panel-body">
+            <div class="drop-hint" id="dropHint">Drop images to insert them into the doc…</div>
+
             <div class="row" style="margin-bottom:10px">
               <div class="field" style="min-width:260px;flex:0">
                 <label for="docTitle">Document title</label>
@@ -371,13 +459,13 @@
                 <button class="tool" id="quoteBtn">Quote</button>
                 <button class="tool" id="linkBtn">Link</button>
                 <button class="tool" id="clearFormatBtn">Clear</button>
-                <span class="pill">Tip: you can also paste images</span>
+                <span class="pill">Drag & drop images • Click image to resize</span>
               </div>
               <div id="editor" class="editor" contenteditable="true" spellcheck="true"></div>
             </div>
 
             <div class="hint" style="margin-top:10px">
-              Images are embedded into the doc (base64). This is stored locally in your browser.
+              Images are embedded into the doc (base64) and stored locally.
             </div>
           </div>
         </div>
@@ -386,29 +474,101 @@
     </div>
   </div>
 
+  <!-- Modal player -->
+  <div class="modal" id="playerModal" aria-hidden="true">
+    <div class="box">
+      <div class="head">
+        <strong id="playerTitle">Player</strong>
+        <button id="closePlayerBtn">Close</button>
+      </div>
+      <div class="body">
+        <video id="playerVideo" controls playsinline></video>
+        <div class="hint" id="playerMeta" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </div>
+
 <script>
 /**
- * TSE (No password screen)
- * - Static GitHub Pages friendly
- * - Videos: upload list + hover preview (session-only object URLs)
- * - Notes: contenteditable doc with image insert + autosave
+ * TSE Local
+ * - Video blobs stored in IndexedDB (persists across refresh)
+ * - Metadata stored in localStorage
+ * - Notes: drag&drop images + paste + file picker
+ * - Images scalable via resizable wrapper (click image to select, resize handles)
  */
 
-// ---------- Basic storage keys ----------
-const KEY_VIDEOS = "tse_videos";
+// =============== Storage keys ===============
+const KEY_VIDEOS_META = "tse_videos_meta";
 const KEY_DOC = "tse_doc";
 
-// ---------- App elements ----------
+// =============== IndexedDB (video blobs) ===============
+const DB_NAME = "tse_db";
+const DB_VERSION = 1;
+const STORE_VIDEOS = "videos"; // key: id, value: { id, blob, type, name, createdAt }
+
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains(STORE_VIDEOS)) {
+        db.createObjectStore(STORE_VIDEOS, { keyPath: "id" });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function idbPutVideo({ id, blob, type, name, createdAt }) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_VIDEOS, "readwrite");
+    tx.objectStore(STORE_VIDEOS).put({ id, blob, type, name, createdAt });
+    tx.oncomplete = () => { db.close(); resolve(true); };
+    tx.onerror = () => { const e = tx.error; db.close(); reject(e); };
+  });
+}
+
+async function idbGetVideo(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_VIDEOS, "readonly");
+    const req = tx.objectStore(STORE_VIDEOS).get(id);
+    req.onsuccess = () => { db.close(); resolve(req.result || null); };
+    req.onerror = () => { const e = req.error; db.close(); reject(e); };
+  });
+}
+
+async function idbDeleteVideo(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_VIDEOS, "readwrite");
+    tx.objectStore(STORE_VIDEOS).delete(id);
+    tx.oncomplete = () => { db.close(); resolve(true); };
+    tx.onerror = () => { const e = tx.error; db.close(); reject(e); };
+  });
+}
+
+async function idbClearAllVideos() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_VIDEOS, "readwrite");
+    tx.objectStore(STORE_VIDEOS).clear();
+    tx.oncomplete = () => { db.close(); resolve(true); };
+    tx.onerror = () => { const e = tx.error; db.close(); reject(e); };
+  });
+}
+
+// =============== Elements ===============
 const clearBtn = document.getElementById("clearBtn");
 const exportBtn = document.getElementById("exportBtn");
 
-// Tabs
 const tabVideos = document.getElementById("tabVideos");
 const tabNotes = document.getElementById("tabNotes");
 const videosView = document.getElementById("videosView");
 const notesView = document.getElementById("notesView");
 
-// Videos form
 const videoFile = document.getElementById("videoFile");
 const videoTitle = document.getElementById("videoTitle");
 const videoOwner = document.getElementById("videoOwner");
@@ -420,26 +580,39 @@ const videoCards = document.getElementById("videoCards");
 const videoCount = document.getElementById("videoCount");
 const videoFormHint = document.getElementById("videoFormHint");
 
-// Notes editor
+const videoSearch = document.getElementById("videoSearch");
+const videoFilterOwner = document.getElementById("videoFilterOwner");
+const videoSort = document.getElementById("videoSort");
+
 const docTitle = document.getElementById("docTitle");
 const editor = document.getElementById("editor");
 const saveStatus = document.getElementById("saveStatus");
 const imageInsert = document.getElementById("imageInsert");
 const downloadHtmlBtn = document.getElementById("downloadHtmlBtn");
+const dropHint = document.getElementById("dropHint");
 
-// ---------- Init ----------
-let videos = [];
+// Modal player
+const playerModal = document.getElementById("playerModal");
+const closePlayerBtn = document.getElementById("closePlayerBtn");
+const playerVideo = document.getElementById("playerVideo");
+const playerTitle = document.getElementById("playerTitle");
+const playerMeta = document.getElementById("playerMeta");
+
+// =============== State ===============
+let videosMeta = []; // [{id,title,owner,q1,q2,desc,createdAt,fileName,fileType,fileSize}]
+let activeObjectURLs = new Map(); // id -> objectURL (for cleanup)
 let docSaveTimer = null;
 
+// =============== Boot ===============
 function boot() {
-  loadVideos();
+  loadVideosMeta();
   renderVideos();
   loadDoc();
   setTab("videos");
 }
 boot();
 
-// ---------- Tabs ----------
+// =============== Tabs ===============
 function setTab(tab) {
   const isVideos = tab === "videos";
   tabVideos.classList.toggle("active", isVideos);
@@ -450,25 +623,22 @@ function setTab(tab) {
 tabVideos.addEventListener("click", () => setTab("videos"));
 tabNotes.addEventListener("click", () => setTab("notes"));
 
-// ---------- Videos storage ----------
-function loadVideos() {
+// =============== Videos Meta (localStorage) ===============
+function loadVideosMeta() {
   try {
-    videos = JSON.parse(localStorage.getItem(KEY_VIDEOS) || "[]");
+    videosMeta = JSON.parse(localStorage.getItem(KEY_VIDEOS_META) || "[]");
   } catch {
-    videos = [];
+    videosMeta = [];
   }
-  videoCount.textContent = String(videos.length);
+  videoCount.textContent = String(videosMeta.length);
 }
-function saveVideos() {
-  localStorage.setItem(KEY_VIDEOS, JSON.stringify(videos));
-  videoCount.textContent = String(videos.length);
-}
-
-function createVideoObjectURL(file) {
-  return URL.createObjectURL(file);
+function saveVideosMeta() {
+  localStorage.setItem(KEY_VIDEOS_META, JSON.stringify(videosMeta));
+  videoCount.textContent = String(videosMeta.length);
 }
 
-addVideoBtn.addEventListener("click", () => {
+// =============== Add Video (store blob in IndexedDB) ===============
+addVideoBtn.addEventListener("click", async () => {
   videoFormHint.textContent = "";
   const file = videoFile.files?.[0];
   const title = (videoTitle.value || "").trim();
@@ -481,49 +651,121 @@ addVideoBtn.addEventListener("click", () => {
   if (!title) return (videoFormHint.textContent = "Add a title.");
   if (!owner) return (videoFormHint.textContent = "Select Aiden or Landon.");
 
-  const objectURL = createVideoObjectURL(file);
+  const id = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
 
-  const item = {
-    id: crypto.randomUUID(),
-    title,
-    owner,
-    q1,
-    q2,
-    desc,
-    createdAt: new Date().toISOString(),
-    objectURL,
-    fileName: file.name,
-    fileType: file.type,
-    fileSize: file.size
-  };
+  try {
+    // Store blob in IndexedDB
+    await idbPutVideo({
+      id,
+      blob: file,
+      type: file.type || "video/mp4",
+      name: file.name || "video",
+      createdAt
+    });
 
-  videos.unshift(item);
-  saveVideos();
-  renderVideos();
+    // Store metadata in localStorage
+    const meta = {
+      id,
+      title,
+      owner,
+      q1,
+      q2,
+      desc,
+      createdAt,
+      fileName: file.name || "video",
+      fileType: file.type || "",
+      fileSize: file.size || 0
+    };
+    videosMeta.unshift(meta);
+    saveVideosMeta();
 
-  videoFile.value = "";
-  videoTitle.value = "";
-  videoOwner.value = "";
-  videoQ1.value = "";
-  videoQ2.value = "";
-  videoDesc.value = "";
-  videoFormHint.textContent = "Added.";
-  setTimeout(() => (videoFormHint.textContent = ""), 1500);
+    // Reset form
+    videoFile.value = "";
+    videoTitle.value = "";
+    videoOwner.value = "";
+    videoQ1.value = "";
+    videoQ2.value = "";
+    videoDesc.value = "";
+
+    videoFormHint.textContent = "Added (saved locally).";
+    setTimeout(() => (videoFormHint.textContent = ""), 1500);
+
+    renderVideos();
+  } catch (e) {
+    console.error(e);
+    videoFormHint.textContent = "Upload failed (storage limit?). Try a smaller clip.";
+  }
 });
 
-function renderVideos() {
+// =============== Search / Filter / Sort listeners ===============
+[videoSearch, videoFilterOwner, videoSort].forEach(el => {
+  el.addEventListener("input", renderVideos);
+  el.addEventListener("change", renderVideos);
+});
+
+// =============== Render Videos ===============
+async function renderVideos() {
+  // Cleanup old object URLs to prevent leaks
+  for (const [id, url] of activeObjectURLs.entries()) {
+    try { URL.revokeObjectURL(url); } catch {}
+  }
+  activeObjectURLs.clear();
+
   videoCards.innerHTML = "";
-  if (!videos.length) {
-    videoCards.innerHTML = `<div class="hint">No videos yet. Upload one on the left.</div>`;
+
+  const query = (videoSearch.value || "").trim().toLowerCase();
+  const ownerFilter = videoFilterOwner.value || "All";
+  const sortMode = videoSort.value || "newest";
+
+  let list = [...videosMeta];
+
+  if (ownerFilter !== "All") {
+    list = list.filter(v => v.owner === ownerFilter);
+  }
+
+  if (query) {
+    list = list.filter(v => {
+      const hay = [
+        v.title, v.owner, v.q1, v.q2, v.desc, v.fileName
+      ].join(" ").toLowerCase();
+      return hay.includes(query);
+    });
+  }
+
+  if (sortMode === "newest") {
+    list.sort((a,b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+  } else if (sortMode === "oldest") {
+    list.sort((a,b) => (a.createdAt || "").localeCompare(b.createdAt || ""));
+  } else if (sortMode === "title") {
+    list.sort((a,b) => (a.title || "").localeCompare(b.title || ""));
+  }
+
+  if (!list.length) {
+    videoCards.innerHTML = `<div class="hint">No videos match your filters.</div>`;
     return;
   }
 
-  for (const v of videos) {
+  for (const v of list) {
     const el = document.createElement("div");
     el.className = "card";
 
     const date = new Date(v.createdAt);
     const dateStr = isNaN(date) ? "" : date.toLocaleString();
+
+    // Load blob from IndexedDB and create an object URL (persisted)
+    let objectURL = "";
+    let missing = false;
+    try {
+      const stored = await idbGetVideo(v.id);
+      if (!stored?.blob) missing = true;
+      else {
+        objectURL = URL.createObjectURL(stored.blob);
+        activeObjectURLs.set(v.id, objectURL);
+      }
+    } catch {
+      missing = true;
+    }
 
     el.innerHTML = `
       <h3>${escapeHtml(v.title)}</h3>
@@ -542,32 +784,43 @@ function renderVideos() {
       </p>
 
       <div class="footer">
-        <span class="pill">Hover to preview</span>
+        <span class="pill">${missing ? "Missing file" : "Hover to preview"}</span>
         <div class="mini">
-          <button data-action="open">Open</button>
+          <button data-action="play"${missing ? " disabled" : ""}>Play</button>
           <button data-action="del">Delete</button>
         </div>
       </div>
     `;
 
     const video = el.querySelector("video");
-    if (v.objectURL) video.src = v.objectURL;
+    if (!missing && objectURL) video.src = objectURL;
 
+    // Hover preview play/pause
     el.addEventListener("mouseenter", () => {
+      if (missing) return;
       try { video.currentTime = 0; video.play(); } catch {}
     });
     el.addEventListener("mouseleave", () => {
+      if (missing) return;
       try { video.pause(); } catch {}
     });
 
-    el.querySelector('[data-action="open"]').addEventListener("click", () => {
-      if (!v.objectURL) return alert("This video link isn't available after refresh in this prototype. For persistence, you’ll want cloud storage.");
-      window.open(v.objectURL, "_blank");
+    el.querySelector('[data-action="play"]').addEventListener("click", () => {
+      if (missing || !objectURL) return;
+      openPlayer(v, objectURL);
     });
 
-    el.querySelector('[data-action="del"]').addEventListener("click", () => {
-      videos = videos.filter(x => x.id !== v.id);
-      saveVideos();
+    el.querySelector('[data-action="del"]').addEventListener("click", async () => {
+      const ok = confirm("Delete this video from local storage?");
+      if (!ok) return;
+
+      // Delete blob
+      try { await idbDeleteVideo(v.id); } catch {}
+
+      // Delete meta
+      videosMeta = videosMeta.filter(x => x.id !== v.id);
+      saveVideosMeta();
+
       renderVideos();
     });
 
@@ -575,7 +828,35 @@ function renderVideos() {
   }
 }
 
-// ---------- Notes (doc) ----------
+// =============== Modal Player ===============
+function openPlayer(meta, objectURL) {
+  playerTitle.textContent = meta.title || "Player";
+  const date = new Date(meta.createdAt);
+  playerMeta.textContent = `${meta.owner || ""} • ${isNaN(date) ? "" : date.toLocaleString()} • ${meta.fileName || ""}`;
+
+  playerVideo.pause();
+  playerVideo.src = objectURL;
+  playerVideo.currentTime = 0;
+
+  playerModal.style.display = "flex";
+  playerModal.setAttribute("aria-hidden", "false");
+  setTimeout(() => { try { playerVideo.play(); } catch {} }, 100);
+}
+function closePlayer() {
+  try { playerVideo.pause(); } catch {}
+  playerVideo.removeAttribute("src");
+  playerModal.style.display = "none";
+  playerModal.setAttribute("aria-hidden", "true");
+}
+closePlayerBtn.addEventListener("click", closePlayer);
+playerModal.addEventListener("click", (e) => {
+  if (e.target === playerModal) closePlayer();
+});
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && playerModal.style.display === "flex") closePlayer();
+});
+
+// =============== Notes (doc) ===============
 function loadDoc() {
   let data;
   try {
@@ -587,11 +868,11 @@ function loadDoc() {
   docTitle.value = data?.title || "TSE Notes";
   editor.innerHTML = data?.html || `
     <h2>Welcome to TSE Notes</h2>
-    <p>Write like Google Docs: format text, paste images, or use the image picker above.</p>
+    <p>Drag & drop images right into this doc. Click an image to select and resize it.</p>
     <ul>
-      <li><b>Bold / Italic / Underline</b> supported</li>
-      <li>Images embed into the doc</li>
-      <li>Autosaves to this browser</li>
+      <li><b>Paste images</b> (Ctrl/Cmd+V)</li>
+      <li><b>Drag & drop images</b> from your desktop</li>
+      <li><b>Click image</b> to enable resize handles</li>
     </ul>
   `;
 }
@@ -609,12 +890,45 @@ function saveDoc(statusText = "saved") {
 function scheduleDocSave() {
   saveStatus.textContent = "Autosave: typing…";
   if (docSaveTimer) clearTimeout(docSaveTimer);
-  docSaveTimer = setTimeout(() => saveDoc("saved"), 500);
+  docSaveTimer = setTimeout(() => saveDoc("saved"), 450);
 }
 
 docTitle.addEventListener("input", scheduleDocSave);
 editor.addEventListener("input", scheduleDocSave);
 
+// Toolbar
+document.querySelectorAll(".tool[data-cmd]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const cmd = btn.getAttribute("data-cmd");
+    document.execCommand(cmd, false, null);
+    editor.focus();
+    scheduleDocSave();
+  });
+});
+document.getElementById("h2Btn").addEventListener("click", () => {
+  document.execCommand("formatBlock", false, "h2");
+  editor.focus();
+  scheduleDocSave();
+});
+document.getElementById("quoteBtn").addEventListener("click", () => {
+  document.execCommand("formatBlock", false, "blockquote");
+  editor.focus();
+  scheduleDocSave();
+});
+document.getElementById("linkBtn").addEventListener("click", () => {
+  const url = prompt("Enter URL:");
+  if (!url) return;
+  document.execCommand("createLink", false, url);
+  editor.focus();
+  scheduleDocSave();
+});
+document.getElementById("clearFormatBtn").addEventListener("click", () => {
+  document.execCommand("removeFormat", false, null);
+  editor.focus();
+  scheduleDocSave();
+});
+
+// Paste images into editor
 editor.addEventListener("paste", async (e) => {
   const items = e.clipboardData?.items;
   if (!items) return;
@@ -625,57 +939,67 @@ editor.addEventListener("paste", async (e) => {
       const file = item.getAsFile();
       if (file) {
         const dataUrl = await fileToDataUrl(file);
-        insertImageAtCursor(dataUrl);
+        insertResizableImageAtCursor(dataUrl);
         scheduleDocSave();
       }
     }
   }
 });
 
-document.querySelectorAll(".tool[data-cmd]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const cmd = btn.getAttribute("data-cmd");
-    document.execCommand(cmd, false, null);
-    editor.focus();
-    scheduleDocSave();
+// Drag & drop images
+function showDropHint(show) {
+  dropHint.style.display = show ? "block" : "none";
+}
+["dragenter","dragover"].forEach(evt => {
+  editor.addEventListener(evt, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    showDropHint(true);
+  });
+});
+["dragleave","drop"].forEach(evt => {
+  editor.addEventListener(evt, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    showDropHint(false);
   });
 });
 
-document.getElementById("h2Btn").addEventListener("click", () => {
-  document.execCommand("formatBlock", false, "h2");
-  editor.focus();
+editor.addEventListener("drop", async (e) => {
+  const files = Array.from(e.dataTransfer?.files || []);
+  if (!files.length) return;
+
+  const images = files.filter(f => (f.type || "").startsWith("image/"));
+  if (!images.length) return;
+
+  // Insert each image
+  for (const imgFile of images) {
+    const dataUrl = await fileToDataUrl(imgFile);
+    insertResizableImageAtCursor(dataUrl);
+  }
   scheduleDocSave();
 });
 
-document.getElementById("quoteBtn").addEventListener("click", () => {
-  document.execCommand("formatBlock", false, "blockquote");
-  editor.focus();
-  scheduleDocSave();
-});
-
-document.getElementById("linkBtn").addEventListener("click", () => {
-  const url = prompt("Enter URL:");
-  if (!url) return;
-  document.execCommand("createLink", false, url);
-  editor.focus();
-  scheduleDocSave();
-});
-
-document.getElementById("clearFormatBtn").addEventListener("click", () => {
-  document.execCommand("removeFormat", false, null);
-  editor.focus();
-  scheduleDocSave();
-});
-
+// Insert image via picker
 imageInsert.addEventListener("change", async () => {
   const file = imageInsert.files?.[0];
   if (!file) return;
   const dataUrl = await fileToDataUrl(file);
-  insertImageAtCursor(dataUrl);
+  insertResizableImageAtCursor(dataUrl);
   imageInsert.value = "";
   scheduleDocSave();
 });
 
+// Click image wrapper to select (shows resize handles more clearly)
+editor.addEventListener("click", (e) => {
+  // Remove selection outline from other images
+  editor.querySelectorAll(".img-wrap").forEach(w => w.classList.remove("img-selected"));
+
+  const wrap = e.target?.closest?.(".img-wrap");
+  if (wrap) wrap.classList.add("img-selected");
+});
+
+// Download doc as HTML file
 downloadHtmlBtn.addEventListener("click", () => {
   const title = (docTitle.value || "TSE Notes").trim();
   const html = `
@@ -687,7 +1011,8 @@ downloadHtmlBtn.addEventListener("click", () => {
 <title>${escapeHtml(title)}</title>
 <style>
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;max-width:900px;margin:40px auto;padding:0 16px;line-height:1.6}
-  img{max-width:100%;height:auto;border-radius:12px}
+  .img-wrap{display:inline-block;max-width:100%;border:1px solid #ddd;border-radius:12px;padding:6px;margin:10px 0}
+  .img-wrap img{display:block;width:100%;height:auto;border-radius:10px}
   blockquote{border-left:4px solid #ddd;padding-left:12px;color:#444}
 </style>
 </head>
@@ -706,32 +1031,30 @@ ${editor.innerHTML}
   a.remove();
 });
 
-// ---------- Clear + Export ----------
-clearBtn.addEventListener("click", () => {
-  const ok = confirm("Clear ALL local TSE data (videos list + notes) on this browser?");
+// =============== Clear + Export ===============
+clearBtn.addEventListener("click", async () => {
+  const ok = confirm("Clear ALL local TSE data (videos + notes) on this browser?");
   if (!ok) return;
-  localStorage.removeItem(KEY_VIDEOS);
+
+  localStorage.removeItem(KEY_VIDEOS_META);
   localStorage.removeItem(KEY_DOC);
-  videos = [];
+
+  videosMeta = [];
+  saveVideosMeta();
+
+  try { await idbClearAllVideos(); } catch {}
+
   renderVideos();
   loadDoc();
 });
 
-exportBtn.addEventListener("click", () => {
+exportBtn.addEventListener("click", async () => {
+  // Export metadata + notes
   const payload = {
     exportedAt: new Date().toISOString(),
-    videos: videos.map(v => ({
-      id: v.id,
-      title: v.title,
-      owner: v.owner,
-      q1: v.q1,
-      q2: v.q2,
-      desc: v.desc,
-      createdAt: v.createdAt,
-      fileName: v.fileName,
-      fileType: v.fileType,
-      fileSize: v.fileSize,
-      note: "Video bytes are not included in this export in the prototype."
+    videos: videosMeta.map(v => ({
+      ...v,
+      note: "Video bytes are NOT included in this JSON export. Use browser storage as the source of truth for blobs."
     })),
     doc: {
       title: docTitle.value || "TSE Notes",
@@ -748,7 +1071,7 @@ exportBtn.addEventListener("click", () => {
   a.remove();
 });
 
-// ---------- Helpers ----------
+// =============== Helpers ===============
 function escapeHtml(str) {
   return String(str)
     .replaceAll("&","&amp;")
@@ -768,26 +1091,48 @@ function fileToDataUrl(file) {
     r.readAsDataURL(file);
   });
 }
-function insertImageAtCursor(dataUrl) {
+
+function insertResizableImageAtCursor(dataUrl) {
   editor.focus();
+
+  const wrap = document.createElement("span");
+  wrap.className = "img-wrap";
+  wrap.setAttribute("contenteditable", "false");
+
+  // default size
+  wrap.style.width = "480px";
+  wrap.style.maxWidth = "100%";
 
   const img = document.createElement("img");
   img.src = dataUrl;
   img.alt = "Inserted image";
 
+  wrap.appendChild(img);
+
   const sel = window.getSelection();
   if (!sel || sel.rangeCount === 0) {
-    editor.appendChild(img);
+    editor.appendChild(wrap);
+    editor.appendChild(document.createElement("br"));
     return;
   }
   const range = sel.getRangeAt(0);
   range.collapse(false);
-  range.insertNode(img);
+  range.insertNode(wrap);
 
-  range.setStartAfter(img);
-  range.setEndAfter(img);
+  // Insert a newline after so typing continues cleanly
+  const br = document.createElement("br");
+  wrap.after(br);
+
+  // Move cursor after <br>
+  const newRange = document.createRange();
+  newRange.setStartAfter(br);
+  newRange.collapse(true);
   sel.removeAllRanges();
-  sel.addRange(range);
+  sel.addRange(newRange);
+
+  // Visual selection
+  editor.querySelectorAll(".img-wrap").forEach(w => w.classList.remove("img-selected"));
+  wrap.classList.add("img-selected");
 }
 </script>
 </body>
