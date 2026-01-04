@@ -4,1063 +4,684 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>TSE</title>
+  <meta name="color-scheme" content="dark" />
   <style>
     :root{
-      --bg:#0b0f17;
-      --panel:#0f1626;
-      --panel2:#0c1220;
-      --muted:#8fa1c7;
-      --text:#e7eefc;
-      --line:rgba(255,255,255,.09);
-      --accent:#6aa6ff;
-      --good:#46e39a;
-      --bad:#ff5d7a;
-      --warn:#ffd166;
-      --shadow: 0 10px 40px rgba(0,0,0,.45);
-      --radius: 16px;
+      --bg:#070a10;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.09);
+      --stroke:rgba(255,255,255,.12);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.62);
+      --good:#4ade80;
+      --bad:#fb7185;
+      --warn:#fbbf24;
+      --chip:rgba(255,255,255,.08);
+      --shadow: 0 20px 60px rgba(0,0,0,.55);
+      --radius:18px;
+      --radius2:22px;
+      --blur: 18px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: radial-gradient(1200px 700px at 20% -10%, rgba(106,166,255,.18), transparent 60%),
-                  radial-gradient(900px 600px at 90% 0%, rgba(70,227,154,.12), transparent 55%),
-                  var(--bg);
+      font-family:var(--font);
       color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% -10%, rgba(56,189,248,.15), transparent 55%),
+        radial-gradient(900px 700px at 85% 5%, rgba(168,85,247,.14), transparent 60%),
+        radial-gradient(900px 700px at 50% 110%, rgba(34,197,94,.10), transparent 55%),
+        var(--bg);
+      overflow-x:hidden;
     }
-    a{color:inherit}
-    .wrap{max-width:1180px;margin:0 auto;padding:22px}
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      box-shadow: var(--shadow);
-      position:sticky; top:14px; z-index:20;
-      backdrop-filter: blur(10px);
+
+    /* Top bar */
+    .top{
+      position:sticky; top:0; z-index:20;
+      padding:18px 18px 10px;
+      backdrop-filter: blur(var(--blur));
+      background: linear-gradient(to bottom, rgba(7,10,16,.9), rgba(7,10,16,.55));
+      border-bottom: 1px solid rgba(255,255,255,.06);
     }
-    .brand{display:flex;align-items:center;gap:10px}
-    .logo{
-      width:38px;height:38px;border-radius:12px;
-      background: radial-gradient(circle at 30% 30%, rgba(106,166,255,.8), rgba(70,227,154,.35) 45%, rgba(255,255,255,.06) 70%);
-      border:1px solid var(--line);
-      box-shadow: 0 10px 30px rgba(106,166,255,.12);
-    }
-    .brand h1{font-size:16px;margin:0;letter-spacing:.5px}
-    .brand p{margin:0;color:var(--muted);font-size:12px}
-    .tabs{display:flex;gap:8px;align-items:center}
-    .tab{
-      cursor:pointer;border:1px solid var(--line);background:rgba(255,255,255,.04);
-      color:var(--text);padding:10px 12px;border-radius:999px;font-weight:600;font-size:13px;
-      transition: transform .08s ease, background .2s ease;
-    }
-    .tab:hover{transform: translateY(-1px);background:rgba(255,255,255,.07)}
-    .tab.active{background:rgba(106,166,255,.16);border-color:rgba(106,166,255,.3)}
-    .right{
-      display:flex; gap:10px; align-items:center;
-    }
-    .pill{
-      font-size:12px;color:var(--muted);border:1px solid var(--line);
-      padding:8px 10px;border-radius:999px;background:rgba(0,0,0,.18);
-      display:flex; align-items:center; gap:8px;
-    }
-    .dot{width:8px;height:8px;border-radius:50%}
-    .dot.ok{background:var(--good)}
-    .dot.bad{background:var(--bad)}
-    .btn{
-      cursor:pointer; border:1px solid var(--line); background:rgba(255,255,255,.06);
-      padding:10px 12px;border-radius:12px; color:var(--text); font-weight:700; font-size:13px;
-      transition: transform .08s ease, background .2s ease, border-color .2s ease;
-      display:inline-flex; align-items:center; gap:8px;
-      user-select:none;
-    }
-    .btn:hover{transform: translateY(-1px); background:rgba(255,255,255,.09)}
-    .btn.primary{background: rgba(106,166,255,.16); border-color: rgba(106,166,255,.35)}
-    .btn.danger{background: rgba(255,93,122,.12); border-color: rgba(255,93,122,.28)}
-    .btn:disabled{opacity:.55; cursor:not-allowed; transform:none}
-    .grid{display:grid; grid-template-columns: 420px 1fr; gap:16px; margin-top:16px}
-    @media (max-width: 980px){ .grid{grid-template-columns:1fr} .topbar{position:relative; top:auto}}
-    .card{
-      border:1px solid var(--line);
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
-      border-radius:var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .card .hd{
-      padding:14px 14px 10px;
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
-      border-bottom:1px solid var(--line);
-      background: rgba(0,0,0,.12);
-    }
-    .card .hd h2{margin:0;font-size:14px}
-    .card .hd span{color:var(--muted);font-size:12px}
-    .card .bd{padding:14px}
-    .field{display:flex; flex-direction:column; gap:6px; margin-bottom:10px}
-    .field label{font-size:12px;color:var(--muted)}
-    input[type="text"], textarea, select{
-      width:100%;
-      background: rgba(0,0,0,.22);
-      border:1px solid var(--line);
-      color:var(--text);
-      padding:10px 10px;
-      border-radius:12px;
-      outline:none;
-    }
-    textarea{min-height:90px;resize:vertical}
-    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
-    .hint{font-size:12px;color:var(--muted);line-height:1.3}
-    .sep{height:1px;background:var(--line);margin:12px 0}
-    .toolbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-    .toolbar .spacer{flex:1}
-    .search{
-      display:flex; gap:10px; align-items:center;
-      padding:12px 14px;
-      border-bottom:1px solid var(--line);
-      background: rgba(0,0,0,.10);
-    }
-    .search input{
-      flex:1; background: rgba(0,0,0,.22);
-      border:1px solid var(--line); border-radius:12px;
-      padding:10px 10px; color:var(--text);
-    }
-    .selectSmall{width:170px}
-    .list{
-      padding:14px;
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+    .top-inner{
+      max-width: 1240px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
       gap:12px;
     }
-    @media (max-width: 980px){ .list{grid-template-columns: 1fr} }
-    .vcard{
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.18);
-      border-radius:14px;
-      overflow:hidden;
-      position:relative;
-      transition: transform .12s ease, border-color .2s ease, background .2s ease;
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      padding:10px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
-    .vcard:hover{
-      transform: translateY(-2px);
-      border-color: rgba(106,166,255,.35);
-      background: rgba(0,0,0,.26);
+    .orb{
+      width:26px;height:26px;border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.85), rgba(255,255,255,.15) 38%, rgba(59,130,246,.35) 55%, rgba(168,85,247,.26) 70%, rgba(34,197,94,.22) 100%);
+      filter: saturate(1.2);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.18) inset;
+    }
+    .brand h1{font-size:16px; margin:0; letter-spacing:.5px}
+    .brand p{margin:0; font-size:12px; color:var(--muted)}
+    .spacer{flex:1}
+    .tabs{
+      display:flex; gap:8px;
+      padding:6px;
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .tab{
+      border:0;
+      color:var(--text);
+      background: transparent;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:600;
+      cursor:pointer;
+      opacity:.75;
+      transition:.15s;
+    }
+    .tab.active{
+      background: rgba(255,255,255,.10);
+      opacity:1;
+      box-shadow: 0 10px 20px rgba(0,0,0,.25);
+    }
+    .right{
+      display:flex; align-items:center; gap:10px;
+    }
+    .pill{
+      display:flex; align-items:center; gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--warn); box-shadow:0 0 0 2px rgba(0,0,0,.3)}
+    .btn{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      transition:.15s;
+    }
+    .btn:hover{background: rgba(255,255,255,.10)}
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{
+      background: linear-gradient(180deg, rgba(59,130,246,.28), rgba(59,130,246,.12));
+      border-color: rgba(59,130,246,.35);
+    }
+
+    /* Layout */
+    .wrap{max-width:1240px;margin:0 auto;padding: 18px}
+    .grid{
+      display:grid;
+      grid-template-columns: 380px 1fr;
+      gap:16px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid{grid-template-columns: 1fr}
+      .tabs{display:none}
+    }
+
+    /* Panels */
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius2);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel-header{
+      padding:14px 14px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .panel-title{display:flex; flex-direction:column; gap:2px}
+    .panel-title h2{margin:0;font-size:14px; letter-spacing:.2px}
+    .panel-title span{font-size:12px;color:var(--muted)}
+    .panel-body{padding:14px}
+
+    /* Inputs */
+    label{display:block; font-size:12px; color:var(--muted); margin:10px 0 6px}
+    input[type="text"], textarea, select{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--text);
+      outline:none;
+    }
+    textarea{min-height:84px; resize:vertical}
+    input[type="file"]{
+      width:100%;
+      padding:10px 10px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--muted);
+    }
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    .help{margin-top:8px; color:var(--muted); font-size:12px}
+    .actions{display:flex; gap:10px; margin-top:12px}
+    .progress{
+      height:8px;
+      background: rgba(255,255,255,.08);
+      border-radius:999px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      margin-top:10px;
+    }
+    .bar{height:100%; width:0%; background: linear-gradient(90deg, rgba(34,197,94,.65), rgba(59,130,246,.55)); transition: width .15s}
+    .status{margin-top:10px; font-size:12px; color:var(--muted)}
+
+    /* Video list */
+    .list-header{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+    .search{flex:1; min-width: 220px}
+    .select-sm{width:auto; min-width: 160px}
+    .list{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:12px;
+    }
+    @media (max-width: 1120px){ .list{grid-template-columns: repeat(2, minmax(0,1fr));} }
+    @media (max-width: 640px){ .list{grid-template-columns: 1fr;} }
+
+    .card{
+      border-radius: 18px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      box-shadow: 0 14px 30px rgba(0,0,0,.35);
+      display:flex;
+      flex-direction:column;
+      min-height: 260px;
     }
     .thumb{
-      height:150px;
-      background: radial-gradient(circle at 30% 20%, rgba(106,166,255,.25), transparent 55%),
-                  radial-gradient(circle at 70% 40%, rgba(70,227,154,.18), transparent 55%),
-                  rgba(255,255,255,.04);
-      border-bottom:1px solid var(--line);
-      display:flex; align-items:center; justify-content:center;
       position:relative;
+      aspect-ratio: 16/9;
+      background:
+        radial-gradient(700px 250px at 20% 20%, rgba(59,130,246,.22), transparent 55%),
+        radial-gradient(700px 250px at 80% 30%, rgba(168,85,247,.18), transparent 55%),
+        rgba(0,0,0,.35);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-bottom:1px solid rgba(255,255,255,.08);
     }
     .thumb .play{
-      width:52px;height:52px;border-radius:50%;
-      border:1px solid rgba(255,255,255,.18);
-      display:flex; align-items:center; justify-content:center;
-      background: rgba(0,0,0,.25);
-      box-shadow: 0 10px 25px rgba(0,0,0,.35);
-      font-size:18px;
+      width:56px;height:56px;border-radius:999px;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.16);
+      display:grid; place-items:center;
+      box-shadow: 0 18px 40px rgba(0,0,0,.45);
+      backdrop-filter: blur(10px);
     }
-    .vmeta{padding:12px}
-    .vtitle{
-      margin:0 0 8px;
-      font-size:14px;
-      line-height:1.25;
-      font-weight:800;
-      letter-spacing:.2px;
+    .thumb .play:before{
+      content:"";
+      display:block;
+      width:0;height:0;
+      border-left:16px solid rgba(255,255,255,.85);
+      border-top:10px solid transparent;
+      border-bottom:10px solid transparent;
+      transform: translateX(2px);
     }
-    .chips{display:flex; gap:6px; flex-wrap:wrap; align-items:center}
+    .meta{padding:12px 12px 10px; display:flex; flex-direction:column; gap:8px}
+    .meta h3{margin:0; font-size:13px; line-height:1.25}
+    .chips{display:flex; flex-wrap:wrap; gap:6px}
     .chip{
-      font-size:11px;
       padding:6px 8px;
       border-radius:999px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.04);
-      color: var(--muted);
+      background: var(--chip);
+      border:1px solid rgba(255,255,255,.10);
+      font-size:11px;
+      color:rgba(255,255,255,.78);
     }
-    .chip.owner{
-      color: rgba(255,255,255,.9);
-      border-color: rgba(106,166,255,.25);
-      background: rgba(106,166,255,.14);
+    .meta p{margin:0; font-size:12px; color:var(--muted); line-height:1.35; white-space:pre-wrap}
+    .card-actions{
+      margin-top:auto;
+      padding:10px 12px 12px;
+      display:flex; gap:8px; align-items:center; justify-content:space-between;
+      border-top:1px solid rgba(255,255,255,.08);
     }
-    .vactions{
-      padding:12px;
-      display:flex; gap:8px; align-items:center;
-      border-top:1px solid var(--line);
-      background: rgba(0,0,0,.14);
+    .small{
+      font-size:11px; color:var(--muted)
     }
-    .preview{
-      position:absolute; inset:0;
-      opacity:0; pointer-events:none;
-      transition: opacity .15s ease;
-      background: rgba(0,0,0,.75);
-      display:flex; align-items:center; justify-content:center;
-      padding:10px;
-    }
-    .vcard:hover .preview{opacity:1; pointer-events:auto}
-    .preview video{
-      width:100%;
-      max-height:220px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.16);
-      background:#000;
+    .danger{
+      background: rgba(251,113,133,.10);
+      border-color: rgba(251,113,133,.25);
     }
 
-    /* Modal */
-    .modalBack{
-      position:fixed; inset:0; background: rgba(0,0,0,.62);
-      display:none; align-items:center; justify-content:center; padding:20px; z-index:50;
-    }
-    .modalBack.show{display:flex}
+    /* Modal player */
     .modal{
-      width:min(960px, 100%);
-      border:1px solid var(--line);
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .modal .mhd{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:12px 14px; border-bottom:1px solid var(--line); background: rgba(0,0,0,.14);
-    }
-    .modal .mhd .title{font-weight:900}
-    .modal .mbd{padding:12px}
-    .modal video{width:100%; border-radius:14px; border:1px solid rgba(255,255,255,.14); background:#000}
-    .toast{
-      position:fixed; left:50%; bottom:18px; transform: translateX(-50%);
-      background: rgba(0,0,0,.75);
-      border:1px solid rgba(255,255,255,.14);
-      padding:10px 12px; border-radius:12px;
-      color: var(--text);
+      position:fixed; inset:0;
       display:none;
-      z-index:60;
-      box-shadow: var(--shadow);
-      max-width: min(820px, 92vw);
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background: rgba(0,0,0,.62);
+      z-index:50;
     }
-    .toast.show{display:block}
+    .modal.open{display:flex}
+    .modal-card{
+      width:min(980px, 100%);
+      border-radius: 20px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(10,12,18,.92);
+      box-shadow: 0 30px 80px rgba(0,0,0,.65);
+      backdrop-filter: blur(14px);
+    }
+    .modal-top{
+      padding:12px 12px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .modal-top strong{font-size:13px}
+    .close{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      border-radius:12px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:800;
+    }
+    video{
+      width:100%;
+      max-height: 70vh;
+      background: black;
+    }
+    .modal-body{padding:12px}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
 
     /* Notes */
-    .notesWrap{display:grid; grid-template-columns: 280px 1fr; gap:16px; margin-top:16px}
-    @media (max-width: 980px){ .notesWrap{grid-template-columns:1fr} }
-    .noteList{padding:12px; display:flex; flex-direction:column; gap:10px}
-    .noteItem{
+    .note-tools{
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      margin-bottom:10px;
+    }
+    .tool{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      padding:8px 10px;
+      border-radius:12px;
       cursor:pointer;
-      border:1px solid var(--line);
-      border-radius:14px;
-      background: rgba(0,0,0,.18);
-      padding:10px;
-      transition: transform .12s ease, border-color .2s ease, background .2s ease;
+      font-weight:800;
+      font-size:12px;
     }
-    .noteItem:hover{transform: translateY(-1px); border-color: rgba(106,166,255,.32); background: rgba(0,0,0,.24)}
-    .noteItem.active{border-color: rgba(106,166,255,.45); background: rgba(106,166,255,.12)}
-    .noteItem .t{font-weight:900; font-size:13px; margin:0 0 4px}
-    .noteItem .s{color:var(--muted); font-size:12px; margin:0}
-    .docTop{
-      display:flex; gap:10px; align-items:center; padding:12px 14px;
-      border-bottom:1px solid var(--line);
-      background: rgba(0,0,0,.10);
-    }
-    .docTitle{flex:1; font-weight:900}
-    .docToolbar{display:flex; gap:8px; flex-wrap:wrap}
+    .tool:hover{background: rgba(255,255,255,.10)}
     .doc{
       min-height: 520px;
-      padding:16px;
+      padding:14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
       outline:none;
-      line-height:1.45;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04);
     }
-    .dropHint{
-      border:1px dashed rgba(255,255,255,.18);
-      border-radius:14px;
-      padding:10px 12px;
-      color: var(--muted);
-      font-size:12px;
-      background: rgba(0,0,0,.14);
+    .doc:empty:before{
+      content:"Write notes here… (Drag & drop images in)";
+      color: rgba(255,255,255,.35);
     }
-
-    /* Resizable images in editor */
-    .imgWrap{
-      display:inline-block;
+    .dropzone{
       position:relative;
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:12px;
-      overflow:hidden;
-      background:#000;
-      margin:6px 0;
+    }
+    .drop-hint{
+      position:absolute; inset:0;
+      border-radius: 16px;
+      border: 2px dashed rgba(59,130,246,.45);
+      background: rgba(59,130,246,.10);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      color: rgba(255,255,255,.85);
+      font-weight:800;
+      pointer-events:none;
+    }
+    .dropzone.drag .drop-hint{display:flex}
+    .doc img.note-img{
       max-width: 100%;
+      height:auto;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: 0 12px 30px rgba(0,0,0,.45);
+      display:block;
+      margin: 10px 0;
+      cursor: pointer;
     }
-    .imgWrap img{display:block; width:100%; height:auto}
-    .handle{
-      position:absolute; width:12px; height:12px; border-radius:3px;
-      background: rgba(106,166,255,.9);
-      border:1px solid rgba(0,0,0,.35);
-      right:8px; bottom:8px; cursor:nwse-resize;
-      box-shadow: 0 8px 18px rgba(0,0,0,.35);
+    .img-editor{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+      padding:10px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      margin-bottom:10px;
     }
-
-    .progressRow{display:flex; gap:10px; align-items:center}
-    progress{width:100%; height:12px; border-radius:999px; overflow:hidden}
-    progress::-webkit-progress-bar{background: rgba(255,255,255,.08)}
-    progress::-webkit-progress-value{background: rgba(106,166,255,.75)}
-    .small{font-size:12px;color:var(--muted)}
+    .range{
+      display:flex; gap:10px; align-items:center;
+    }
+    input[type="range"]{width: 220px}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="topbar">
+  <header class="top">
+    <div class="top-inner">
       <div class="brand">
-        <div class="logo"></div>
+        <div class="orb" aria-hidden="true"></div>
         <div>
           <h1>TSE</h1>
           <p>Videos + Notes • Shared via Cloudflare (R2 + D1)</p>
         </div>
       </div>
 
-      <div class="tabs">
-        <button class="tab active" id="tabVideos">Videos</button>
-        <button class="tab" id="tabNotes">Notes</button>
+      <div class="spacer"></div>
+
+      <div class="tabs" role="tablist" aria-label="Sections">
+        <button class="tab active" id="tabVideos" role="tab" aria-selected="true">Videos</button>
+        <button class="tab" id="tabNotes" role="tab" aria-selected="false">Notes</button>
       </div>
 
       <div class="right">
-        <div class="pill" title="API connection status">
-          <span class="dot bad" id="apiDot"></span>
-          <span id="apiText">API: not checked</span>
+        <div class="pill" title="Backend status">
+          <span class="dot" id="apiDot"></span>
+          <span id="apiText">API: checking…</span>
         </div>
         <button class="btn" id="btnCheckApi">Check API</button>
         <button class="btn primary" id="btnRefresh">Refresh</button>
       </div>
     </div>
+  </header>
 
-    <!-- VIDEOS VIEW -->
-    <div id="viewVideos">
+  <main class="wrap">
+    <!-- VIDEOS -->
+    <section id="sectionVideos">
       <div class="grid">
-        <div class="card">
-          <div class="hd">
-            <div>
+        <!-- Upload panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
               <h2>Upload video</h2>
               <span>Shared — appears for everyone with Access</span>
             </div>
-            <span class="small" id="uploadMax">Max 500MB</span>
+            <div class="chip" title="Max upload size">Max 500MB</div>
           </div>
-          <div class="bd">
-            <div class="field">
-              <label>Video file</label>
-              <input type="file" id="file" accept="video/*" />
-              <div class="hint">Tip: keep clips under 500MB for fastest uploads.</div>
-            </div>
-
-            <div class="field">
-              <label>Title</label>
-              <input type="text" id="title" placeholder="e.g., NQ Scalps – Jan 4" />
-            </div>
+          <div class="panel-body">
+            <label>Video file</label>
+            <input type="file" id="fileVideo" accept="video/*" />
 
             <div class="row">
-              <div class="field">
+              <div>
+                <label>Title</label>
+                <input type="text" id="title" placeholder="e.g., NQ Scalps – Jan 4" maxlength="140" />
+              </div>
+              <div>
                 <label>Owner (Aiden or Landon)</label>
                 <select id="owner">
                   <option value="Aiden">Aiden</option>
                   <option value="Landon">Landon</option>
                 </select>
               </div>
-              <div class="field">
+            </div>
+
+            <div class="row">
+              <div>
                 <label>Sort tag</label>
                 <select id="tag">
                   <option value="Trade Review">Trade Review</option>
-                  <option value="Strategy">Strategy</option>
-                  <option value="Journal">Journal</option>
+                  <option value="Pre-Market">Pre-Market</option>
+                  <option value="Recap">Recap</option>
+                  <option value="Idea">Idea</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
+              <div>
+                <label>Private ID (optional)</label>
+                <input type="text" id="privateId" placeholder="optional reference" maxlength="80" />
+              </div>
             </div>
 
-            <div class="sep"></div>
+            <label>Description Q1</label>
+            <input type="text" id="q1" placeholder="What was the setup?" maxlength="260" />
 
-            <div class="field">
-              <label>Description Q1</label>
-              <input type="text" id="q1" placeholder="What was the setup?" />
-            </div>
-            <div class="field">
-              <label>Description Q2</label>
-              <input type="text" id="q2" placeholder="What did you learn?" />
-            </div>
-            <div class="field">
-              <label>Notes (optional)</label>
-              <textarea id="vnotes" placeholder="Write notes attached to this video..."></textarea>
-            </div>
+            <label>Description Q2</label>
+            <input type="text" id="q2" placeholder="What did you learn?" maxlength="260" />
 
-            <div class="progressRow" style="margin-top:10px;">
+            <label>Notes (optional)</label>
+            <textarea id="notes" placeholder="Write notes attached to this video…"></textarea>
+
+            <div class="actions">
               <button class="btn primary" id="btnUpload">Upload</button>
-              <button class="btn" id="btnClearForm">Clear</button>
+              <button class="btn" id="btnClear">Clear</button>
             </div>
 
-            <div style="margin-top:10px;">
-              <progress id="prog" value="0" max="100"></progress>
-              <div class="small" id="progText" style="margin-top:6px;">Idle</div>
+            <div class="progress" aria-label="Upload progress">
+              <div class="bar" id="uploadBar"></div>
             </div>
+            <div class="status" id="uploadStatus">Idle</div>
 
-            <div class="sep"></div>
-
-            <div class="hint">
-              If upload/list calls fail with 401/403, open <b>api.tseapp.com</b> once so Access can set your session, then refresh.
+            <div class="help">
+              If upload/list calls fail with 401/403, open <span class="mono">api.tseapp.com</span> once so Cloudflare Access can set your session, then refresh.
             </div>
           </div>
         </div>
 
-        <div class="card">
-          <div class="search">
-            <input id="search" placeholder="Search videos by title, owner, notes..." />
-            <select id="sort" class="selectSmall">
-              <option value="new">Newest</option>
-              <option value="old">Oldest</option>
-              <option value="aiden">Owner: Aiden</option>
-              <option value="landon">Owner: Landon</option>
-            </select>
-            <button class="btn" id="btnLoad">Load</button>
+        <!-- List panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <h2>Library</h2>
+              <span>Search, load, and play clips</span>
+            </div>
+            <div class="chips">
+              <span class="chip" id="countChip">0 videos</span>
+            </div>
           </div>
-          <div class="list" id="videoList"></div>
-        </div>
-      </div>
-    </div>
+          <div class="panel-body">
+            <div class="list-header">
+              <input class="search" type="text" id="search" placeholder="Search videos by title, owner, notes…" />
+              <select class="select-sm" id="sort">
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+                <option value="owner">Owner</option>
+                <option value="title">Title</option>
+              </select>
+              <button class="btn" id="btnLoad">Load</button>
+            </div>
 
-    <!-- NOTES VIEW -->
-    <div id="viewNotes" style="display:none;">
-      <div class="notesWrap">
-        <div class="card">
-          <div class="hd">
-            <div>
-              <h2>Notes</h2>
-              <span>Google-doc style • drag & drop images • resizable</span>
-            </div>
-          </div>
-          <div class="noteList">
-            <button class="btn primary" id="btnNewNote">New note</button>
-            <button class="btn danger" id="btnDeleteNote">Delete note</button>
-            <div class="dropHint">
-              Drop images into the doc area → they’ll insert where your cursor is.
-              Drag the blue corner to resize.
-            </div>
-            <div class="sep"></div>
-            <div id="noteItems"></div>
-          </div>
-        </div>
+            <div class="list" id="videoList"></div>
 
-        <div class="card">
-          <div class="docTop">
-            <div class="docTitle" id="docTitle">Untitled</div>
-            <div class="docToolbar">
-              <button class="btn" id="btnBold"><b>B</b></button>
-              <button class="btn" id="btnItalic"><i>I</i></button>
-              <button class="btn" id="btnUnderline"><u>U</u></button>
-              <button class="btn" id="btnH2">H2</button>
-              <button class="btn" id="btnBullets">• List</button>
-              <button class="btn" id="btnInsertImage">Insert image</button>
-              <button class="btn" id="btnSaveNote">Save</button>
-            </div>
-          </div>
-          <div class="bd">
-            <input type="text" id="noteTitleInput" placeholder="Note title..." style="margin-bottom:12px;" />
-            <div class="doc card" id="doc" contenteditable="true"></div>
-            <div class="small" id="noteStatus" style="margin-top:10px;">Autosave on typing.</div>
+            <div class="status" id="listStatus"></div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-  </div>
+    <!-- NOTES -->
+    <section id="sectionNotes" style="display:none">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <h2>Notes</h2>
+            <span>Google-doc style notes • drag & drop images • scalable</span>
+          </div>
+          <div class="chips">
+            <span class="chip" id="noteSaved">Not saved</span>
+            <button class="btn" id="btnExport">Export HTML</button>
+            <button class="btn" id="btnClearNotes">Clear</button>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          <div class="img-editor" id="imgEditor" style="display:none">
+            <strong style="font-size:12px">Image selected</strong>
+            <div class="range">
+              <span class="small">Scale</span>
+              <input type="range" id="imgScale" min="10" max="200" value="100" />
+              <span class="small" id="imgScaleLabel">100%</span>
+            </div>
+            <button class="tool" id="btnImgAlignLeft">Left</button>
+            <button class="tool" id="btnImgAlignCenter">Center</button>
+            <button class="tool" id="btnImgAlignRight">Right</button>
+            <button class="tool danger" id="btnImgRemove">Remove</button>
+          </div>
+
+          <div class="note-tools">
+            <button class="tool" data-cmd="bold"><b>B</b></button>
+            <button class="tool" data-cmd="italic"><i>I</i></button>
+            <button class="tool" data-cmd="underline"><u>U</u></button>
+            <button class="tool" id="btnH2">H2</button>
+            <button class="tool" id="btnH3">H3</button>
+            <button class="tool" id="btnBullet">• List</button>
+            <button class="tool" id="btnNum">1. List</button>
+            <button class="tool" id="btnLink">Link</button>
+            <button class="tool" id="btnImage">Insert image</button>
+            <input type="file" id="fileNoteImage" accept="image/*" hidden />
+          </div>
+
+          <div class="dropzone" id="dropzone">
+            <div class="drop-hint">Drop image to insert</div>
+            <div id="doc" class="doc" contenteditable="true" spellcheck="true"></div>
+          </div>
+
+          <div class="help">
+            Notes are saved locally in your browser (so they persist when you leave/come back). If you want shared notes later, we can add a Notes API endpoint.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <!-- Video modal -->
-  <div class="modalBack" id="modalBack">
-    <div class="modal">
-      <div class="mhd">
-        <div class="title" id="modalTitle">Video</div>
-        <button class="btn" id="btnCloseModal">Close</button>
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <div class="modal-top">
+        <strong id="modalTitle">Video</strong>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span class="small" id="modalMeta"></span>
+          <button class="close" id="btnClose">Close</button>
+        </div>
       </div>
-      <div class="mbd">
-        <video id="modalVideo" controls playsinline></video>
-        <div class="sep"></div>
-        <div class="small" id="modalMeta"></div>
+      <video id="player" controls playsinline></video>
+      <div class="modal-body">
+        <div class="small" id="modalNotes"></div>
       </div>
     </div>
   </div>
 
-  <div class="toast" id="toast"></div>
-
   <script>
-    // =========================
-    // CONFIG
-    // =========================
-    // If your API is on api.tseapp.com:
-    const API_BASE = "https://api.tseapp.com";
+    /**
+     * IMPORTANT: This fixes "API blocked/offline"
+     * We ALWAYS call the API on the subdomain so GitHub Pages never intercepts /api paths.
+     */
+    const API_BASE = "https://api.tseapp.com"; // ✅ correct host for your Cloudflare Worker
 
-    // =========================
-    // UTIL
-    // =========================
-    const $ = (id) => document.getElementById(id);
-    const toast = (msg, ms=2600) => {
-      const t = $("toast");
-      t.textContent = msg;
-      t.classList.add("show");
-      clearTimeout(window.__t_toast);
-      window.__t_toast = setTimeout(() => t.classList.remove("show"), ms);
-    };
-    const fmtDate = (iso) => {
-      try{
-        const d = new Date(iso);
-        return d.toLocaleString(undefined, {year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit"});
-      }catch{return iso || ""}
+    // If you ever move the Worker onto the root domain and confirm it works, you could use:
+    // const API_BASE = location.origin;
+
+    const els = {
+      apiDot: document.getElementById("apiDot"),
+      apiText: document.getElementById("apiText"),
+      btnCheckApi: document.getElementById("btnCheckApi"),
+      btnRefresh: document.getElementById("btnRefresh"),
+
+      tabVideos: document.getElementById("tabVideos"),
+      tabNotes: document.getElementById("tabNotes"),
+      sectionVideos: document.getElementById("sectionVideos"),
+      sectionNotes: document.getElementById("sectionNotes"),
+
+      fileVideo: document.getElementById("fileVideo"),
+      title: document.getElementById("title"),
+      owner: document.getElementById("owner"),
+      tag: document.getElementById("tag"),
+      privateId: document.getElementById("privateId"),
+      q1: document.getElementById("q1"),
+      q2: document.getElementById("q2"),
+      notes: document.getElementById("notes"),
+      btnUpload: document.getElementById("btnUpload"),
+      btnClear: document.getElementById("btnClear"),
+      uploadBar: document.getElementById("uploadBar"),
+      uploadStatus: document.getElementById("uploadStatus"),
+
+      search: document.getElementById("search"),
+      sort: document.getElementById("sort"),
+      btnLoad: document.getElementById("btnLoad"),
+      videoList: document.getElementById("videoList"),
+      listStatus: document.getElementById("listStatus"),
+      countChip: document.getElementById("countChip"),
+
+      // notes
+      doc: document.getElementById("doc"),
+      dropzone: document.getElementById("dropzone"),
+      noteSaved: document.getElementById("noteSaved"),
+      btnExport: document.getElementById("btnExport"),
+      btnClearNotes: document.getElementById("btnClearNotes"),
+      fileNoteImage: document.getElementById("fileNoteImage"),
+      imgEditor: document.getElementById("imgEditor"),
+      imgScale: document.getElementById("imgScale"),
+      imgScaleLabel: document.getElementById("imgScaleLabel"),
+      btnImgAlignLeft: document.getElementById("btnImgAlignLeft"),
+      btnImgAlignCenter: document.getElementById("btnImgAlignCenter"),
+      btnImgAlignRight: document.getElementById("btnImgAlignRight"),
+      btnImgRemove: document.getElementById("btnImgRemove"),
+
+      // modal
+      modal: document.getElementById("modal"),
+      btnClose: document.getElementById("btnClose"),
+      player: document.getElementById("player"),
+      modalTitle: document.getElementById("modalTitle"),
+      modalMeta: document.getElementById("modalMeta"),
+      modalNotes: document.getElementById("modalNotes"),
     };
 
-    // =========================
-    // API HELPERS
-    // =========================
-    async function apiFetch(path, options = {}) {
-      const url = path.startsWith("http") ? path : (API_BASE + path);
+    // ---------- helpers ----------
+    function setApiStatus(state, text){
+      // state: "ok" | "bad" | "warn"
+      const dot = els.apiDot;
+      if (state === "ok") dot.style.background = "var(--good)";
+      else if (state === "bad") dot.style.background = "var(--bad)";
+      else dot.style.background = "var(--warn)";
+      els.apiText.textContent = text;
+    }
+
+    async function apiFetch(path, opts = {}){
+      const url = API_BASE + path;
       const res = await fetch(url, {
-        credentials: "include",
-        ...options,
-      });
-      // If Access blocks, you might get 403/401 or an HTML login response.
-      const ctype = res.headers.get("content-type") || "";
-      if (!res.ok) {
-        let body = "";
-        try { body = ctype.includes("application/json") ? JSON.stringify(await res.json()) : await res.text(); } catch {}
-        throw new Error(`API ${res.status}: ${body.slice(0, 160)}`);
-      }
-      if (ctype.includes("application/json")) return await res.json();
-      return await res.text();
-    }
-
-    async function checkApi() {
-      try{
-        const data = await apiFetch("/api/videos");
-        $("apiDot").className = "dot ok";
-        $("apiText").textContent = "API: connected";
-        return data;
-      }catch(e){
-        $("apiDot").className = "dot bad";
-        $("apiText").textContent = "API: blocked/offline";
-        toast("API not reachable. If using Access: open api.tseapp.com once, login, then retry.");
-        return null;
-      }
-    }
-
-    // =========================
-    // VIDEOS
-    // =========================
-    let allVideos = [];
-
-    function videoCard(v){
-      const streamUrl = v.streamUrl || `${API_BASE}/v/${v.id}`;
-      const owner = v.owner || "—";
-      const created = fmtDate(v.created_at);
-      const title = v.title || "Untitled";
-      const q1 = v.q1 || "";
-      const q2 = v.q2 || "";
-      const notes = v.notes || "";
-
-      const el = document.createElement("div");
-      el.className = "vcard";
-      el.innerHTML = `
-        <div class="thumb">
-          <div class="play">▶</div>
-          <div class="preview">
-            <video muted playsinline preload="metadata"></video>
-          </div>
-        </div>
-        <div class="vmeta">
-          <p class="vtitle"></p>
-          <div class="chips">
-            <span class="chip owner"></span>
-            <span class="chip">${created}</span>
-          </div>
-          ${(q1 || q2) ? `<div style="margin-top:10px;color:var(--muted);font-size:12px;line-height:1.35">
-            ${q1 ? `<div><b style="color:var(--text)">Q1:</b> ${escapeHtml(q1)}</div>` : ""}
-            ${q2 ? `<div><b style="color:var(--text)">Q2:</b> ${escapeHtml(q2)}</div>` : ""}
-          </div>` : ""}
-          ${notes ? `<div style="margin-top:10px;color:var(--muted);font-size:12px;line-height:1.35">
-            <b style="color:var(--text)">Notes:</b> ${escapeHtml(notes).slice(0, 140)}${escapeHtml(notes).length>140?"…":""}
-          </div>` : ""}
-        </div>
-        <div class="vactions">
-          <button class="btn primary btnPlay">Play</button>
-          <button class="btn btnCopy">Copy link</button>
-          <span class="spacer"></span>
-          <button class="btn danger btnDelete">Delete</button>
-        </div>
-      `;
-
-      el.querySelector(".vtitle").textContent = title;
-      el.querySelector(".chip.owner").textContent = owner;
-
-      const preview = el.querySelector(".preview video");
-      preview.src = streamUrl;
-
-      // Hover preview: play silently
-      el.addEventListener("mouseenter", () => {
-        preview.currentTime = 0;
-        preview.play().catch(()=>{});
-      });
-      el.addEventListener("mouseleave", () => {
-        preview.pause();
-      });
-
-      el.querySelector(".btnPlay").onclick = () => openModal(v, streamUrl);
-      el.querySelector(".btnCopy").onclick = async () => {
-        try{
-          await navigator.clipboard.writeText(streamUrl);
-          toast("Link copied");
-        }catch{
-          toast("Couldn’t copy. Here it is: " + streamUrl, 4200);
+        ...opts,
+        credentials: "include", // required for Cloudflare Access cookies
+        headers: {
+          ...(opts.headers || {})
         }
-      };
-      el.querySelector(".btnDelete").onclick = () => deleteVideo(v.id, title);
-      return el;
-    }
-
-    function renderVideos(){
-      const q = $("search").value.trim().toLowerCase();
-      const mode = $("sort").value;
-
-      let vids = [...allVideos];
-
-      if (mode === "old") vids.reverse();
-      if (mode === "aiden") vids = vids.filter(v => (v.owner||"").toLowerCase() === "aiden");
-      if (mode === "landon") vids = vids.filter(v => (v.owner||"").toLowerCase() === "landon");
-
-      if (q){
-        vids = vids.filter(v => {
-          const hay = [
-            v.title, v.owner, v.q1, v.q2, v.notes
-          ].filter(Boolean).join(" ").toLowerCase();
-          return hay.includes(q);
-        });
-      }
-
-      const list = $("videoList");
-      list.innerHTML = "";
-      if (!vids.length){
-        const empty = document.createElement("div");
-        empty.className = "hint";
-        empty.style.gridColumn = "1 / -1";
-        empty.textContent = "No videos yet. Upload one on the left.";
-        list.appendChild(empty);
-        return;
-      }
-      vids.forEach(v => list.appendChild(videoCard(v)));
-    }
-
-    async function loadVideos(){
-      $("btnLoad").disabled = true;
-      try{
-        const data = await apiFetch("/api/videos");
-        allVideos = (data && data.videos) ? data.videos : [];
-        // Ensure streamUrl exists
-        allVideos = allVideos.map(v => ({
-          ...v,
-          streamUrl: v.streamUrl || `${API_BASE}/v/${v.id}`,
-        }));
-        $("apiDot").className = "dot ok";
-        $("apiText").textContent = "API: connected";
-        renderVideos();
-        toast("Loaded videos");
-      }catch(e){
-        $("apiDot").className = "dot bad";
-        $("apiText").textContent = "API: blocked/offline";
-        toast("Load failed. If Access: open api.tseapp.com, login, then retry.", 4200);
-        console.error(e);
-      }finally{
-        $("btnLoad").disabled = false;
-      }
-    }
-
-    async function deleteVideo(id, title){
-      if (!confirm(`Delete "${title}"?\nThis removes it for everyone.`)) return;
-      try{
-        await apiFetch(`/api/videos/${encodeURIComponent(id)}`, { method:"DELETE" });
-        allVideos = allVideos.filter(v => v.id !== id);
-        renderVideos();
-        toast("Deleted");
-      }catch(e){
-        toast("Delete failed. Check Access / permissions.");
-        console.error(e);
-      }
-    }
-
-    function openModal(v, url){
-      $("modalTitle").textContent = v.title || "Video";
-      $("modalMeta").innerHTML = `
-        <div><b>Owner:</b> ${escapeHtml(v.owner || "")}</div>
-        <div><b>Created:</b> ${escapeHtml(fmtDate(v.created_at || ""))}</div>
-        ${v.q1 ? `<div style="margin-top:6px"><b>Q1:</b> ${escapeHtml(v.q1)}</div>` : ""}
-        ${v.q2 ? `<div style="margin-top:6px"><b>Q2:</b> ${escapeHtml(v.q2)}</div>` : ""}
-        ${v.notes ? `<div style="margin-top:6px"><b>Notes:</b> ${escapeHtml(v.notes)}</div>` : ""}
-      `;
-      const mv = $("modalVideo");
-      mv.src = url;
-      $("modalBack").classList.add("show");
-      mv.play().catch(()=>{});
-    }
-
-    $("btnCloseModal").onclick = () => {
-      const mv = $("modalVideo");
-      mv.pause();
-      mv.src = "";
-      $("modalBack").classList.remove("show");
-    };
-    $("modalBack").addEventListener("click", (e) => {
-      if (e.target === $("modalBack")) $("btnCloseModal").click();
-    });
-
-    // Upload with progress
-    async function uploadVideo(){
-      const file = $("file").files[0];
-      const title = $("title").value.trim();
-      const owner = $("owner").value;
-      const tag = $("tag").value; // stored into q1 prefix (optional)
-      const q1 = $("q1").value.trim();
-      const q2 = $("q2").value.trim();
-      const notes = $("vnotes").value.trim();
-
-      if (!file) return toast("Pick a video file first.");
-      if (!title) return toast("Add a title.");
-      const MAX = 500 * 1024 * 1024;
-      if (file.size > MAX) return toast("That file is over 500MB.");
-
-      $("btnUpload").disabled = true;
-      $("prog").value = 0;
-      $("progText").textContent = "Preparing upload…";
-
-      try{
-        // Use XHR so we can show upload progress
-        const form = new FormData();
-        form.append("file", file);
-        form.append("title", title);
-        form.append("owner", owner);
-        // store tag inside q1 if you want, without changing backend schema
-        form.append("q1", tag ? `[${tag}] ${q1}` : q1);
-        form.append("q2", q2);
-        form.append("notes", notes);
-
-        await xhrUpload(`${API_BASE}/api/upload`, form, (pct) => {
-          $("prog").value = pct;
-          $("progText").textContent = `Uploading… ${pct}%`;
-        });
-
-        $("prog").value = 100;
-        $("progText").textContent = "Upload complete — refreshing list…";
-        await loadVideos();
-        toast("Uploaded!");
-        clearForm();
-      }catch(e){
-        console.error(e);
-        $("progText").textContent = "Upload failed.";
-        toast("Upload failed. If Access: open api.tseapp.com and login, then try again.", 4500);
-      }finally{
-        $("btnUpload").disabled = false;
-        setTimeout(()=>{ $("prog").value = 0; $("progText").textContent="Idle"; }, 1200);
-      }
-    }
-
-    function xhrUpload(url, formData, onProgress){
-      return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", url, true);
-        xhr.withCredentials = true;
-
-        xhr.upload.onprogress = (evt) => {
-          if (!evt.lengthComputable) return;
-          const pct = Math.round((evt.loaded / evt.total) * 100);
-          onProgress(Math.min(99, Math.max(1, pct))); // keep 100 for completion
-        };
-
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve(xhr.responseText);
-          } else {
-            reject(new Error(`Upload failed: ${xhr.status} ${xhr.responseText?.slice?.(0,200)}`));
-          }
-        };
-        xhr.onerror = () => reject(new Error("Network error"));
-        xhr.send(formData);
       });
+      return res;
     }
 
-    function clearForm(){
-      $("file").value = "";
-      $("title").value = "";
-      $("q1").value = "";
-      $("q2").value = "";
-      $("vnotes").value = "";
-      $("owner").value = "Aiden";
-      $("tag").value = "Trade Review";
-    }
-
-    $("btnUpload").onclick = uploadVideo;
-    $("btnClearForm").onclick = clearForm;
-    $("btnLoad").onclick = loadVideos;
-    $("btnRefresh").onclick = loadVideos;
-    $("search").addEventListener("input", renderVideos);
-    $("sort").addEventListener("change", renderVideos);
-    $("btnCheckApi").onclick = async () => { await checkApi(); };
-
-    // =========================
-    // NOTES (LOCAL — persists across tab closes)
-    // =========================
-    // Notes are stored in localStorage per device for now.
-    // If you want shared notes too, we can add a D1 table + /api/notes endpoints.
-    const NOTES_KEY = "tse_notes_v1";
-    let notes = [];
-    let activeNoteId = null;
-
-    function loadNotesLocal(){
+    function prettyDate(ts){
       try{
-        notes = JSON.parse(localStorage.getItem(NOTES_KEY) || "[]");
-      }catch{ notes = []; }
-      if (!Array.isArray(notes)) notes = [];
-      if (!notes.length) {
-        const id = crypto.randomUUID();
-        notes.push({ id, title: "Welcome", html: "<p>Drop images here. Resize with the blue corner.</p>", updatedAt: Date.now() });
-        activeNoteId = id;
-        saveNotesLocal();
-      } else if (!activeNoteId) {
-        activeNoteId = notes[0].id;
-      }
+        const d = new Date(ts);
+        if (!isFinite(d.getTime())) return "";
+        return d.toLocaleString();
+      }catch{ return ""; }
     }
 
-    function saveNotesLocal(){
-      localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
-    }
-
-    function renderNoteList(){
-      const wrap = $("noteItems");
-      wrap.innerHTML = "";
-      notes
-        .slice()
-        .sort((a,b)=> (b.updatedAt||0) - (a.updatedAt||0))
-        .forEach(n => {
-          const item = document.createElement("div");
-          item.className = "noteItem" + (n.id === activeNoteId ? " active" : "");
-          item.innerHTML = `
-            <p class="t"></p>
-            <p class="s"></p>
-          `;
-          item.querySelector(".t").textContent = n.title || "Untitled";
-          item.querySelector(".s").textContent = new Date(n.updatedAt||Date.now()).toLocaleString();
-          item.onclick = () => { setActiveNote(n.id); };
-          wrap.appendChild(item);
-        });
-    }
-
-    function setActiveNote(id){
-      activeNoteId = id;
-      const n = notes.find(x => x.id === id);
-      if (!n) return;
-      $("docTitle").textContent = n.title || "Untitled";
-      $("noteTitleInput").value = n.title || "";
-      $("doc").innerHTML = n.html || "<p></p>";
-      renderNoteList();
-      $("noteStatus").textContent = "Loaded.";
-    }
-
-    function upsertActiveNote(){
-      const title = $("noteTitleInput").value.trim() || "Untitled";
-      const html = $("doc").innerHTML;
-      let n = notes.find(x => x.id === activeNoteId);
-      if (!n){
-        activeNoteId = crypto.randomUUID();
-        n = { id: activeNoteId, title, html, updatedAt: Date.now() };
-        notes.push(n);
-      } else {
-        n.title = title;
-        n.html = html;
-        n.updatedAt = Date.now();
-      }
-      $("docTitle").textContent = title;
-      saveNotesLocal();
-      renderNoteList();
-      $("noteStatus").textContent = "Saved.";
-    }
-
-    function newNote(){
-      activeNoteId = crypto.randomUUID();
-      notes.push({ id: activeNoteId, title: "New note", html: "<p></p>", updatedAt: Date.now() });
-      saveNotesLocal();
-      setActiveNote(activeNoteId);
-      toast("New note created");
-    }
-
-    function deleteNote(){
-      if (!activeNoteId) return;
-      const n = notes.find(x => x.id === activeNoteId);
-      if (!confirm(`Delete note "${n?.title || "Untitled"}"?`)) return;
-      notes = notes.filter(x => x.id !== activeNoteId);
-      if (!notes.length) {
-        activeNoteId = null;
-        newNote();
-        return;
-      }
-      activeNoteId = notes[0].id;
-      saveNotesLocal();
-      setActiveNote(activeNoteId);
-      toast("Note deleted");
-    }
-
-    // Editor formatting
-    function cmd(command, value=null){
-      document.execCommand(command, false, value);
-      $("doc").focus();
-      autosaveSoon();
-    }
-    $("btnBold").onclick = ()=>cmd("bold");
-    $("btnItalic").onclick = ()=>cmd("italic");
-    $("btnUnderline").onclick = ()=>cmd("underline");
-    $("btnH2").onclick = ()=>cmd("formatBlock","h2");
-    $("btnBullets").onclick = ()=>cmd("insertUnorderedList");
-    $("btnSaveNote").onclick = ()=>upsertActiveNote();
-    $("btnNewNote").onclick = newNote;
-    $("btnDeleteNote").onclick = deleteNote;
-
-    // Insert image from file picker
-    $("btnInsertImage").onclick = async () => {
-      const inp = document.createElement("input");
-      inp.type = "file";
-      inp.accept = "image/*";
-      inp.onchange = async () => {
-        const f = inp.files?.[0];
-        if (!f) return;
-        const dataUrl = await readAsDataURL(f);
-        insertResizableImage(dataUrl);
-        autosaveSoon();
-      };
-      inp.click();
-    };
-
-    // Drag/drop images into doc
-    const doc = $("doc");
-    doc.addEventListener("dragover", (e) => {
-      e.preventDefault();
-    });
-    doc.addEventListener("drop", async (e) => {
-      e.preventDefault();
-      const files = [...(e.dataTransfer?.files || [])].filter(f => f.type.startsWith("image/"));
-      if (!files.length) return;
-
-      // Insert at caret if possible
-      placeCaretFromPoint(e);
-
-      for (const f of files){
-        const dataUrl = await readAsDataURL(f);
-        insertResizableImage(dataUrl);
-      }
-      autosaveSoon();
-      toast(`Inserted ${files.length} image(s)`);
-    });
-
-    // Autosave on typing
-    let autosaveTimer = null;
-    function autosaveSoon(){
-      $("noteStatus").textContent = "Editing…";
-      clearTimeout(autosaveTimer);
-      autosaveTimer = setTimeout(() => {
-        upsertActiveNote();
-        $("noteStatus").textContent = "Autosaved.";
-      }, 450);
-    }
-    doc.addEventListener("input", autosaveSoon);
-    $("noteTitleInput").addEventListener("input", autosaveSoon);
-
-    // Make inserted images resizable
-    function insertResizableImage(dataUrl){
-      // Build wrapper
-      const wrap = document.createElement("span");
-      wrap.className = "imgWrap";
-      wrap.contentEditable = "false";
-      wrap.style.width = "320px"; // default size
-      wrap.innerHTML = `<img src="${dataUrl}" alt="image"><span class="handle" title="Drag to resize"></span>`;
-
-      insertNodeAtCaret(wrap);
-
-      // Add a trailing space so you can continue typing
-      insertNodeAtCaret(document.createTextNode(" "));
-
-      // Hook resize
-      const handle = wrap.querySelector(".handle");
-      let startX = 0, startW = 0;
-
-      const onMove = (ev) => {
-        const dx = (ev.clientX || (ev.touches && ev.touches[0]?.clientX) || 0) - startX;
-        const newW = Math.max(120, Math.min(doc.clientWidth - 24, startW + dx));
-        wrap.style.width = newW + "px";
-      };
-
-      const onUp = () => {
-        window.removeEventListener("mousemove", onMove);
-        window.removeEventListener("mouseup", onUp);
-        window.removeEventListener("touchmove", onMove);
-        window.removeEventListener("touchend", onUp);
-        autosaveSoon();
-      };
-
-      const onDown = (ev) => {
-        ev.preventDefault();
-        startX = (ev.clientX || (ev.touches && ev.touches[0]?.clientX) || 0);
-        startW = wrap.getBoundingClientRect().width;
-        window.addEventListener("mousemove", onMove);
-        window.addEventListener("mouseup", onUp);
-        window.addEventListener("touchmove", onMove, {passive:false});
-        window.addEventListener("touchend", onUp);
-      };
-
-      handle.addEventListener("mousedown", onDown);
-      handle.addEventListener("touchstart", onDown, {passive:false});
-    }
-
-    function readAsDataURL(file){
-      return new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(r.result);
-        r.onerror = reject;
-        r.readAsDataURL(file);
-      });
-    }
-
-    function insertNodeAtCaret(node){
-      const sel = window.getSelection();
-      if (!sel || sel.rangeCount === 0){
-        doc.appendChild(node);
-        return;
-      }
-      const range = sel.getRangeAt(0);
-      range.deleteContents();
-      range.insertNode(node);
-      // Move caret after node
-      range.setStartAfter(node);
-      range.setEndAfter(node);
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
-
-    function placeCaretFromPoint(e){
-      const x = e.clientX, y = e.clientY;
-      const range = document.caretRangeFromPoint ? document.caretRangeFromPoint(x, y)
-                    : (document.caretPositionFromPoint ? (() => {
-                      const pos = document.caretPositionFromPoint(x, y);
-                      if (!pos) return null;
-                      const r = document.createRange();
-                      r.setStart(pos.offsetNode, pos.offset);
-                      r.collapse(true);
-                      return r;
-                    })() : null);
-
-      if (!range) return;
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
-
-    function escapeHtml(str){
-      return (str ?? "").toString()
+    function escapeHtml(s){
+      return (s ?? "").toString()
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
@@ -1068,27 +689,565 @@
         .replaceAll("'","&#039;");
     }
 
-    // =========================
-    // NAV
-    // =========================
-    function show(view){
-      const isVideos = view === "videos";
-      $("viewVideos").style.display = isVideos ? "" : "none";
-      $("viewNotes").style.display = isVideos ? "none" : "";
-      $("tabVideos").classList.toggle("active", isVideos);
-      $("tabNotes").classList.toggle("active", !isVideos);
+    // ---------- API check ----------
+    async function checkApi(){
+      setApiStatus("warn", "API: checking…");
+      try{
+        const res = await apiFetch("/api/videos");
+        if (res.status === 401 || res.status === 403){
+          setApiStatus("warn", "API: login needed (Access)");
+          return false;
+        }
+        if (!res.ok){
+          setApiStatus("bad", "API: error " + res.status);
+          return false;
+        }
+        setApiStatus("ok", "API: online");
+        return true;
+      }catch (e){
+        setApiStatus("bad", "API: offline");
+        return false;
+      }
     }
-    $("tabVideos").onclick = () => show("videos");
-    $("tabNotes").onclick = () => show("notes");
 
-    // =========================
-    // INIT
-    // =========================
+    // ---------- Videos ----------
+    let ALL_VIDEOS = [];
+
+    function renderVideos(){
+      const q = (els.search.value || "").trim().toLowerCase();
+      const sort = els.sort.value;
+
+      let list = [...ALL_VIDEOS];
+
+      if (q){
+        list = list.filter(v => {
+          const blob = [
+            v.title, v.owner, v.tag, v.q1, v.q2, v.notes, v.privateId
+          ].filter(Boolean).join(" ").toLowerCase();
+          return blob.includes(q);
+        });
+      }
+
+      if (sort === "newest"){
+        list.sort((a,b) => (b.createdAt || 0) - (a.createdAt || 0));
+      } else if (sort === "oldest"){
+        list.sort((a,b) => (a.createdAt || 0) - (b.createdAt || 0));
+      } else if (sort === "owner"){
+        list.sort((a,b) => (a.owner||"").localeCompare(b.owner||"") || (b.createdAt||0)-(a.createdAt||0));
+      } else if (sort === "title"){
+        list.sort((a,b) => (a.title||"").localeCompare(b.title||"") || (b.createdAt||0)-(a.createdAt||0));
+      }
+
+      els.countChip.textContent = `${list.length} video${list.length===1?"":"s"}`;
+      els.videoList.innerHTML = "";
+
+      if (!list.length){
+        els.videoList.innerHTML = `<div class="small" style="grid-column:1/-1; opacity:.75; padding:8px 4px">No videos found.</div>`;
+        return;
+      }
+
+      for (const v of list){
+        const created = prettyDate(v.createdAt);
+        const safeTitle = escapeHtml(v.title || "Untitled");
+        const safeNotes = escapeHtml(v.notes || "");
+        const safeQ1 = escapeHtml(v.q1 || "");
+        const safeQ2 = escapeHtml(v.q2 || "");
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="thumb" role="button" tabindex="0" aria-label="Play ${safeTitle}">
+            <div class="play"></div>
+          </div>
+          <div class="meta">
+            <h3 title="${safeTitle}">${safeTitle}</h3>
+            <div class="chips">
+              ${v.owner ? `<span class="chip">${escapeHtml(v.owner)}</span>` : ""}
+              ${v.tag ? `<span class="chip">${escapeHtml(v.tag)}</span>` : ""}
+              ${created ? `<span class="chip">${escapeHtml(created)}</span>` : ""}
+            </div>
+            ${(safeQ1 || safeQ2) ? `<p><b style="color:rgba(255,255,255,.82)">Q1:</b> ${safeQ1 || "<span style='color:rgba(255,255,255,.4)'>—</span>"}\n<b style="color:rgba(255,255,255,.82)">Q2:</b> ${safeQ2 || "<span style='color:rgba(255,255,255,.4)'>—</span>"}</p>` : ""}
+            ${safeNotes ? `<p>${safeNotes}</p>` : ""}
+          </div>
+          <div class="card-actions">
+            <span class="small">${v.sizeMB ? `${escapeHtml(v.sizeMB)} MB` : ""}</span>
+            <div style="display:flex; gap:8px; align-items:center">
+              <button class="btn" data-action="copy" title="Copy link">Copy</button>
+              <button class="btn danger" data-action="delete" title="Delete">Delete</button>
+            </div>
+          </div>
+        `;
+
+        const thumb = card.querySelector(".thumb");
+        thumb.addEventListener("click", () => openPlayer(v));
+        thumb.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") openPlayer(v); });
+
+        card.querySelector('[data-action="copy"]').addEventListener("click", async (e) => {
+          e.stopPropagation();
+          const link = buildStreamUrl(v);
+          await navigator.clipboard.writeText(link);
+          els.listStatus.textContent = "Copied video link ✅";
+          setTimeout(() => els.listStatus.textContent = "", 1500);
+        });
+
+        card.querySelector('[data-action="delete"]').addEventListener("click", async (e) => {
+          e.stopPropagation();
+          const ok = confirm(`Delete "${v.title || "Untitled"}"?`);
+          if (!ok) return;
+          await deleteVideo(v);
+        });
+
+        els.videoList.appendChild(card);
+      }
+    }
+
+    function buildStreamUrl(video){
+      // Your Worker should serve video streaming URLs under /v/<id> or /v/<key>
+      // We try to build something safe:
+      if (video.streamUrl) return video.streamUrl;
+
+      // common: id
+      if (video.id) return API_BASE + "/v/" + encodeURIComponent(video.id);
+
+      // fallback: key
+      if (video.key) return API_BASE + "/v/" + encodeURIComponent(video.key);
+
+      // last resort: if worker returned direct URL
+      if (video.url) return video.url;
+
+      return "";
+    }
+
+    function openPlayer(video){
+      const url = buildStreamUrl(video);
+      if (!url){
+        alert("No stream URL found for this video. (Check your Worker response fields: id/key/streamUrl)");
+        return;
+      }
+
+      els.modalTitle.textContent = video.title || "Untitled";
+      els.modalMeta.textContent = [video.owner, video.tag, prettyDate(video.createdAt)].filter(Boolean).join(" • ");
+      els.modalNotes.innerHTML = `
+        <div style="margin-top:6px">
+          ${video.q1 ? `<div><b>Q1:</b> ${escapeHtml(video.q1)}</div>` : ""}
+          ${video.q2 ? `<div><b>Q2:</b> ${escapeHtml(video.q2)}</div>` : ""}
+          ${video.notes ? `<div style="margin-top:8px; white-space:pre-wrap">${escapeHtml(video.notes)}</div>` : ""}
+        </div>
+      `;
+
+      els.player.src = url;
+      els.modal.classList.add("open");
+      els.player.play().catch(()=>{});
+    }
+
+    function closePlayer(){
+      els.modal.classList.remove("open");
+      try{ els.player.pause(); }catch{}
+      els.player.removeAttribute("src");
+      els.player.load();
+    }
+
+    async function loadVideos(){
+      els.listStatus.textContent = "Loading…";
+      try{
+        const res = await apiFetch("/api/videos");
+        if (res.status === 401 || res.status === 403){
+          els.listStatus.textContent = "Access login required. Open api.tseapp.com once, then refresh.";
+          setApiStatus("warn", "API: login needed (Access)");
+          return;
+        }
+        if (!res.ok){
+          els.listStatus.textContent = "Failed to load videos (" + res.status + ")";
+          setApiStatus("bad", "API: error " + res.status);
+          return;
+        }
+        const data = await res.json();
+        // expected { videos: [...] }
+        ALL_VIDEOS = Array.isArray(data.videos) ? data.videos : [];
+        els.listStatus.textContent = ALL_VIDEOS.length ? "" : "No videos yet.";
+        renderVideos();
+        setApiStatus("ok", "API: online");
+      }catch(e){
+        els.listStatus.textContent = "Could not reach API. (Check Access + routes)";
+        setApiStatus("bad", "API: offline");
+      }
+    }
+
+    async function deleteVideo(video){
+      try{
+        els.listStatus.textContent = "Deleting…";
+        const res = await apiFetch("/api/videos/" + encodeURIComponent(video.id || video.key || ""), {
+          method: "DELETE",
+        });
+
+        // If your API uses a different delete endpoint, change this block accordingly.
+        if (res.status === 404){
+          // alternate: /api/delete?id=...
+          const alt = await apiFetch("/api/delete?id=" + encodeURIComponent(video.id || video.key || ""), { method:"POST" });
+          if (!alt.ok){
+            els.listStatus.textContent = "Delete failed (" + alt.status + ")";
+            return;
+          }
+        } else if (!res.ok){
+          els.listStatus.textContent = "Delete failed (" + res.status + ")";
+          return;
+        }
+
+        els.listStatus.textContent = "Deleted ✅";
+        ALL_VIDEOS = ALL_VIDEOS.filter(v => (v.id || v.key) !== (video.id || video.key));
+        renderVideos();
+        setTimeout(() => els.listStatus.textContent = "", 1200);
+      }catch(e){
+        els.listStatus.textContent = "Delete failed (network)";
+      }
+    }
+
+    async function uploadVideo(){
+      const file = els.fileVideo.files?.[0];
+      if (!file){
+        alert("Pick a video file first.");
+        return;
+      }
+      const sizeMB = file.size / (1024*1024);
+      if (sizeMB > 500){
+        alert("File is over 500MB. Choose a smaller file.");
+        return;
+      }
+      if (!els.title.value.trim()){
+        alert("Add a title.");
+        return;
+      }
+
+      els.uploadStatus.textContent = "Preparing upload…";
+      els.uploadBar.style.width = "0%";
+
+      // We use XHR so we can show upload progress reliably
+      const form = new FormData();
+      form.append("file", file);
+      form.append("title", els.title.value.trim());
+      form.append("owner", els.owner.value);
+      form.append("tag", els.tag.value);
+      form.append("privateId", els.privateId.value.trim());
+      form.append("q1", els.q1.value.trim());
+      form.append("q2", els.q2.value.trim());
+      form.append("notes", els.notes.value);
+
+      // If your Worker expects different field names, adjust these .append() calls.
+
+      const url = API_BASE + "/api/upload";
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", url, true);
+      xhr.withCredentials = true; // Cloudflare Access cookie
+
+      xhr.upload.onprogress = (evt) => {
+        if (!evt.lengthComputable) return;
+        const pct = Math.round((evt.loaded / evt.total) * 100);
+        els.uploadBar.style.width = pct + "%";
+        els.uploadStatus.textContent = `Uploading… ${pct}%`;
+      };
+
+      xhr.onload = async () => {
+        if (xhr.status === 401 || xhr.status === 403){
+          els.uploadStatus.textContent = "Access login required. Open api.tseapp.com once, then refresh.";
+          setApiStatus("warn", "API: login needed (Access)");
+          return;
+        }
+        if (xhr.status < 200 || xhr.status >= 300){
+          els.uploadStatus.textContent = "Upload failed (" + xhr.status + ").";
+          setApiStatus("bad", "API: error " + xhr.status);
+          return;
+        }
+        els.uploadBar.style.width = "100%";
+        els.uploadStatus.textContent = "Uploaded ✅ Refreshing list…";
+        setApiStatus("ok", "API: online");
+        await loadVideos();
+        setTimeout(() => {
+          els.uploadStatus.textContent = "Idle";
+          els.uploadBar.style.width = "0%";
+        }, 1200);
+      };
+
+      xhr.onerror = () => {
+        els.uploadStatus.textContent = "Upload failed (network).";
+        setApiStatus("bad", "API: offline");
+      };
+
+      xhr.send(form);
+    }
+
+    function clearUploadForm(){
+      els.fileVideo.value = "";
+      els.title.value = "";
+      els.owner.value = "Aiden";
+      els.tag.value = "Trade Review";
+      els.privateId.value = "";
+      els.q1.value = "";
+      els.q2.value = "";
+      els.notes.value = "";
+      els.uploadStatus.textContent = "Idle";
+      els.uploadBar.style.width = "0%";
+    }
+
+    // ---------- Notes (local persistence) ----------
+    const NOTES_KEY = "tse_notes_v1";
+    let noteSaveTimer = null;
+    let selectedImg = null;
+
+    function setNoteSaved(isSaved, text){
+      els.noteSaved.textContent = text || (isSaved ? "Saved" : "Not saved");
+      els.noteSaved.style.borderColor = isSaved ? "rgba(74,222,128,.35)" : "rgba(255,255,255,.10)";
+      els.noteSaved.style.background = isSaved ? "rgba(74,222,128,.10)" : "rgba(255,255,255,.06)";
+      els.noteSaved.style.color = isSaved ? "rgba(255,255,255,.9)" : "rgba(255,255,255,.72)";
+    }
+
+    function saveNotesSoon(){
+      setNoteSaved(false, "Saving…");
+      clearTimeout(noteSaveTimer);
+      noteSaveTimer = setTimeout(() => {
+        const html = els.doc.innerHTML;
+        localStorage.setItem(NOTES_KEY, html);
+        setNoteSaved(true, "Saved");
+      }, 350);
+    }
+
+    function loadNotes(){
+      const html = localStorage.getItem(NOTES_KEY);
+      if (html){
+        els.doc.innerHTML = html;
+        setNoteSaved(true, "Saved");
+      } else {
+        els.doc.innerHTML = "";
+        setNoteSaved(false, "Not saved");
+      }
+    }
+
+    function exec(cmd, value=null){
+      document.execCommand(cmd, false, value);
+      els.doc.focus();
+      saveNotesSoon();
+    }
+
+    function wrapSelectionWithHeading(level){
+      // simple approach: apply formatBlock
+      exec("formatBlock", level);
+    }
+
+    function insertImageFromFile(file){
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = document.createElement("img");
+        img.src = reader.result;
+        img.className = "note-img";
+        img.dataset.scale = "100";
+        img.style.width = "100%"; // default scale
+        img.style.display = "block";
+        img.style.marginLeft = "0";
+        img.style.marginRight = "0";
+
+        insertNodeAtCaret(img);
+        insertNodeAtCaret(document.createElement("br"));
+        saveNotesSoon();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function insertNodeAtCaret(node){
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0){
+        els.doc.appendChild(node);
+        return;
+      }
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      range.insertNode(node);
+      // move caret after
+      range.setStartAfter(node);
+      range.setEndAfter(node);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+
+    function setSelectedImage(img){
+      selectedImg = img;
+      if (!img){
+        els.imgEditor.style.display = "none";
+        return;
+      }
+      els.imgEditor.style.display = "flex";
+      const scale = Number(img.dataset.scale || "100");
+      els.imgScale.value = String(scale);
+      els.imgScaleLabel.textContent = scale + "%";
+    }
+
+    function applyImageScale(scale){
+      if (!selectedImg) return;
+      selectedImg.dataset.scale = String(scale);
+
+      // scale controls width relative to container
+      // 100% = full width, 50% = half, etc.
+      selectedImg.style.width = Math.max(10, Math.min(200, scale)) + "%";
+      saveNotesSoon();
+    }
+
+    function applyImageAlign(align){
+      if (!selectedImg) return;
+      // block element alignment using margins
+      selectedImg.style.display = "block";
+      if (align === "left"){
+        selectedImg.style.marginLeft = "0";
+        selectedImg.style.marginRight = "auto";
+      } else if (align === "center"){
+        selectedImg.style.marginLeft = "auto";
+        selectedImg.style.marginRight = "auto";
+      } else if (align === "right"){
+        selectedImg.style.marginLeft = "auto";
+        selectedImg.style.marginRight = "0";
+      }
+      saveNotesSoon();
+    }
+
+    function removeSelectedImage(){
+      if (!selectedImg) return;
+      const img = selectedImg;
+      setSelectedImage(null);
+      img.remove();
+      saveNotesSoon();
+    }
+
+    function exportNotes(){
+      const html = `
+<!doctype html>
+<html><head><meta charset="utf-8"><title>TSE Notes Export</title></head>
+<body>${els.doc.innerHTML}</body></html>`;
+      const blob = new Blob([html], {type:"text/html"});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "tse-notes.html";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function clearNotes(){
+      const ok = confirm("Clear notes? (This removes the locally saved notes)");
+      if (!ok) return;
+      localStorage.removeItem(NOTES_KEY);
+      els.doc.innerHTML = "";
+      setSelectedImage(null);
+      setNoteSaved(false, "Not saved");
+    }
+
+    // ---------- Tabs ----------
+    function showVideos(){
+      els.sectionVideos.style.display = "";
+      els.sectionNotes.style.display = "none";
+      els.tabVideos.classList.add("active");
+      els.tabNotes.classList.remove("active");
+      els.tabVideos.setAttribute("aria-selected","true");
+      els.tabNotes.setAttribute("aria-selected","false");
+    }
+    function showNotes(){
+      els.sectionVideos.style.display = "none";
+      els.sectionNotes.style.display = "";
+      els.tabVideos.classList.remove("active");
+      els.tabNotes.classList.add("active");
+      els.tabVideos.setAttribute("aria-selected","false");
+      els.tabNotes.setAttribute("aria-selected","true");
+      els.doc.focus();
+    }
+
+    // ---------- Wire up ----------
+    els.btnCheckApi.addEventListener("click", checkApi);
+    els.btnRefresh.addEventListener("click", async () => {
+      await checkApi();
+      await loadVideos();
+    });
+
+    els.tabVideos.addEventListener("click", showVideos);
+    els.tabNotes.addEventListener("click", showNotes);
+
+    els.btnLoad.addEventListener("click", loadVideos);
+    els.search.addEventListener("input", renderVideos);
+    els.sort.addEventListener("change", renderVideos);
+
+    els.btnUpload.addEventListener("click", uploadVideo);
+    els.btnClear.addEventListener("click", clearUploadForm);
+
+    // modal close
+    els.btnClose.addEventListener("click", closePlayer);
+    els.modal.addEventListener("click", (e) => { if (e.target === els.modal) closePlayer(); });
+    window.addEventListener("keydown", (e) => { if (e.key === "Escape" && els.modal.classList.contains("open")) closePlayer(); });
+
+    // Notes formatting buttons
+    document.querySelectorAll('.tool[data-cmd]').forEach(btn => {
+      btn.addEventListener("click", () => exec(btn.dataset.cmd));
+    });
+    document.getElementById("btnH2").addEventListener("click", () => wrapSelectionWithHeading("h2"));
+    document.getElementById("btnH3").addEventListener("click", () => wrapSelectionWithHeading("h3"));
+    document.getElementById("btnBullet").addEventListener("click", () => exec("insertUnorderedList"));
+    document.getElementById("btnNum").addEventListener("click", () => exec("insertOrderedList"));
+    document.getElementById("btnLink").addEventListener("click", () => {
+      const url = prompt("Paste link URL:");
+      if (!url) return;
+      exec("createLink", url);
+    });
+
+    document.getElementById("btnImage").addEventListener("click", () => els.fileNoteImage.click());
+    els.fileNoteImage.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      insertImageFromFile(file);
+      e.target.value = "";
+    });
+
+    // Notes autosave
+    els.doc.addEventListener("input", saveNotesSoon);
+
+    // Click image to select + enable scaling
+    els.doc.addEventListener("click", (e) => {
+      const img = e.target && e.target.tagName === "IMG" ? e.target : null;
+      if (img && img.classList.contains("note-img")){
+        setSelectedImage(img);
+      } else {
+        setSelectedImage(null);
+      }
+    });
+
+    els.imgScale.addEventListener("input", () => {
+      const scale = Number(els.imgScale.value);
+      els.imgScaleLabel.textContent = scale + "%";
+      applyImageScale(scale);
+    });
+    els.btnImgAlignLeft.addEventListener("click", () => applyImageAlign("left"));
+    els.btnImgAlignCenter.addEventListener("click", () => applyImageAlign("center"));
+    els.btnImgAlignRight.addEventListener("click", () => applyImageAlign("right"));
+    els.btnImgRemove.addEventListener("click", removeSelectedImage);
+
+    els.btnExport.addEventListener("click", exportNotes);
+    els.btnClearNotes.addEventListener("click", clearNotes);
+
+    // Drag & drop images into notes
+    ["dragenter","dragover"].forEach(ev => {
+      els.dropzone.addEventListener(ev, (e) => {
+        e.preventDefault();
+        els.dropzone.classList.add("drag");
+      });
+    });
+    ["dragleave","drop"].forEach(ev => {
+      els.dropzone.addEventListener(ev, (e) => {
+        e.preventDefault();
+        els.dropzone.classList.remove("drag");
+      });
+    });
+    els.dropzone.addEventListener("drop", (e) => {
+      const file = e.dataTransfer?.files?.[0];
+      if (file && file.type.startsWith("image/")){
+        insertImageFromFile(file);
+      }
+    });
+
+    // ---------- boot ----------
     (async function init(){
-      loadNotesLocal();
-      renderNoteList();
-      setActiveNote(activeNoteId);
-
+      loadNotes();
       await checkApi();
       await loadVideos();
     })();
