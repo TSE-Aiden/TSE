@@ -4,23 +4,31 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>TSE</title>
+
   <style>
     :root{
       --bg0:#070a12;
       --bg1:#0b1020;
+
       --card:rgba(255,255,255,.06);
-      --card2:rgba(255,255,255,.08);
-      --stroke:rgba(255,255,255,.10);
+      --stroke:rgba(255,255,255,.11);
+
       --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.65);
-      --muted2:rgba(255,255,255,.45);
+      --muted:rgba(255,255,255,.66);
+      --muted2:rgba(255,255,255,.46);
+
       --good:#33d17a;
       --bad:#ff4d4d;
+      --warn:#f7c948;
+
       --shadow: 0 20px 60px rgba(0,0,0,.55);
       --r:18px;
+
+      --ease: cubic-bezier(.2,.8,.2,1);
     }
 
-    *{box-sizing:border-box}
+    *{ box-sizing:border-box; }
+    html, body { height: 100%; }
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
@@ -31,6 +39,11 @@
         radial-gradient(900px 600px at 50% 85%, rgba(16,185,129,.08), transparent 55%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
     }
 
     .shell{
@@ -57,24 +70,46 @@
       border: 1px solid var(--stroke);
       box-shadow: 0 12px 40px rgba(0,0,0,.35);
       backdrop-filter: blur(10px);
+      position:relative;
+      overflow:hidden;
     }
+    .brand::after{
+      content:"";
+      position:absolute;
+      inset:-40px -80px;
+      background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.10) 40%, transparent 52%);
+      transform: translateX(-60%) rotate(8deg);
+      animation: shimmer 8s linear infinite;
+      opacity:.55;
+      pointer-events:none;
+    }
+    @keyframes shimmer{
+      0%{ transform: translateX(-60%) rotate(8deg); }
+      100%{ transform: translateX(60%) rotate(8deg); }
+    }
+
     .dot{
       width: 14px; height: 14px;
       border-radius: 999px;
       background: rgba(255,255,255,.25);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.20);
+      flex: 0 0 auto;
     }
     .brand h1{
       font-size: 14px;
       margin:0;
       letter-spacing:.2px;
       line-height:1.1;
+      position:relative;
+      z-index:1;
     }
     .brand p{
       font-size: 12px;
       margin:0;
       color:var(--muted);
       line-height:1.1;
+      position:relative;
+      z-index:1;
     }
 
     .actions{
@@ -104,6 +139,10 @@
       background: var(--good);
       box-shadow: 0 0 0 2px rgba(0,0,0,.35), 0 0 22px rgba(51,209,122,.35);
     }
+    .badge.warn .dot{
+      background: var(--warn);
+      box-shadow: 0 0 0 2px rgba(0,0,0,.35), 0 0 22px rgba(247,201,72,.25);
+    }
     .badge span{
       font-size: 13px;
       color: var(--muted);
@@ -118,19 +157,28 @@
       padding: 10px 12px;
       border-radius: 12px;
       cursor:pointer;
-      transition: transform .06s ease, background .15s ease, border-color .15s ease;
+      transition: transform .12s var(--ease), background .15s var(--ease), border-color .15s var(--ease);
       text-decoration:none;
       display:inline-flex;
       align-items:center;
       gap:8px;
       font-size: 13px;
       backdrop-filter: blur(10px);
+      user-select:none;
     }
-    button:hover, .btn:hover{ background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.16); }
+    button:hover, .btn:hover{
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.18);
+      transform: translateY(-1px);
+    }
     button:active, .btn:active{ transform: translateY(1px); }
     button.primary{
       background: rgba(59,130,246,.18);
       border-color: rgba(59,130,246,.35);
+    }
+    button.danger{
+      background: rgba(255,77,77,.12);
+      border-color: rgba(255,77,77,.25);
     }
 
     .grid{
@@ -147,6 +195,11 @@
       box-shadow: var(--shadow);
       backdrop-filter: blur(12px);
       overflow:hidden;
+      animation: panelIn .5s var(--ease) both;
+    }
+    @keyframes panelIn{
+      from{ opacity:0; transform: translateY(10px); }
+      to{ opacity:1; transform: translateY(0); }
     }
 
     .panel .hdr{
@@ -157,27 +210,15 @@
       gap: 12px;
       border-bottom: 1px solid rgba(255,255,255,.07);
     }
-    .panel .hdr h2{
-      margin:0;
-      font-size: 14px;
-      letter-spacing:.2px;
-    }
-    .panel .hdr .sub{
-      margin:0;
-      font-size: 12px;
-      color: var(--muted2);
-    }
-
-    .panel .body{
-      padding: 14px;
-    }
+    .panel .hdr h2{ margin:0; font-size: 14px; letter-spacing:.2px; }
+    .panel .hdr .sub{ margin:0; font-size: 12px; color: var(--muted2); }
+    .panel .body{ padding: 14px; }
 
     .row{
       display:grid;
       gap: 10px;
       margin-bottom: 12px;
     }
-
     label{
       font-size: 12px;
       color: var(--muted);
@@ -195,6 +236,11 @@
       padding: 10px 12px;
       border-radius: 12px;
       outline:none;
+      transition: border-color .15s var(--ease), background .15s var(--ease);
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(59,130,246,.45);
+      background: rgba(0,0,0,.32);
     }
     textarea{ min-height: 84px; resize: vertical; }
 
@@ -210,7 +256,6 @@
       line-height:1.35;
       margin-top: 10px;
     }
-
     .err{
       margin-top: 10px;
       font-size: 12px;
@@ -229,6 +274,7 @@
       flex: 1 1 360px;
       min-width: 240px;
     }
+
     .pill{
       padding: 8px 10px;
       border-radius: 999px;
@@ -236,6 +282,16 @@
       background: rgba(0,0,0,.22);
       color: var(--muted);
       font-size: 12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+    }
+    .pill input{
+      width: 16px;
+      height: 16px;
+      margin:0;
+      accent-color: #60a5fa;
     }
 
     .cards{
@@ -243,6 +299,7 @@
       grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
       gap: 12px;
       margin-top: 12px;
+      align-items: start;
     }
 
     .card{
@@ -251,13 +308,19 @@
       border-radius: 16px;
       overflow:hidden;
       cursor:pointer;
-      transition: transform .08s ease, border-color .15s ease, background .15s ease;
+      transition: transform .18s var(--ease), border-color .15s var(--ease), background .15s var(--ease), box-shadow .2s var(--ease);
       position:relative;
+      animation: cardIn .35s var(--ease) both;
+    }
+    @keyframes cardIn{
+      from{ opacity:0; transform: translateY(8px) scale(.99); }
+      to{ opacity:1; transform: translateY(0) scale(1); }
     }
     .card:hover{
-      transform: translateY(-2px);
+      transform: translateY(-4px);
       border-color: rgba(255,255,255,.18);
       background: rgba(255,255,255,.07);
+      box-shadow: 0 18px 50px rgba(0,0,0,.45);
     }
 
     .thumb{
@@ -272,7 +335,22 @@
       object-fit: cover;
       display:block;
       filter: saturate(1.05) contrast(1.02);
+      transform: scale(1.02);
+      transition: transform .35s var(--ease), filter .35s var(--ease);
     }
+    .card:hover .thumb video{
+      transform: scale(1.06);
+      filter: saturate(1.12) contrast(1.05);
+    }
+
+    .thumb::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.45));
+      pointer-events:none;
+    }
+
     .thumb .fallback{
       position:absolute; inset:0;
       display:flex;
@@ -280,12 +358,14 @@
       justify-content:center;
       color: rgba(255,255,255,.35);
       font-size: 12px;
+      background: rgba(0,0,0,.15);
+      backdrop-filter: blur(2px);
     }
     .thumb .play{
       position:absolute;
       inset:auto 10px 10px auto;
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       border-radius: 999px;
       display:flex;
       align-items:center;
@@ -294,12 +374,14 @@
       border: 1px solid rgba(255,255,255,.18);
       backdrop-filter: blur(10px);
       box-shadow: 0 12px 30px rgba(0,0,0,.35);
+      transition: transform .18s var(--ease);
     }
+    .card:hover .thumb .play{ transform: scale(1.06); }
 
     .meta{
       padding: 10px 10px 12px;
       display:grid;
-      gap: 6px;
+      gap: 7px;
     }
     .title{
       font-size: 13px;
@@ -309,6 +391,30 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+    .chips{
+      display:flex;
+      gap:6px;
+      flex-wrap: wrap;
+      align-items:center;
+    }
+    .chip{
+      font-size: 11px;
+      color: rgba(255,255,255,.72);
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      max-width: 100%;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .chip.muted{
+      color: rgba(255,255,255,.55);
+      border-color: rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+    }
+
     .subline{
       font-size: 12px;
       color: var(--muted);
@@ -326,11 +432,33 @@
       font-size: 13px;
     }
 
-    /* Modal player */
+    /* Skeleton cards */
+    .skeleton{
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      overflow:hidden;
+      position:relative;
+      height: 210px;
+    }
+    .skeleton::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(110deg, transparent 35%, rgba(255,255,255,.08) 45%, transparent 58%);
+      transform: translateX(-60%);
+      animation: shimmer2 1.6s linear infinite;
+    }
+    @keyframes shimmer2{
+      0%{ transform: translateX(-60%); }
+      100%{ transform: translateX(60%); }
+    }
+
+    /* Modal */
     .modal{
       position:fixed;
       inset:0;
-      background: rgba(0,0,0,.55);
+      background: rgba(0,0,0,.62);
       display:none;
       align-items:center;
       justify-content:center;
@@ -339,13 +467,19 @@
     }
     .modal.open{ display:flex; }
     .modalCard{
-      width:min(1000px, 96vw);
+      width:min(1040px, 96vw);
       border-radius: 18px;
       border:1px solid rgba(255,255,255,.14);
       background: rgba(10,14,28,.92);
       box-shadow: 0 24px 80px rgba(0,0,0,.65);
       overflow:hidden;
+      animation: modalIn .22s var(--ease) both;
     }
+    @keyframes modalIn{
+      from{ opacity:0; transform: translateY(10px) scale(.99); }
+      to{ opacity:1; transform: translateY(0) scale(1); }
+    }
+
     .modalHdr{
       display:flex;
       align-items:center;
@@ -373,15 +507,121 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+
     .modalBody{
       padding: 12px;
       background: rgba(0,0,0,.25);
+      display:grid;
+      gap: 12px;
+    }
+
+    .playerWrap{
+      border-radius: 14px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.10);
+      background: black;
     }
     .modalBody video{
       width:100%;
-      max-height: 70vh;
+      max-height: 66vh;
+      display:block;
       background: black;
+    }
+
+    .notesWrap{
       border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      overflow:hidden;
+    }
+    .notesHdr{
+      padding: 10px 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .notesHdr strong{
+      font-size: 12px;
+      letter-spacing:.2px;
+      color: rgba(255,255,255,.84);
+    }
+    .notesBody{
+      padding: 12px;
+      display:grid;
+      gap: 10px;
+    }
+    .kv{
+      display:grid;
+      gap: 6px;
+    }
+    .kv .k{
+      font-size: 11px;
+      color: var(--muted2);
+      letter-spacing:.15px;
+    }
+    .kv .v{
+      font-size: 13px;
+      color: rgba(255,255,255,.86);
+      white-space: pre-wrap;
+      line-height: 1.35;
+    }
+
+    /* Toasts */
+    .toasts{
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      display:grid;
+      gap: 10px;
+      z-index: 10000;
+      pointer-events:none;
+    }
+    .toast{
+      pointer-events:none;
+      width: min(360px, calc(100vw - 28px));
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(15,20,38,.92);
+      box-shadow: 0 18px 55px rgba(0,0,0,.55);
+      padding: 10px 12px;
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
+      animation: toastIn .22s var(--ease) both;
+      backdrop-filter: blur(10px);
+    }
+    @keyframes toastIn{
+      from{ opacity:0; transform: translateY(8px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+    .toast .b{
+      width: 10px; height: 10px; border-radius:999px; margin-top: 4px;
+      background: var(--good);
+      box-shadow: 0 0 0 2px rgba(0,0,0,.35), 0 0 18px rgba(51,209,122,.25);
+    }
+    .toast.err .b{
+      background: var(--bad);
+      box-shadow: 0 0 0 2px rgba(0,0,0,.35), 0 0 18px rgba(255,77,77,.25);
+    }
+    .toast.warn .b{
+      background: var(--warn);
+      box-shadow: 0 0 0 2px rgba(0,0,0,.35), 0 0 18px rgba(247,201,72,.18);
+    }
+    .toast .t{
+      display:grid;
+      gap: 2px;
+    }
+    .toast .t strong{
+      font-size: 12px;
+      color: rgba(255,255,255,.88);
+    }
+    .toast .t span{
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.25;
+      white-space: pre-wrap;
     }
 
     @media (max-width: 980px){
@@ -466,8 +706,7 @@
           </div>
 
           <div class="hint">
-            Tip: keep clips under 500MB for fastest uploads. If you see “Load failed” it usually means the request didn’t complete
-            (wrong endpoint, missing binding, or server returned non-JSON).
+            Tip: press <b>/</b> to focus search. Press <b>Esc</b> to close the player.
           </div>
           <div id="uploadErr" class="err"></div>
         </div>
@@ -485,7 +724,21 @@
 
         <div class="body">
           <div class="videosTop">
-            <input class="search" id="search" placeholder="Search videos by title, owner, tag…" />
+            <input class="search" id="search" placeholder="Search videos by title, owner, tag, notes…" />
+
+            <select id="sort" style="min-width: 180px;">
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+              <option value="title">Title (A→Z)</option>
+              <option value="owner">Owner (A→Z)</option>
+              <option value="tag">Tag (A→Z)</option>
+            </select>
+
+            <div class="pill" title="Auto-load list on page open">
+              <input id="autoLoad" type="checkbox" />
+              <span>Auto-load</span>
+            </div>
+
             <div class="pill" id="countPill">0 items</div>
           </div>
 
@@ -506,28 +759,59 @@
           <strong id="mTitle">Video</strong>
           <span id="mSub">—</span>
         </div>
-        <div style="display:flex; gap:10px;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+          <button id="mCopy" class="btn">Copy stream link</button>
           <a class="btn" id="mOpen" target="_blank" rel="noreferrer">Open stream</a>
+          <button id="mDelete" class="danger">Delete</button>
           <button id="mClose">Close</button>
         </div>
       </div>
+
       <div class="modalBody">
-        <video id="mVideo" controls playsinline></video>
+        <div class="playerWrap">
+          <video id="mVideo" controls playsinline preload="auto"></video>
+        </div>
+
+        <div class="notesWrap">
+          <div class="notesHdr">
+            <strong>Notes</strong>
+            <button id="mToggleNotes" class="btn" style="padding:8px 10px;">Collapse</button>
+          </div>
+          <div id="mNotesBody" class="notesBody">
+            <div class="kv">
+              <div class="k">Q1</div>
+              <div id="mQ1" class="v">—</div>
+            </div>
+            <div class="kv">
+              <div class="k">Q2</div>
+              <div id="mQ2" class="v">—</div>
+            </div>
+            <div class="kv">
+              <div class="k">Notes</div>
+              <div id="mNotes" class="v">—</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Toast container -->
+  <div id="toasts" class="toasts"></div>
+
   <script>
-    // IMPORTANT: point UI at the API Worker domain
+    // API Worker domain
     const API_BASE = "https://api.tseapp.com";
 
     const el = (id) => document.getElementById(id);
 
+    // Top controls
     const apiBadge = el("apiBadge");
     const openApiBtn = el("openApiBtn");
     const checkApiBtn = el("checkApiBtn");
     const refreshBtn = el("refreshBtn");
 
+    // Upload form
     const fileEl = el("file");
     const titleEl = el("title");
     const ownerEl = el("owner");
@@ -539,42 +823,84 @@
     const clearBtn = el("clearBtn");
     const uploadErr = el("uploadErr");
 
+    // Videos list
     const loadBtn = el("loadBtn");
     const searchEl = el("search");
+    const sortEl = el("sort");
+    const autoLoadEl = el("autoLoad");
     const cardsEl = el("cards");
     const emptyEl = el("empty");
     const countPill = el("countPill");
     const listErr = el("listErr");
 
+    // Modal
     const modal = el("modal");
     const mClose = el("mClose");
     const mTitle = el("mTitle");
     const mSub = el("mSub");
     const mVideo = el("mVideo");
     const mOpen = el("mOpen");
+    const mCopy = el("mCopy");
+    const mDelete = el("mDelete");
+    const mToggleNotes = el("mToggleNotes");
+    const mNotesBody = el("mNotesBody");
+    const mQ1 = el("mQ1");
+    const mQ2 = el("mQ2");
+    const mNotes = el("mNotes");
+
+    // Toasts
+    const toasts = el("toasts");
 
     openApiBtn.href = `${API_BASE}/api/health`;
 
-    function setBadge(ok, text) {
-      apiBadge.classList.toggle("ok", !!ok);
+    // ---------- Toast helpers ----------
+    function toast(type, title, msg, ms=2600){
+      const t = document.createElement("div");
+      t.className = `toast ${type || ""}`.trim();
+      t.innerHTML = `
+        <div class="b"></div>
+        <div class="t">
+          <strong></strong>
+          <span></span>
+        </div>
+      `;
+      t.querySelector("strong").textContent = title || (type==="err" ? "Error" : "Saved");
+      t.querySelector("span").textContent = msg || "";
+      toasts.appendChild(t);
+      setTimeout(() => {
+        try { t.style.opacity = "0"; t.style.transform = "translateY(8px)"; } catch {}
+        setTimeout(() => t.remove(), 220);
+      }, ms);
+    }
+
+    // ---------- Badge helpers ----------
+    function setBadge(mode, text) {
+      apiBadge.classList.toggle("ok", mode === "ok");
+      apiBadge.classList.toggle("warn", mode === "warn");
+      apiBadge.classList.toggle("bad", mode === "bad");
       apiBadge.querySelector("span").textContent = text;
+    }
+
+    async function safeJson(res){
+      try { return await res.json(); } catch { return null; }
     }
 
     async function checkAPI() {
       try {
         const r = await fetch(`${API_BASE}/api/health`, { method: "GET" });
-        const j = await r.json().catch(() => null);
+        const j = await safeJson(r);
         if (!r.ok) throw new Error(j?.details || j?.error || `HTTP ${r.status}`);
         const good = !!j?.ok;
         const bindings = j?.bindings ? ` (D1:${j.bindings.d1 ? "✓" : "×"} R2:${j.bindings.r2 ? "✓" : "×"})` : "";
-        setBadge(good, good ? `API: online${bindings}` : "API: offline");
+        setBadge(good ? "ok" : "warn", good ? `API: online${bindings}` : "API: degraded");
         return good;
-      } catch (e) {
-        setBadge(false, "API: offline");
+      } catch {
+        setBadge("bad", "API: offline");
         return false;
       }
     }
 
+    // ---------- Utilities ----------
     function clearUploadForm() {
       fileEl.value = "";
       titleEl.value = "";
@@ -586,25 +912,16 @@
       uploadErr.textContent = "";
     }
 
-    clearBtn.addEventListener("click", clearUploadForm);
-    refreshBtn.addEventListener("click", async () => {
-      await checkAPI();
-      await loadVideos();
-    });
-    checkApiBtn.addEventListener("click", checkAPI);
-
     function streamUrlFor(id) {
       return `${API_BASE}/api/videos/${encodeURIComponent(id)}/stream`;
     }
 
     function fmtTime(ts) {
       if (!ts) return "";
-      try {
-        return new Date(ts).toLocaleString();
-      } catch { return ""; }
+      try { return new Date(ts).toLocaleString(); } catch { return ""; }
     }
 
-    // Hover preview (muted autoplay) — safe & lightweight
+    // ---------- Hover preview ----------
     function wireHoverPreview(videoEl) {
       let started = false;
 
@@ -624,19 +941,33 @@
 
       videoEl.addEventListener("mouseenter", start);
       videoEl.addEventListener("mouseleave", stop);
+      document.addEventListener("visibilitychange", () => { if (document.hidden) stop(); });
+    }
 
-      // Also stop if tab loses focus
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) stop();
-      });
+    // ---------- Modal ----------
+    let currentVideo = null;
+    let notesCollapsed = false;
+
+    function setNotesCollapsed(collapsed){
+      notesCollapsed = !!collapsed;
+      mNotesBody.style.display = notesCollapsed ? "none" : "grid";
+      mToggleNotes.textContent = notesCollapsed ? "Expand" : "Collapse";
     }
 
     function openModal(v) {
+      currentVideo = v;
+
       const url = streamUrlFor(v.id);
       mTitle.textContent = v.title || "(untitled)";
       mSub.textContent = `${v.owner || "(no owner)"} · ${v.tag || "(no tag)"} · ${fmtTime(v.createdAt) || ""}`.trim();
+
+      mQ1.textContent = v.q1 ? v.q1 : "—";
+      mQ2.textContent = v.q2 ? v.q2 : "—";
+      mNotes.textContent = v.notes ? v.notes : "—";
+
       mVideo.src = url;
       mOpen.href = url;
+
       modal.classList.add("open");
       setTimeout(() => { try { mVideo.play(); } catch {} }, 0);
     }
@@ -645,12 +976,97 @@
       modal.classList.remove("open");
       try { mVideo.pause(); } catch {}
       mVideo.src = "";
+      currentVideo = null;
     }
 
     mClose.addEventListener("click", closeModal);
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) closeModal();
+    modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+    mToggleNotes.addEventListener("click", () => setNotesCollapsed(!notesCollapsed));
+    setNotesCollapsed(false);
+
+    mCopy.addEventListener("click", async () => {
+      if (!currentVideo?.id) return;
+      const url = streamUrlFor(currentVideo.id);
+      try{
+        await navigator.clipboard.writeText(url);
+        toast("", "Copied", "Stream link copied to clipboard.");
+      }catch{
+        toast("warn", "Copy failed", "Browser blocked clipboard. Open stream and copy manually.");
+      }
     });
+
+    // Optional delete: works if Worker supports DELETE /api/videos/:id
+    async function deleteCurrentVideo() {
+      if (!currentVideo?.id) return;
+
+      const id = currentVideo.id;
+      const title = currentVideo.title || "(untitled)";
+      const ok = confirm(`Delete "${title}"?\n\nThis will remove it from the shared library.`);
+      if (!ok) return;
+
+      try{
+        mDelete.disabled = true;
+        mDelete.textContent = "Deleting…";
+
+        const r = await fetch(`${API_BASE}/api/videos/${encodeURIComponent(id)}`, { method: "DELETE" });
+        const j = await safeJson(r);
+
+        if (!r.ok) {
+          // if endpoint not supported, handle nicely
+          const msg = j?.details || j?.error || `HTTP ${r.status}`;
+          throw new Error(msg);
+        }
+
+        toast("", "Deleted", `"${title}" removed.`);
+        closeModal();
+        await loadVideos();
+      }catch(e){
+        toast("err", "Delete failed", (e && e.message) ? e.message : String(e));
+      }finally{
+        mDelete.disabled = false;
+        mDelete.textContent = "Delete";
+      }
+    }
+    mDelete.addEventListener("click", deleteCurrentVideo);
+
+    // ---------- Render + filter + sort ----------
+    let lastVideos = [];
+
+    function filterVideos(videos, q) {
+      q = (q || "").trim().toLowerCase();
+      if (!q) return videos;
+      return videos.filter(v => {
+        const hay = `${v.title||""} ${v.owner||""} ${v.tag||""} ${v.q1||""} ${v.q2||""} ${v.notes||""}`.toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    function sortVideos(videos, mode){
+      const arr = [...videos];
+      const m = mode || "newest";
+
+      const alpha = (a,b) => a.localeCompare(b);
+      const lc = (x) => (x || "").toLowerCase();
+
+      if (m === "newest") arr.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+      else if (m === "oldest") arr.sort((a,b) => (a.createdAt||0) - (b.createdAt||0));
+      else if (m === "title") arr.sort((a,b) => alpha(lc(a.title), lc(b.title)));
+      else if (m === "owner") arr.sort((a,b) => alpha(lc(a.owner), lc(b.owner)));
+      else if (m === "tag") arr.sort((a,b) => alpha(lc(a.tag), lc(b.tag)));
+
+      return arr;
+    }
+
+    function showSkeletons(n=8){
+      cardsEl.innerHTML = "";
+      for (let i=0;i<n;i++){
+        const s = document.createElement("div");
+        s.className = "skeleton";
+        cardsEl.appendChild(s);
+      }
+      emptyEl.style.display = "none";
+    }
 
     function render(videos) {
       cardsEl.innerHTML = "";
@@ -676,13 +1092,12 @@
         fallback.className = "fallback";
         fallback.textContent = "Preview";
 
-        // If stream fails, keep fallback visible
         vid.addEventListener("loadeddata", () => { fallback.style.display = "none"; });
         vid.addEventListener("error", () => { fallback.style.display = "flex"; });
 
         const play = document.createElement("div");
         play.className = "play";
-        play.innerHTML = "▶︎";
+        play.textContent = "▶︎";
 
         thumb.appendChild(vid);
         thumb.appendChild(fallback);
@@ -695,118 +1110,9 @@
         t.className = "title";
         t.textContent = v.title || "(untitled)";
 
-        const sub = document.createElement("div");
-        sub.className = "subline";
+        const chips = document.createElement("div");
+        chips.className = "chips";
 
-        const left = document.createElement("span");
-        left.textContent = v.owner || "(no owner)";
-
-        const right = document.createElement("span");
-        right.textContent = v.tag || "";
-
-        sub.appendChild(left);
-        sub.appendChild(right);
-
-        meta.appendChild(t);
-        meta.appendChild(sub);
-
-        card.appendChild(thumb);
-        card.appendChild(meta);
-
-        // hover preview + click modal
-        wireHoverPreview(vid);
-        card.addEventListener("click", () => openModal(v));
-
-        cardsEl.appendChild(card);
-      }
-    }
-
-    function filterVideos(videos, q) {
-      q = (q || "").trim().toLowerCase();
-      if (!q) return videos;
-      return videos.filter(v => {
-        const hay = `${v.title||""} ${v.owner||""} ${v.tag||""} ${v.q1||""} ${v.q2||""} ${v.notes||""}`.toLowerCase();
-        return hay.includes(q);
-      });
-    }
-
-    let lastVideos = [];
-
-    async function loadVideos() {
-      try {
-        const r = await fetch(`${API_BASE}/api/videos`, { method: "GET" });
-        const j = await r.json().catch(() => null);
-        if (!r.ok) throw new Error(j?.details || j?.error || `HTTP ${r.status}`);
-        lastVideos = Array.isArray(j?.videos) ? j.videos : [];
-        render(filterVideos(lastVideos, searchEl.value));
-      } catch (e) {
-        listErr.textContent = `Load failed: ${e.message || e}`;
-        render([]);
-      }
-    }
-
-    loadBtn.addEventListener("click", loadVideos);
-
-    searchEl.addEventListener("input", () => {
-      render(filterVideos(lastVideos, searchEl.value));
-    });
-
-    uploadBtn.addEventListener("click", async () => {
-      uploadErr.textContent = "";
-      const file = fileEl.files?.[0];
-      if (!file) {
-        uploadErr.textContent = "Choose a video file first.";
-        return;
-      }
-
-      try {
-        uploadBtn.disabled = true;
-        uploadBtn.textContent = "Uploading…";
-
-        const fd = new FormData();
-
-        // MUST be "file" — matches the Worker
-        fd.append("file", file, file.name);
-
-        fd.append("title", titleEl.value || "");
-        fd.append("owner", ownerEl.value || "");
-        fd.append("tag", tagEl.value || "");
-        fd.append("q1", q1El.value || "");
-        fd.append("q2", q2El.value || "");
-        fd.append("notes", notesEl.value || "");
-
-        const r = await fetch(`${API_BASE}/api/videos/upload`, {
-          method: "POST",
-          body: fd
-        });
-
-        const j = await r.json().catch(() => null);
-        if (!r.ok) throw new Error(j?.details || j?.error || `HTTP ${r.status}`);
-
-        // Auto refresh list after upload
-        await loadVideos();
-
-        // Optional: open the uploaded video immediately
-        if (j?.id) {
-          const v = lastVideos.find(x => x.id === j.id) || { id: j.id, title: titleEl.value, owner: ownerEl.value, tag: tagEl.value, createdAt: j.createdAt };
-          openModal(v);
-        }
-
-        clearUploadForm();
-      } catch (e) {
-        uploadErr.textContent = `Upload failed: ${e.message || e}`;
-      } finally {
-        uploadBtn.disabled = false;
-        uploadBtn.textContent = "Upload";
-      }
-    });
-
-    // boot
-    (async () => {
-      await checkAPI();
-      // lazy load on open (you can auto-load if you want):
-      // await loadVideos();
-    })();
-  </script>
-</body>
-</html>
+        const ownerChip = document.createElement("div");
+        ownerChip.className = "chip";
+        ownerChip.textContent = v.owner || "No owner";
