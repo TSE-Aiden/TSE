@@ -1,940 +1,272 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TSE</title>
-  <style>
-    :root{
-      --bg:#070A12;
-      --panel:rgba(255,255,255,.05);
-      --panel2:rgba(255,255,255,.07);
-      --stroke:rgba(255,255,255,.10);
-      --stroke2:rgba(255,255,255,.16);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.65);
-      --muted2:rgba(255,255,255,.45);
-      --accent:#8b5cf6;
-      --accent2:#22c55e;
-      --danger:#ef4444;
-      --shadow: 0 18px 50px rgba(0,0,0,.45);
-      --radius:18px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background:
-        radial-gradient(1200px 700px at 55% 20%, rgba(139,92,246,.24), transparent 60%),
-        radial-gradient(900px 700px at 25% 85%, rgba(34,197,94,.14), transparent 60%),
-        var(--bg);
-      color:var(--text);
-      min-height:100vh;
-    }
-    .wrap{max-width:1280px;margin:0 auto;padding:28px 18px 60px}
-    .topbar{
-      display:flex;align-items:center;justify-content:space-between;
-      gap:12px;margin-bottom:18px;
-    }
-    .brand{
-      display:flex;align-items:center;gap:12px;
-      padding:12px 14px;border:1px solid var(--stroke);
-      border-radius:999px;background:rgba(255,255,255,.03);
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-    }
-    .dot{width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.25)}
-    .brand h1{font-size:14px;margin:0;letter-spacing:.08em;text-transform:uppercase}
-    .brand .sub{font-size:12px;color:var(--muted2)}
-    .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .pill{
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.04);
-      color:var(--text);
-      padding:10px 12px;border-radius:999px;
-      cursor:pointer;
-      transition: transform .15s ease, border-color .15s ease, background .15s ease;
-      user-select:none;
-    }
-    .pill:hover{transform: translateY(-1px); border-color: var(--stroke2); background: rgba(255,255,255,.06)}
-    .status{
-      display:flex;align-items:center;gap:10px;
-      padding:10px 12px;border-radius:999px;
-      border:1px solid var(--stroke);
-      background:rgba(255,255,255,.04);
-    }
-    .status .led{width:10px;height:10px;border-radius:999px;background:var(--danger)}
-    .status.ok .led{background: var(--accent2)}
-    .grid{display:grid;grid-template-columns: 360px 1fr; gap:18px}
-    @media (max-width: 980px){
-      .grid{grid-template-columns: 1fr}
-    }
+<meta charset="utf-8"/>
+<title>TSE</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 
-    .card{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-      overflow:hidden;
-    }
-    .card .hd{
-      padding:14px 14px 10px;
-      display:flex;align-items:center;justify-content:space-between;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-    .card .hd .title{font-weight:700}
-    .card .bd{padding:14px}
-    label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
-    input, select, textarea{
-      width:100%;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      color:var(--text);
-      padding:10px 12px;border-radius:12px;
-      outline:none;
-      transition:border-color .15s ease, transform .15s ease, background .15s ease;
-    }
-    input:focus, select:focus, textarea:focus{
-      border-color: rgba(139,92,246,.55);
-      background: rgba(0,0,0,.22);
-    }
-    textarea{min-height:88px;resize: vertical}
-    .row{display:grid;grid-template-columns:1fr 1fr; gap:10px}
-    .btnrow{display:flex;gap:10px;margin-top:12px}
-    .btn{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-      padding:10px 12px;border-radius:12px;
-      cursor:pointer;color:var(--text);
-      transition: transform .15s ease, border-color .15s ease, background .15s ease;
-    }
-    .btn:hover{transform: translateY(-1px); border-color: var(--stroke2); background: rgba(255,255,255,.09)}
-    .btn.primary{background: rgba(139,92,246,.20); border-color: rgba(139,92,246,.35)}
-    .btn.primary:hover{background: rgba(139,92,246,.26)}
-    .btn.danger{background: rgba(239,68,68,.18); border-color: rgba(239,68,68,.35)}
-    .hint{margin-top:10px;font-size:12px;color:var(--muted2);line-height:1.4}
-    .err{margin-top:10px;font-size:12px;color: #ffb4b4}
-    .videosTop{
-      display:flex;gap:10px;align-items:center;flex-wrap:wrap;
-      margin-bottom:10px;
-    }
-    .search{flex:1;min-width:220px}
-    .chips{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    .chip{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      padding:8px 10px;border-radius:999px;
-      font-size:12px;color:var(--muted);
-      cursor:pointer; user-select:none;
-      transition: transform .15s ease, border-color .15s ease, background .15s ease;
-      display:inline-flex;align-items:center;gap:8px;
-    }
-    .chip:hover{transform: translateY(-1px); border-color: var(--stroke2); background: rgba(255,255,255,.08)}
-    .chip.active{color: var(--text); border-color: rgba(139,92,246,.45); background: rgba(139,92,246,.16)}
-    .chip .count{opacity:.8}
-    .vidGrid{
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap:14px;
-    }
-    @media (max-width: 1100px){ .vidGrid{grid-template-columns: repeat(2, minmax(0,1fr));} }
-    @media (max-width: 620px){ .vidGrid{grid-template-columns: 1fr;} }
+<style>
+/* ===== THEME ===== */
+:root{
+  --bg:#070a12;
+  --panel:rgba(255,255,255,.08);
+  --panel2:rgba(255,255,255,.12);
+  --stroke:rgba(255,255,255,.14);
+  --text:#fff;
+  --muted:rgba(255,255,255,.6);
+  --accent:#7c5cff;
+  --radius:16px;
+}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+}
 
-    .vid{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      border-radius: 16px;
-      overflow:hidden;
-      cursor:pointer;
-      position:relative;
-      transform: translateY(0);
-      transition: transform .18s ease, border-color .18s ease, background .18s ease;
-      box-shadow: 0 10px 30px rgba(0,0,0,.28);
-    }
-    .vid:hover{transform: translateY(-4px); border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.06)}
-    .thumb{
-      aspect-ratio: 16/9;
-      background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      display:flex;align-items:center;justify-content:center;
-      position:relative;
-    }
-    .play{
-      width:44px;height:44px;border-radius:999px;
-      background: rgba(0,0,0,.35);
-      border:1px solid rgba(255,255,255,.18);
-      display:flex;align-items:center;justify-content:center;
-      backdrop-filter: blur(8px);
-    }
-    .play:before{
-      content:"";
-      display:block;
-      width:0;height:0;
-      border-left: 14px solid rgba(255,255,255,.88);
-      border-top: 9px solid transparent;
-      border-bottom: 9px solid transparent;
-      margin-left:3px;
-    }
-    .meta{padding:10px 12px 12px}
-    .meta .t{font-weight:700;margin:0 0 6px}
-    .meta .s{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    .tag{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      padding:4px 8px;border-radius:999px;
-      font-size:11px;color:rgba(255,255,255,.72);
-    }
+/* ===== LAYOUT ===== */
+header{
+  padding:14px 20px;
+  border-bottom:1px solid var(--stroke);
+  display:flex;
+  justify-content:space-between;
+}
+.tabs{display:flex;gap:10px}
+.tab{
+  padding:8px 14px;
+  border-radius:999px;
+  border:1px solid var(--stroke);
+  background:var(--panel);
+  cursor:pointer;
+}
+.tab.active{background:rgba(124,92,255,.3)}
 
-    /* Modal */
-    .modal{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.55);
-      display:none; align-items:center; justify-content:center;
-      padding:20px;
-      z-index:50;
-    }
-    .modal.open{display:flex}
-    .modalPanel{
-      width:min(1100px, 96vw);
-      background: rgba(8,10,18,.86);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius: 18px;
-      box-shadow: 0 30px 90px rgba(0,0,0,.6);
-      backdrop-filter: blur(14px);
-      overflow:hidden;
-      animation: pop .18s ease both;
-    }
-    @keyframes pop{from{transform: translateY(10px);opacity:.6}to{transform: translateY(0);opacity:1}}
-    .modalHd{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:12px 14px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    .modalHd .left{display:flex;flex-direction:column;gap:4px}
-    .modalHd .left .h{font-weight:800}
-    .modalHd .left .sub{font-size:12px;color:var(--muted)}
-    .modalHd .right{display:flex;gap:10px;align-items:center}
-    .modalBd{padding:14px}
-    video{width:100%; border-radius: 14px; background: #000}
-    .notesBox{
-      margin-top:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      border-radius: 14px;
-      padding:12px;
-    }
-    .notesGrid{
-      display:grid;grid-template-columns:1fr 1fr; gap:10px;
-    }
-    @media (max-width: 760px){ .notesGrid{grid-template-columns:1fr} }
-    .notesGrid .k{font-size:12px;color:var(--muted);margin-bottom:6px}
-    .notesGrid .v{font-size:13px;color:rgba(255,255,255,.86);white-space:pre-wrap}
+main{padding:16px}
+.section{display:none}
+.section.active{display:block}
 
-    /* Toasts */
-    .toasts{
-      position:fixed; right:16px; bottom:16px;
-      display:flex; flex-direction:column; gap:10px;
-      z-index:80;
-    }
-    .toast{
-      min-width: 260px;
-      max-width: 380px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(10,12,22,.85);
-      border-radius: 14px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.55);
-      padding:10px 12px;
-      backdrop-filter: blur(14px);
-      animation: toastIn .18s ease both;
-      display:flex; gap:10px; align-items:flex-start;
-    }
-    @keyframes toastIn{from{transform: translateY(8px);opacity:.6}to{transform: translateY(0);opacity:1}}
-    .toast .b{font-weight:800}
-    .toast .m{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.35}
-    .toast.ok{border-color: rgba(34,197,94,.25)}
-    .toast.err{border-color: rgba(239,68,68,.28)}
-    .toast .x{margin-left:auto; cursor:pointer; opacity:.7}
-    .toast .x:hover{opacity:1}
+/* ===== SPLIT VIEW ===== */
+.split{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+@media(max-width:900px){
+  .split{grid-template-columns:1fr}
+}
 
-    /* Bible section */
-    .bibleHdSub{font-size:12px;color:var(--muted2)}
-    .lessonBox{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      border-radius: 14px;
-      padding:12px;
-      margin-top:10px;
-      overflow:hidden;
-    }
-    .lessonTitle{font-weight:900;margin:0 0 6px}
-    .lessonRef{font-size:12px;color:var(--muted);margin:0 0 10px}
-    .lessonText{
-      font-size:13px;color:rgba(255,255,255,.86);
-      line-height:1.55;
-      white-space:pre-wrap;
-      border-left: 3px solid rgba(139,92,246,.45);
-      padding-left:10px;
-      margin-bottom:12px;
-    }
-    .lessonSect{
-      border-top:1px solid rgba(255,255,255,.06);
-      padding-top:10px; margin-top:10px;
-    }
-    .lessonSect h4{margin:0 0 8px;font-size:13px}
-    .lessonSect ul{margin:0; padding-left:18px; color:rgba(255,255,255,.82); font-size:13px; line-height:1.55}
-    .lessonSect li{margin:6px 0}
-    .tiny{font-size:12px;color:var(--muted2)}
-  </style>
+/* ===== PLAYER ===== */
+video{width:100%;border-radius:14px;background:#000}
+
+/* ===== DOC SYSTEM ===== */
+.doc{
+  background:var(--panel);
+  border:1px solid var(--stroke);
+  border-radius:14px;
+  padding:10px;
+}
+.docTabs{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-bottom:6px;
+}
+.docTab{
+  padding:6px 10px;
+  border-radius:10px;
+  border:1px solid var(--stroke);
+  cursor:pointer;
+}
+.docTab.active{background:rgba(124,92,255,.25)}
+.toolbar{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-bottom:6px;
+}
+.toolbar button,input[type=color],select{
+  background:var(--panel2);
+  border:1px solid var(--stroke);
+  color:var(--text);
+  border-radius:8px;
+  padding:6px;
+}
+.editor{
+  min-height:260px;
+  background:#000;
+  padding:10px;
+  border-radius:10px;
+}
+.editor img{
+  max-width:100%;
+  border-radius:10px;
+  cursor:pointer;
+}
+.editor img.selected{
+  outline:2px solid var(--accent);
+}
+
+/* ===== NEWS ===== */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+.modal.show{display:flex}
+.modal iframe{
+  width:92vw;
+  height:92vh;
+  border-radius:16px;
+  border:none;
+}
+</style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="dot"></div>
-        <div>
-          <h1>TSE</h1>
-          <div class="sub">Videos + Notes · Shared via Cloudflare (R2 + D1)</div>
-        </div>
-      </div>
 
-      <div class="actions">
-        <div id="apiStatus" class="status">
-          <div class="led"></div>
-          <div style="font-size:12px;color:var(--muted)">API: checking…</div>
-        </div>
-        <div class="pill" id="openApiBtn">Open API</div>
-        <div class="pill" id="checkApiBtn">Check API</div>
-        <div class="pill" id="refreshBtn">Refresh</div>
-      </div>
-    </div>
+<header>
+  <b>TSE</b>
+  <div class="tabs">
+    <div class="tab active" data-tab="videos">Videos</div>
+    <div class="tab" data-tab="news">News</div>
+  </div>
+</header>
 
-    <div class="grid">
-      <!-- Upload -->
-      <div class="card">
-        <div class="hd">
-          <div>
-            <div class="title">Upload video</div>
-            <div class="bibleHdSub">Shared — appears for everyone using this site</div>
-          </div>
-          <div class="chip" title="Keep clips under 500MB for fastest uploads">
-            Max <span class="count">500MB</span>
-          </div>
-        </div>
-        <div class="bd">
-          <label>Video file</label>
-          <input id="file" type="file" accept="video/*" />
+<main>
 
-          <label>Title</label>
-          <input id="title" placeholder="e.g., NQ Scalps — Jan 4" />
+<!-- ===== VIDEOS + NOTES ===== -->
+<section id="videos" class="section active">
 
-          <div class="row">
-            <div>
-              <label>Owner</label>
-              <input id="owner" placeholder="Aiden" />
-            </div>
-            <div>
-              <label>Sort tag</label>
-              <input id="tag" placeholder="Trading / Review / Setups" />
-            </div>
-          </div>
+<div class="split">
 
-          <label>Description Q1</label>
-          <input id="q1" placeholder="What was the setup?" />
+<!-- PLAYER -->
+<div>
+  <video id="video" controls></video>
+  <button onclick="insertTimestamp()">+ Timestamp</button>
+</div>
 
-          <label>Description Q2</label>
-          <input id="q2" placeholder="What did you learn?" />
+<!-- DOCS -->
+<div class="doc">
 
-          <label>Notes (optional)</label>
-          <textarea id="notes" placeholder="Write notes attached to this video…"></textarea>
+  <div class="docTabs" id="docTabs"></div>
 
-          <label>Folder</label>
-          <select id="folderSelect"></select>
-
-          <div class="btnrow">
-            <div class="btn primary" id="uploadBtn">Upload</div>
-            <div class="btn" id="clearBtn">Clear</div>
-          </div>
-
-          <div class="hint">
-            Tip: Drag any video card into a folder chip/tile. Press <b>/</b> to focus search. Press <b>Esc</b> to close the player.
-          </div>
-          <div class="err" id="uploadErr"></div>
-        </div>
-      </div>
-
-      <!-- Videos -->
-      <div class="card">
-        <div class="hd">
-          <div>
-            <div class="title">Videos</div>
-            <div class="bibleHdSub">YouTube-style cards · hover to preview · drag into folders</div>
-          </div>
-          <div class="btn" id="loadBtn">Load</div>
-        </div>
-        <div class="bd">
-          <div class="videosTop">
-            <input id="search" class="search" placeholder="Search videos by title, owner, tag, notes…" />
-            <label style="display:flex;align-items:center;gap:8px;margin:0;color:var(--muted);font-size:12px">
-              <input id="autoLoad" type="checkbox" style="width:auto" />
-              Auto-load
-            </label>
-            <div class="chip" id="countChip"><span>0</span> items</div>
-          </div>
-
-          <div class="chips" id="folderChips"></div>
-
-          <div class="err" id="loadErr"></div>
-          <div style="height:12px"></div>
-
-          <div class="vidGrid" id="vidGrid"></div>
-          <div class="tiny" id="emptyHint" style="margin-top:10px;color:var(--muted2)">No videos yet. Upload one, then click Load.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Daily Bible Study -->
-    <div class="card" style="margin-top:18px">
-      <div class="hd">
-        <div>
-          <div class="title">Daily Bible Study</div>
-          <div class="bibleHdSub">A real lesson: Read → Observe → Interpret → Apply → Prayer</div>
-        </div>
-        <div class="chip" id="bibleStatusChip">Ready</div>
-      </div>
-      <div class="bd">
-        <div class="row">
-          <div>
-            <label>Date</label>
-            <input id="bibleDate" />
-          </div>
-          <div>
-            <label>Verse reference (optional)</label>
-            <input id="bibleRef" placeholder="John 3:16 or Romans 8:1-2" />
-          </div>
-        </div>
-
-        <div class="btnrow">
-          <div class="btn" id="verseOfDayBtn">Verse of the day</div>
-          <div class="btn primary" id="generateLessonBtn">Generate lesson</div>
-          <div class="btn" id="loadJournalBtn">Load journal</div>
-          <div class="btn primary" id="saveJournalBtn">Save journal</div>
-        </div>
-
-        <div class="lessonBox" id="lessonBox" style="display:none"></div>
-
-        <label style="margin-top:12px">Journal (saved per day)</label>
-        <textarea id="journal" placeholder="Write your response: what you learned, conviction, action step, prayer…"></textarea>
-
-        <div class="err" id="bibleErr"></div>
-      </div>
-    </div>
+  <div class="toolbar">
+    <button onclick="cmd('bold')">B</button>
+    <button onclick="cmd('italic')">I</button>
+    <button onclick="cmd('underline')">U</button>
+    <select onchange="cmd('fontSize',this.value)">
+      <option value="3">Text</option>
+      <option value="4">Large</option>
+      <option value="5">XL</option>
+    </select>
+    <input type="color" onchange="cmd('foreColor',this.value)">
+    <button onclick="exportPDF()">Export PDF</button>
+    <button onclick="addDoc()">+ Doc</button>
   </div>
 
-  <!-- Video Modal -->
-  <div class="modal" id="modal">
-    <div class="modalPanel">
-      <div class="modalHd">
-        <div class="left">
-          <div class="h" id="mTitle">Video</div>
-          <div class="sub" id="mSub">—</div>
-        </div>
-        <div class="right">
-          <div class="btn" id="copyStreamBtn">Copy stream link</div>
-          <div class="btn" id="openStreamBtn">Open stream</div>
-          <div class="btn danger" id="deleteBtn">Delete</div>
-          <div class="btn" id="closeBtn">Close</div>
-        </div>
-      </div>
-      <div class="modalBd">
-        <video id="player" controls playsinline preload="metadata"></video>
+  <div id="editor" class="editor" contenteditable></div>
 
-        <div class="notesBox" id="modalNotes">
-          <div class="notesGrid">
-            <div>
-              <div class="k">Q1</div>
-              <div class="v" id="mQ1">—</div>
-            </div>
-            <div>
-              <div class="k">Q2</div>
-              <div class="v" id="mQ2">—</div>
-            </div>
-            <div style="grid-column:1 / -1">
-              <div class="k">Notes</div>
-              <div class="v" id="mNotes">—</div>
-            </div>
-          </div>
-        </div>
+</div>
+</div>
+</section>
 
-        <div style="height:8px"></div>
-        <div class="tiny">Tip: If playback feels slow, click “Open stream” (direct stream tab) — it’s often smoother.</div>
-      </div>
-    </div>
-  </div>
+<!-- ===== NEWS ===== -->
+<section id="news" class="section">
+<h2>Market News</h2>
+<button onclick="openNews('https://www.forexfactory.com')">Forex Factory</button>
+<button onclick="openNews('https://www.reuters.com/markets')">Reuters</button>
+<button onclick="openNews('https://www.investing.com')">Investing.com</button>
+<button onclick="openNews('https://www.bloomberg.com/markets')">Bloomberg</button>
+<button onclick="openNews('https://www.cmegroup.com/market-data/economic-calendar.html')">CME Calendar</button>
+</section>
 
-  <div class="toasts" id="toasts"></div>
+</main>
 
-  <script>
-    // IMPORTANT: Your website is tseapp.com and API is api.tseapp.com
-    const API_BASE = "https://api.tseapp.com";
+<div id="newsModal" class="modal" onclick="this.classList.remove('show')">
+  <iframe id="newsFrame"></iframe>
+</div>
 
-    const $ = (id) => document.getElementById(id);
+<script>
+/* ===== TABS ===== */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'))
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'))
+    t.classList.add('active')
+    document.getElementById(t.dataset.tab).classList.add('active')
+  }
+})
 
-    function toast(kind, title, msg) {
-      const wrap = $("toasts");
-      const el = document.createElement("div");
-      el.className = `toast ${kind}`;
-      el.innerHTML = `
-        <div>
-          <div class="b">${title}</div>
-          <div class="m">${msg || ""}</div>
-        </div>
-        <div class="x">✕</div>
-      `;
-      el.querySelector(".x").onclick = () => el.remove();
-      wrap.appendChild(el);
-      setTimeout(() => { if (el.isConnected) el.remove(); }, 4200);
-    }
+/* ===== DOC STATE ===== */
+let docs={
+  active:'doc-1',
+  docs:{
+    'doc-1':{title:'Notes',html:''}
+  }
+}
 
-    async function apiFetch(path, opts = {}) {
-      const url = API_BASE + path;
-      const res = await fetch(url, opts);
-      const ct = res.headers.get("content-type") || "";
-      let data = null;
+/* ===== DOC UI ===== */
+function renderTabs(){
+  const el=document.getElementById('docTabs')
+  el.innerHTML=''
+  Object.entries(docs.docs).forEach(([id,d])=>{
+    const t=document.createElement('div')
+    t.className='docTab'+(docs.active===id?' active':'')
+    t.textContent=d.title
+    t.onclick=()=>switchDoc(id)
+    el.appendChild(t)
+  })
+}
+function switchDoc(id){
+  saveDoc()
+  docs.active=id
+  document.getElementById('editor').innerHTML=docs.docs[id].html
+  renderTabs()
+}
+function saveDoc(){
+  docs.docs[docs.active].html=document.getElementById('editor').innerHTML
+  localStorage.setItem('tse-docs',JSON.stringify(docs))
+}
+function addDoc(){
+  const id='doc-'+Date.now()
+  docs.docs[id]={title:'New Doc',html:''}
+  switchDoc(id)
+}
 
-      if (ct.includes("application/json")) {
-        data = await res.json().catch(() => null);
-      } else {
-        const t = await res.text().catch(() => "");
-        data = { error: "Non-JSON response", details: t.slice(0, 300) };
-      }
+/* ===== COMMANDS ===== */
+function cmd(c,v=null){document.execCommand(c,false,v)}
 
-      if (!res.ok) {
-        const msg = data?.error || `HTTP ${res.status}`;
-        throw new Error(msg + (data?.details ? ` — ${JSON.stringify(data.details)}` : ""));
-      }
-      return data;
-    }
+/* ===== TIMESTAMPS ===== */
+function insertTimestamp(){
+  const t=Math.floor(document.getElementById('video').currentTime)
+  document.execCommand('insertHTML',false,
+    `<span style="color:#7c5cff;cursor:pointer" onclick="document.getElementById('video').currentTime=${t}">[${t}s]</span> `
+  )
+}
 
-    async function checkApi() {
-      try {
-        const r = await apiFetch("/api/health");
-        $("apiStatus").classList.add("ok");
-        $("apiStatus").innerHTML = `<div class="led"></div><div style="font-size:12px;color:var(--muted)">API: online</div>`;
-        return r;
-      } catch (e) {
-        $("apiStatus").classList.remove("ok");
-        $("apiStatus").innerHTML = `<div class="led"></div><div style="font-size:12px;color:var(--muted)">API: offline</div>`;
-        return null;
-      }
-    }
+/* ===== EXPORT PDF ===== */
+function exportPDF(){
+  const w=window.open('')
+  w.document.write(`<html><body>${document.getElementById('editor').innerHTML}</body></html>`)
+  w.print()
+}
 
-    // --------- FOLDERS ----------
-    let folders = [];
-    let activeFolder = ""; // "" = All
-    function renderFolderUI() {
-      // dropdown
-      const sel = $("folderSelect");
-      sel.innerHTML = "";
-      const opts = [
-        { value: "Unsorted", label: "Unsorted" },
-        ...folders.filter(f => f.name !== "Unsorted").map(f => ({ value: f.name, label: f.name }))
-      ];
-      for (const o of opts) {
-        const opt = document.createElement("option");
-        opt.value = o.value;
-        opt.textContent = o.label;
-        sel.appendChild(opt);
-      }
+/* ===== NEWS ===== */
+function openNews(url){
+  document.getElementById('newsFrame').src=url
+  document.getElementById('newsModal').classList.add('show')
+}
 
-      // chips
-      const chips = $("folderChips");
-      chips.innerHTML = "";
+/* ===== INIT ===== */
+const saved=localStorage.getItem('tse-docs')
+if(saved){docs=JSON.parse(saved)}
+renderTabs()
+switchDoc(docs.active)
+setInterval(saveDoc,2000)
+</script>
 
-      const allChip = document.createElement("div");
-      allChip.className = "chip " + (!activeFolder ? "active" : "");
-      allChip.textContent = "All";
-      allChip.onclick = () => { activeFolder = ""; loadVideos(); };
-      chips.appendChild(allChip);
-
-      for (const f of opts) {
-        const c = document.createElement("div");
-        c.className = "chip " + (activeFolder === f.value ? "active" : "");
-        c.innerHTML = `${f.label}`;
-        c.dataset.folder = f.value;
-
-        // allow dropping videos onto chip
-        c.ondragover = (ev) => { ev.preventDefault(); c.style.borderColor = "rgba(139,92,246,.55)"; };
-        c.ondragleave = () => { c.style.borderColor = ""; };
-        c.ondrop = async (ev) => {
-          ev.preventDefault();
-          c.style.borderColor = "";
-          const vid = ev.dataTransfer.getData("text/video-id");
-          if (!vid) return;
-          try {
-            await apiFetch(`/api/videos/${encodeURIComponent(vid)}`, {
-              method: "PATCH",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ folder: f.value })
-            });
-            toast("ok", "Moved", `Video moved to "${f.value}"`);
-            await loadVideos();
-          } catch (e) {
-            toast("err", "Move failed", e.message);
-          }
-        };
-
-        c.onclick = () => { activeFolder = f.value; loadVideos(); };
-        chips.appendChild(c);
-      }
-    }
-
-    async function loadFolders() {
-      try {
-        const r = await apiFetch("/api/folders");
-        folders = r.folders || [];
-      } catch {
-        folders = [{ name: "Unsorted" }];
-      }
-      renderFolderUI();
-    }
-
-    // --------- VIDEOS ----------
-    let videos = [];
-    let current = null;
-
-    function fmtDate(ts) {
-      if (!ts) return "";
-      const d = new Date(ts * 1000);
-      return d.toLocaleString();
-    }
-
-    function renderVideos() {
-      const grid = $("vidGrid");
-      const empty = $("emptyHint");
-      grid.innerHTML = "";
-
-      const q = ($("search").value || "").trim().toLowerCase();
-      const filtered = videos.filter(v => {
-        if (activeFolder && (v.folder || "Unsorted") !== activeFolder) return false;
-        if (!q) return true;
-        const hay = `${v.title||""} ${v.owner||""} ${v.tag||""} ${v.notes||""} ${v.q1||""} ${v.q2||""}`.toLowerCase();
-        return hay.includes(q);
-      });
-
-      $("countChip").innerHTML = `<span>${filtered.length}</span> items`;
-      empty.style.display = filtered.length ? "none" : "block";
-
-      for (const v of filtered) {
-        const card = document.createElement("div");
-        card.className = "vid";
-        card.draggable = true;
-        card.ondragstart = (ev) => {
-          ev.dataTransfer.setData("text/video-id", v.id);
-          ev.dataTransfer.effectAllowed = "move";
-        };
-
-        const folder = v.folder || "Unsorted";
-        const owner = v.owner || "No owner";
-        const tag = v.tag || "—";
-
-        card.innerHTML = `
-          <div class="thumb">
-            <div class="play"></div>
-          </div>
-          <div class="meta">
-            <div class="t">${v.title || "(untitled)"}</div>
-            <div class="s">
-              <span class="tag">${owner}</span>
-              <span class="tag">${tag}</span>
-              <span class="tag">${folder}</span>
-              <span style="margin-left:auto;color:rgba(255,255,255,.45);font-size:11px">${fmtDate(v.createdAt)}</span>
-            </div>
-          </div>
-        `;
-
-        // Hover preview (lightweight): preload metadata only
-        card.onmouseenter = () => {
-          card.querySelector(".thumb").style.background = "linear-gradient(135deg, rgba(139,92,246,.18), rgba(255,255,255,.02))";
-        };
-        card.onmouseleave = () => {
-          card.querySelector(".thumb").style.background = "linear-gradient(135deg, rgba(255,255,255,.06), rgba(255,255,255,.02))";
-        };
-
-        card.onclick = () => openModal(v);
-        grid.appendChild(card);
-      }
-    }
-
-    async function loadVideos() {
-      $("loadErr").textContent = "";
-      try {
-        const q = encodeURIComponent(($("search").value || "").trim());
-        const folderParam = activeFolder ? `&folder=${encodeURIComponent(activeFolder)}` : "";
-        const r = await apiFetch(`/api/videos?q=${q}${folderParam}`);
-        videos = r.videos || [];
-        renderVideos();
-      } catch (e) {
-        $("loadErr").textContent = "Load failed: " + e.message;
-        toast("err", "Load failed", e.message);
-      }
-    }
-
-    // --------- MODAL / PLAYER ----------
-    function openModal(v) {
-      current = v;
-      $("mTitle").textContent = v.title || "(untitled)";
-      $("mSub").textContent = `${v.owner || "—"} · ${v.tag || "—"} · ${fmtDate(v.createdAt)}`;
-
-      $("mQ1").textContent = v.q1 || "—";
-      $("mQ2").textContent = v.q2 || "—";
-      $("mNotes").textContent = v.notes || "—";
-
-      const streamUrl = `${API_BASE}/api/videos/${encodeURIComponent(v.id)}/stream`;
-      const player = $("player");
-
-      // Force fresh stream (prevents stale range issues)
-      player.pause();
-      player.removeAttribute("src");
-      player.load();
-      player.src = streamUrl;
-      player.load();
-
-      $("modal").classList.add("open");
-    }
-
-    function closeModal() {
-      $("modal").classList.remove("open");
-      const player = $("player");
-      player.pause();
-      player.removeAttribute("src");
-      player.load();
-      current = null;
-    }
-
-    // --------- UPLOAD ----------
-    async function upload() {
-      $("uploadErr").textContent = "";
-      const file = $("file").files[0];
-      if (!file) {
-        $("uploadErr").textContent = "Pick a file first.";
-        return;
-      }
-
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("title", $("title").value || "");
-      fd.append("owner", $("owner").value || "");
-      fd.append("tag", $("tag").value || "");
-      fd.append("q1", $("q1").value || "");
-      fd.append("q2", $("q2").value || "");
-      fd.append("notes", $("notes").value || "");
-      fd.append("folder", $("folderSelect").value || "Unsorted");
-
-      $("uploadBtn").textContent = "Uploading…";
-      $("uploadBtn").style.pointerEvents = "none";
-
-      try {
-        await apiFetch("/api/videos/upload", { method: "POST", body: fd });
-        toast("ok", "Uploaded", "Video uploaded successfully.");
-        clearForm();
-        await loadFolders();
-        await loadVideos();
-      } catch (e) {
-        $("uploadErr").textContent = "Upload failed: " + e.message;
-        toast("err", "Upload failed", e.message);
-      } finally {
-        $("uploadBtn").textContent = "Upload";
-        $("uploadBtn").style.pointerEvents = "auto";
-      }
-    }
-
-    function clearForm() {
-      $("file").value = "";
-      $("title").value = "";
-      $("tag").value = "";
-      $("q1").value = "";
-      $("q2").value = "";
-      $("notes").value = "";
-      // keep owner + folder for convenience
-    }
-
-    // --------- BIBLE STUDY ----------
-    function setBibleDateDefault() {
-      const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
-      $("bibleDate").value = `${yyyy}-${mm}-${dd}`;
-    }
-
-    function renderLesson(lesson) {
-      const box = $("lessonBox");
-      box.style.display = "block";
-      box.innerHTML = `
-        <div class="lessonTitle">Today’s Lesson</div>
-        <div class="lessonRef">${lesson.reference} · ${lesson.date}</div>
-        <div class="lessonText">${lesson.passageText || "(no text returned)"}</div>
-
-        <div class="lessonSect">
-          <h4>Read</h4>
-          <ul>${lesson.sections.read.content.map(x => `<li>${x}</li>`).join("")}</ul>
-        </div>
-
-        <div class="lessonSect">
-          <h4>Observe</h4>
-          <ul>${lesson.sections.observe.questions.map(x => `<li>${x}</li>`).join("")}</ul>
-        </div>
-
-        <div class="lessonSect">
-          <h4>Interpret</h4>
-          <ul>${lesson.sections.interpret.questions.map(x => `<li>${x}</li>`).join("")}</ul>
-        </div>
-
-        <div class="lessonSect">
-          <h4>Apply</h4>
-          <ul>${lesson.sections.apply.questions.map(x => `<li>${x}</li>`).join("")}</ul>
-        </div>
-
-        <div class="lessonSect">
-          <h4>Prayer</h4>
-          <ul>${lesson.sections.prayer.prompts.map(x => `<li>${x}</li>`).join("")}</ul>
-        </div>
-
-        <div class="lessonSect">
-          <h4>Memory Verse</h4>
-          <div class="tiny">${lesson.memoryVerse}</div>
-        </div>
-      `;
-    }
-
-    async function generateLesson(forceVerseOfDay = false) {
-      $("bibleErr").textContent = "";
-      $("bibleStatusChip").textContent = "Loading…";
-
-      const date = $("bibleDate").value.trim();
-      const ref = $("bibleRef").value.trim();
-
-      try {
-        const qs = new URLSearchParams();
-        qs.set("date", date || new Date().toISOString().slice(0,10));
-        if (!forceVerseOfDay && ref) qs.set("ref", ref);
-
-        const r = await apiFetch(`/api/daily-lesson?${qs.toString()}`);
-        const lesson = r.lesson;
-
-        renderLesson(lesson);
-        $("bibleStatusChip").textContent = "Lesson ready";
-        toast("ok", "Bible Study", "Lesson generated.");
-      } catch (e) {
-        $("bibleStatusChip").textContent = "Error";
-        $("bibleErr").textContent = "Lesson failed: " + e.message;
-        toast("err", "Lesson failed", e.message);
-      }
-    }
-
-    async function saveJournal() {
-      $("bibleErr").textContent = "";
-      const date = $("bibleDate").value.trim();
-      const reference = $("bibleRef").value.trim();
-      const entry = $("journal").value;
-
-      try {
-        await apiFetch("/api/bible-journal", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ date, reference, entry })
-        });
-        toast("ok", "Saved", "Journal saved for this date.");
-      } catch (e) {
-        $("bibleErr").textContent = "Save failed: " + e.message;
-        toast("err", "Save failed", e.message);
-      }
-    }
-
-    async function loadJournal() {
-      $("bibleErr").textContent = "";
-      const date = $("bibleDate").value.trim();
-      try {
-        const r = await apiFetch(`/api/bible-journal?date=${encodeURIComponent(date)}`);
-        const j = r.journal;
-        if (!j) {
-          toast("ok", "No entry", "No journal saved for this date yet.");
-          return;
-        }
-        $("bibleRef").value = j.reference || $("bibleRef").value;
-        $("journal").value = j.entry || "";
-        toast("ok", "Loaded", "Journal loaded.");
-      } catch (e) {
-        $("bibleErr").textContent = "Load failed: " + e.message;
-        toast("err", "Load failed", e.message);
-      }
-    }
-
-    // --------- WIRE UP ----------
-    $("openApiBtn").onclick = () => window.open(API_BASE + "/api/health", "_blank");
-    $("checkApiBtn").onclick = async () => { await checkApi(); };
-    $("refreshBtn").onclick = async () => { await loadFolders(); await loadVideos(); toast("ok","Refreshed","UI refreshed."); };
-    $("loadBtn").onclick = loadVideos;
-
-    $("uploadBtn").onclick = upload;
-    $("clearBtn").onclick = clearForm;
-
-    $("search").addEventListener("input", () => {
-      renderVideos();
-      if ($("autoLoad").checked) loadVideos();
-    });
-
-    $("autoLoad").addEventListener("change", () => {
-      if ($("autoLoad").checked) loadVideos();
-    });
-
-    // modal controls
-    $("closeBtn").onclick = closeModal;
-    $("modal").addEventListener("click", (e) => { if (e.target === $("modal")) closeModal(); });
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeModal();
-      if (e.key === "/") { e.preventDefault(); $("search").focus(); }
-    });
-
-    $("copyStreamBtn").onclick = async () => {
-      if (!current) return;
-      const url = `${API_BASE}/api/videos/${encodeURIComponent(current.id)}/stream`;
-      await navigator.clipboard.writeText(url);
-      toast("ok", "Copied", "Stream link copied.");
-    };
-    $("openStreamBtn").onclick = () => {
-      if (!current) return;
-      const url = `${API_BASE}/api/videos/${encodeURIComponent(current.id)}/stream`;
-      window.open(url, "_blank");
-    };
-    $("deleteBtn").onclick = async () => {
-      if (!current) return;
-      if (!confirm("Delete this video?")) return;
-      try {
-        await apiFetch(`/api/videos/${encodeURIComponent(current.id)}`, { method: "DELETE" });
-        toast("ok","Deleted","Video deleted.");
-        closeModal();
-        await loadVideos();
-      } catch (e) {
-        toast("err","Delete failed", e.message);
-      }
-    };
-
-    // Bible study buttons
-    $("verseOfDayBtn").onclick = () => generateLesson(true);
-    $("generateLessonBtn").onclick = () => generateLesson(false);
-    $("saveJournalBtn").onclick = saveJournal;
-    $("loadJournalBtn").onclick = loadJournal;
-
-    // init
-    (async function init(){
-      await checkApi();
-      await loadFolders();
-      await loadVideos();
-      setBibleDateDefault();
-      // keep owner default
-      $("owner").value = $("owner").value || "Aiden";
-    })();
-  </script>
 </body>
 </html>
