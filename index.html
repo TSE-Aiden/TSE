@@ -1,329 +1,1597 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<title>TSE</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TSE</title>
+  <style>
+    :root{
+      --bg0:#070814;
+      --bg1:#0b0d22;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.09);
+      --stroke: rgba(255,255,255,.10);
+      --stroke2: rgba(255,255,255,.18);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.65);
+      --muted2: rgba(255,255,255,.45);
+      --accent:#8b5cf6;
+      --accent2:#22c55e;
+      --danger:#ef4444;
+      --warn:#f59e0b;
+      --shadow: 0 20px 80px rgba(0,0,0,.45);
+      --radius: 18px;
+      --radius2: 24px;
+    }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(1200px 800px at 65% 25%, rgba(139,92,246,.25), transparent 55%),
+        radial-gradient(900px 600px at 25% 75%, rgba(59,130,246,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      color: var(--text);
+    }
+    .wrap{ max-width: 1300px; margin: 0 auto; padding: 28px 18px 80px; }
 
-<style>
-/* =================== THEME =================== */
-:root {
-  --bg: #0b0e14;
-  --panel: rgba(18,22,36,.85);
-  --panel-strong: #121826;
-  --border: rgba(255,255,255,.08);
-  --accent: #6d7cff;
-  --accent-soft: rgba(109,124,255,.15);
-  --text: #e6e9f2;
-  --muted: #9aa4c7;
-}
+    /* top bar */
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; margin-bottom:18px;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      padding: 10px 14px;
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius: 999px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+    .dot{ width:10px; height:10px; border-radius:999px; background: rgba(255,255,255,.18); }
+    .brand h1{ font-size:14px; margin:0; letter-spacing:.4px; }
+    .sub{ font-size:12px; color:var(--muted2); margin-top:1px; }
 
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background:
-    radial-gradient(1200px 600px at 50% -200px, #1a2140, transparent),
-    var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
-}
+    .rightbar{ display:flex; align-items:center; gap:10px; }
+    .status{
+      display:flex; align-items:center; gap:10px;
+      padding: 10px 14px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      border-radius: 999px;
+      backdrop-filter: blur(10px);
+    }
+    .status .pill{
+      display:flex; align-items:center; gap:8px;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.18);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .led{ width:10px; height:10px; border-radius:999px; background: var(--danger); box-shadow: 0 0 18px rgba(239,68,68,.6); }
+    .led.ok{ background: var(--accent2); box-shadow: 0 0 18px rgba(34,197,94,.55); }
 
-/* =================== HEADER =================== */
-header {
-  padding: 18px 28px;
-  font-weight: 800;
-  letter-spacing: .6px;
-  font-size: 18px;
-}
+    .btn{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.05);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: var(--stroke2); background: rgba(255,255,255,.07); }
+    .btn.primary{ background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.35); }
+    .btn.primary:hover{ background: rgba(139,92,246,.22); }
+    .btn.danger{ background: rgba(239,68,68,.13); border-color: rgba(239,68,68,.30); }
+    .btn.ghost{ background: transparent; }
+    .btn.small{ padding: 8px 10px; border-radius: 10px; font-size: 12px; }
 
-/* =================== TABS =================== */
-.tabs {
-  display: flex;
-  gap: 10px;
-  padding: 0 28px 16px;
-}
-.tab {
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  cursor: pointer;
-  opacity: .6;
-}
-.tab.active {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-  opacity: 1;
-}
+    /* tabs */
+    .tabs{
+      display:flex; gap:8px; margin: 16px 0 18px;
+      padding: 6px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      width: fit-content;
+    }
+    .tab{
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-size: 13px;
+      color: var(--muted);
+      border:1px solid transparent;
+      transition: all .15s ease;
+      user-select:none;
+    }
+    .tab:hover{ color: var(--text); background: rgba(255,255,255,.05); }
+    .tab.active{
+      color: var(--text);
+      background: rgba(139,92,246,.16);
+      border-color: rgba(139,92,246,.32);
+      box-shadow: 0 10px 35px rgba(139,92,246,.18);
+    }
 
-/* =================== LAYOUT =================== */
-main { padding: 0 28px 40px; }
-.panel {
-  background: linear-gradient(180deg, #141a30, #0e1324);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 20px;
-}
-.hidden { display: none; }
+    /* layout */
+    .grid{
+      display:grid;
+      grid-template-columns: 380px 1fr;
+      gap: 16px;
+      align-items:start;
+    }
+    @media (max-width: 1000px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+    .panel{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      border-radius: var(--radius2);
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+    .panel h2{
+      margin:0 0 6px;
+      font-size: 14px;
+      letter-spacing:.3px;
+    }
+    .panel .hint{ margin:0 0 14px; font-size: 12px; color: var(--muted2); }
 
-/* =================== VIDEO =================== */
-.video-layout {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 16px;
-}
-video {
-  width: 100%;
-  background: black;
-  border-radius: 14px;
-}
-.timestamp {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 6px;
-}
+    .field{ margin: 10px 0; }
+    label{ display:block; font-size: 12px; color: var(--muted2); margin-bottom: 6px; }
+    input, select, textarea{
+      width:100%;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 10px 12px;
+      outline:none;
+      transition: border-color .15s ease, background .15s ease;
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(139,92,246,.45);
+      background: rgba(0,0,0,.24);
+    }
+    textarea{ min-height: 110px; resize: vertical; }
+    .row{ display:flex; gap:10px; }
+    .row > *{ flex:1; }
 
-/* =================== NOTES =================== */
-.notes-panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-.toolbar {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-.toolbar button, .toolbar select, .toolbar input {
-  background: #1a2140;
-  color: white;
-  border: 1px solid #2a3470;
-  border-radius: 6px;
-  padding: 6px 8px;
-}
-#editor {
-  flex: 1;
-  padding: 14px;
-  background: #0a0f1f;
-  border: 1px solid #2a3470;
-  border-radius: 12px;
-  outline: none;
-  overflow-y: auto;
-}
-#editor img {
-  max-width: 100%;
-  resize: both;
-  border: 1px dashed #555;
-  margin: 6px 0;
-}
+    /* videos */
+    .videoTop{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      margin-bottom: 10px;
+    }
+    .searchRow{
+      display:flex; gap:10px; align-items:center; margin-bottom:10px;
+    }
+    .chips{
+      display:flex; gap:8px; flex-wrap:wrap; margin: 8px 0 10px;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      border-radius: 999px;
+      padding: 7px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      cursor:pointer;
+      user-select:none;
+      transition: all .15s ease;
+    }
+    .chip:hover{ border-color: var(--stroke2); transform: translateY(-1px); }
+    .chip.active{
+      color: var(--text);
+      border-color: rgba(139,92,246,.35);
+      background: rgba(139,92,246,.14);
+    }
+    .chip .count{
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.25);
+      color: var(--muted2);
+    }
 
-/* =================== FOLDERS =================== */
-.folders {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-.folder {
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: #1a2140;
-  border: 1px solid #2a3470;
-  cursor: pointer;
-}
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+      padding: 8px 0 0;
+    }
+    .card{
+      border:1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border-radius: 18px;
+      overflow:hidden;
+      cursor:pointer;
+      transform: translateY(0);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+      position:relative;
+    }
+    .card:hover{
+      transform: translateY(-4px);
+      border-color: rgba(139,92,246,.35);
+      box-shadow: 0 22px 70px rgba(0,0,0,.55);
+    }
+    .thumb{
+      aspect-ratio: 16/9;
+      background: rgba(0,0,0,.35);
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .play{
+      width:48px; height:48px; border-radius:999px;
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.18);
+      display:flex; align-items:center; justify-content:center;
+      backdrop-filter: blur(8px);
+      opacity:.95;
+      transition: transform .18s ease;
+    }
+    .card:hover .play{ transform: scale(1.06); }
+    .play:before{
+      content:"";
+      display:block;
+      width:0;height:0;
+      border-left: 14px solid rgba(255,255,255,.88);
+      border-top: 9px solid transparent;
+      border-bottom: 9px solid transparent;
+      margin-left: 4px;
+    }
+    .meta{
+      padding: 12px 12px 13px;
+    }
+    .title{
+      font-size: 13px;
+      font-weight: 650;
+      margin: 0 0 8px;
+      letter-spacing:.2px;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .tags{
+      display:flex; flex-wrap:wrap; gap:6px;
+      color: var(--muted2);
+      font-size: 11px;
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.18);
+    }
+    .badge.folder{ border-color: rgba(139,92,246,.25); background: rgba(139,92,246,.10); color: rgba(255,255,255,.82); }
+    .smallLine{
+      margin-top: 9px;
+      display:flex; justify-content:space-between;
+      font-size: 11px; color: var(--muted2);
+    }
 
-/* =================== NEWS =================== */
-iframe {
-  width: 100%;
-  height: 70vh;
-  border: none;
-  border-radius: 14px;
-}
+    .empty{
+      padding: 18px;
+      border:1px dashed rgba(255,255,255,.14);
+      border-radius: 18px;
+      background: rgba(0,0,0,.15);
+      color: var(--muted2);
+      text-align:center;
+      margin-top: 10px;
+    }
 
-/* =================== BIBLE =================== */
-.bible-lesson {
-  line-height: 1.6;
-}
-.bible-lesson h4 {
-  margin-top: 14px;
-}
-</style>
+    /* modal */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center; justify-content:center;
+      padding: 18px;
+      z-index: 50;
+    }
+    .overlay.show{ display:flex; }
+    .modal{
+      width: min(1100px, 96vw);
+      border-radius: 22px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10,10,20,.82);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 35px 120px rgba(0,0,0,.7);
+      overflow:hidden;
+      transform: translateY(8px) scale(.98);
+      opacity:0;
+      transition: transform .18s ease, opacity .18s ease;
+    }
+    .overlay.show .modal{
+      transform: translateY(0) scale(1);
+      opacity:1;
+    }
+    .modalTop{
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 12px 14px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      gap:10px;
+    }
+    .modalTitle{ font-size: 13px; font-weight: 650; }
+    .modalActions{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .playerWrap{ padding: 10px 14px 14px; }
+    video{
+      width:100%;
+      max-height: 62vh;
+      background: black;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .notesPanel{
+      border-top:1px solid rgba(255,255,255,.10);
+      padding: 12px 14px 14px;
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .notesPanel .box{
+      border:1px solid var(--stroke);
+      border-radius: 16px;
+      padding: 10px 10px;
+      background: rgba(255,255,255,.03);
+      min-height: 90px;
+    }
+    .notesPanel h3{ margin:0 0 6px; font-size: 12px; color: var(--muted2); }
+    .notesPanel p{ margin:0; font-size: 12px; color: rgba(255,255,255,.86); white-space: pre-wrap; }
+
+    /* toast */
+    .toast{
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 80;
+      background: rgba(0,0,0,.62);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      min-width: 220px;
+      display:none;
+    }
+    .toast.show{ display:block; animation: pop .20s ease; }
+    @keyframes pop{
+      from{ transform: translateY(8px); opacity:0; }
+      to{ transform: translateY(0); opacity:1; }
+    }
+    .toast .t{ font-size: 12px; color: var(--muted); }
+    .toast .m{ font-size: 13px; margin-top: 4px; }
+
+    /* notes docs editor */
+    .docsGrid{
+      display:grid;
+      grid-template-columns: 320px 1fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 1000px){
+      .docsGrid{ grid-template-columns: 1fr; }
+    }
+    .docListItem{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      border-radius: 14px;
+      padding: 10px 12px;
+      cursor:pointer;
+      transition: transform .15s ease, border-color .15s ease;
+      margin-bottom: 8px;
+    }
+    .docListItem:hover{ transform: translateY(-1px); border-color: var(--stroke2); }
+    .docListItem.active{
+      border-color: rgba(139,92,246,.35);
+      background: rgba(139,92,246,.12);
+    }
+    .docListItem .ttl{ font-weight: 650; font-size: 13px; margin:0 0 4px; }
+    .docListItem .dt{ font-size: 11px; color: var(--muted2); margin:0; }
+
+    .toolbar{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      padding: 10px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.16);
+      border-radius: 16px;
+      margin-bottom: 10px;
+    }
+    .tool{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-size: 12px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .tool:hover{ border-color: var(--stroke2); }
+    .tool input[type="color"]{ width: 32px; height: 18px; padding:0; border:0; background: transparent; }
+    .tool select{ width:auto; padding: 7px 10px; border-radius: 12px; }
+
+    .editor{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
+      border-radius: 18px;
+      padding: 14px;
+      min-height: 420px;
+      outline:none;
+    }
+    .editor:focus{ border-color: rgba(139,92,246,.35); }
+
+    /* resizable image wrapper */
+    .imgWrap{
+      display:inline-block;
+      position:relative;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius: 14px;
+      overflow:hidden;
+      margin: 8px 0;
+      max-width: 100%;
+    }
+    .imgWrap img{
+      display:block;
+      width: 420px;
+      max-width: 100%;
+      height:auto;
+    }
+    .handle{
+      position:absolute;
+      width: 14px;
+      height: 14px;
+      right: 8px;
+      bottom: 8px;
+      border-radius: 6px;
+      border:1px solid rgba(255,255,255,.20);
+      background: rgba(0,0,0,.55);
+      cursor: nwse-resize;
+      backdrop-filter: blur(6px);
+    }
+
+    /* news modal iframe */
+    .iframeBox{
+      width: 100%;
+      height: 72vh;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 16px;
+      background: rgba(0,0,0,.35);
+    }
+    .muted{ color: var(--muted2); font-size: 12px; }
+    .err{ color: rgba(239,68,68,.92); font-size: 12px; margin-top: 10px; white-space: pre-wrap; }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="dot" id="brandDot"></div>
+        <div>
+          <h1>TSE</h1>
+          <div class="sub">Videos + Notes + News + Daily Bible Study (R2 + D1)</div>
+        </div>
+      </div>
 
-<header>TSE</header>
-
-<div class="tabs">
-  <div class="tab active" data-tab="videos">Videos</div>
-  <div class="tab" data-tab="notes">Notes</div>
-  <div class="tab" data-tab="bible">Daily Bible Study</div>
-  <div class="tab" data-tab="news">News</div>
-</div>
-
-<main>
-
-<!-- ================= VIDEOS ================= -->
-<div id="videos" class="panel">
-  <div class="video-layout">
-    <div>
-      <video id="player" controls></video>
-      <div class="timestamp">Safe player · no duration dependency</div>
+      <div class="rightbar">
+        <div class="status">
+          <div class="pill">
+            <span class="led" id="led"></span>
+            <span id="apiText">API: checking...</span>
+          </div>
+        </div>
+        <button class="btn" id="openApiBtn">Open API</button>
+        <button class="btn" id="checkApiBtn">Check API</button>
+        <button class="btn" id="refreshBtn">Refresh</button>
+      </div>
     </div>
 
-    <div class="notes-panel">
-      <strong>Quick Notes</strong>
-      <div id="quickNotes" contenteditable="true" style="
-        flex:1;
-        margin-top:8px;
-        background:#0a0f1f;
-        border:1px solid #2a3470;
-        border-radius:12px;
-        padding:12px;">
-        Jot thoughts while watching…
+    <div class="tabs">
+      <div class="tab active" data-tab="videos">Videos</div>
+      <div class="tab" data-tab="notes">Notes</div>
+      <div class="tab" data-tab="news">News</div>
+      <div class="tab" data-tab="bible">Daily Bible Study</div>
+    </div>
+
+    <!-- VIDEOS -->
+    <section id="tab-videos">
+      <div class="grid">
+        <div class="panel">
+          <h2>Upload video</h2>
+          <p class="hint">Shared — appears for everyone using this site</p>
+
+          <div class="field">
+            <label>Video file (max ~500MB recommended)</label>
+            <input type="file" id="file" accept="video/*" />
+          </div>
+
+          <div class="field">
+            <label>Title</label>
+            <input id="title" placeholder="e.g., NQ Scalps — Jan 5" />
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Owner</label>
+              <input id="owner" placeholder="Aiden" />
+            </div>
+            <div class="field">
+              <label>Sort tag</label>
+              <input id="tag" placeholder="Trading / Review / Setup" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label>Description Q1</label>
+              <input id="q1" placeholder="What was the setup?" />
+            </div>
+            <div class="field">
+              <label>Description Q2</label>
+              <input id="q2" placeholder="What did you learn?" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Notes (optional)</label>
+            <textarea id="videoNotes" placeholder="Write notes attached to this video..."></textarea>
+          </div>
+
+          <div class="field">
+            <label>Folder</label>
+            <select id="folderSelect"></select>
+          </div>
+
+          <div class="row">
+            <button class="btn primary" id="uploadBtn">Upload</button>
+            <button class="btn" id="clearBtn">Clear</button>
+          </div>
+
+          <div class="muted" style="margin-top:10px;">
+            Tip: Drag any video card onto a folder chip. Press <b>/</b> to focus search. Press <b>Esc</b> to close the player.
+          </div>
+          <div class="err" id="uploadErr"></div>
+        </div>
+
+        <div class="panel">
+          <div class="videoTop">
+            <div>
+              <h2>Videos</h2>
+              <p class="hint">YouTube-style cards • hover to preview • drag into folders</p>
+            </div>
+            <button class="btn" id="loadBtn">Load</button>
+          </div>
+
+          <div class="searchRow">
+            <input id="search" placeholder="Search videos by title, owner, tag, notes..." />
+            <select id="sortSelect" style="max-width:200px;">
+              <option value="newest">Newest</option>
+              <option value="oldest">Oldest</option>
+            </select>
+            <label class="muted" style="display:flex; gap:8px; align-items:center;">
+              <input type="checkbox" id="autoLoad" checked />
+              Auto-load
+            </label>
+          </div>
+
+          <div class="chips" id="folderChips"></div>
+
+          <div id="videosInfo" class="muted"></div>
+          <div class="err" id="videosErr"></div>
+
+          <div class="cards" id="cards"></div>
+          <div class="empty" id="empty" style="display:none;">No videos. Upload one, then click Load.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTES DOCS -->
+    <section id="tab-notes" style="display:none;">
+      <div class="panel">
+        <h2>Notes (Docs)</h2>
+        <p class="hint">Create rich “docs” with formatting + images. Autosaves. Stored in D1.</p>
+
+        <div class="docsGrid">
+          <div>
+            <div class="row" style="margin-bottom:10px;">
+              <button class="btn primary" id="newDocBtn">+ New doc</button>
+              <button class="btn" id="refreshDocsBtn">Refresh</button>
+            </div>
+            <div id="docList"></div>
+          </div>
+
+          <div>
+            <div class="row" style="margin-bottom:10px;">
+              <input id="docTitle" placeholder="Doc title..." />
+              <button class="btn primary" id="saveDocBtn">Save</button>
+              <button class="btn danger" id="deleteDocBtn">Delete</button>
+            </div>
+
+            <div class="toolbar">
+              <button class="tool" data-cmd="bold"><b>B</b></button>
+              <button class="tool" data-cmd="italic"><i>I</i></button>
+              <button class="tool" data-cmd="underline"><u>U</u></button>
+
+              <span class="tool">
+                Size
+                <select id="fontSizeSel">
+                  <option value="12px">12</option>
+                  <option value="14px" selected>14</option>
+                  <option value="16px">16</option>
+                  <option value="18px">18</option>
+                  <option value="22px">22</option>
+                  <option value="28px">28</option>
+                </select>
+              </span>
+
+              <span class="tool">
+                Text
+                <input type="color" id="textColor" value="#ffffff" />
+              </span>
+
+              <span class="tool">
+                Highlight
+                <input type="color" id="hiliteColor" value="#8b5cf6" />
+              </span>
+
+              <button class="tool" data-cmd="justifyLeft">Left</button>
+              <button class="tool" data-cmd="justifyCenter">Center</button>
+              <button class="tool" data-cmd="justifyRight">Right</button>
+
+              <span class="tool">
+                <input type="file" id="imgInsert" accept="image/*" style="max-width:180px;" />
+              </span>
+            </div>
+
+            <div id="editor" class="editor" contenteditable="true"></div>
+            <div class="muted" style="margin-top:10px;">
+              Image scaling: click an image, drag the bottom-right handle.
+            </div>
+            <div class="err" id="docsErr"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEWS -->
+    <section id="tab-news" style="display:none;">
+      <div class="panel">
+        <h2>News</h2>
+        <p class="hint">Choose a source. It opens in an in-app modal. If the site blocks embeds, you’ll get an “Open in new tab” fallback.</p>
+
+        <div class="row" style="margin-bottom:10px;">
+          <select id="newsSource"></select>
+          <button class="btn primary" id="openNewsBtn">Open</button>
+        </div>
+
+        <div class="muted">
+          Reliable sources included by default: central banks / regulators / major finance portals (plus Forex Factory).
+        </div>
+      </div>
+    </section>
+
+    <!-- BIBLE -->
+    <section id="tab-bible" style="display:none;">
+      <div class="panel">
+        <h2>Daily Bible Study</h2>
+        <p class="hint">A real lesson: Read → Observe → Interpret → Apply → Prayer. Generates from passage text + saves your journal per day.</p>
+
+        <div class="row">
+          <div class="field">
+            <label>Date</label>
+            <input id="bibleDate" />
+          </div>
+          <div class="field" style="flex:2;">
+            <label>Verse reference</label>
+            <input id="bibleRef" placeholder="John 3:16" />
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:8px;">
+          <button class="btn" id="verseOfDayBtn">Verse of the day</button>
+          <button class="btn primary" id="genLessonBtn">Generate lesson</button>
+          <button class="btn" id="loadJournalBtn">Load journal</button>
+          <button class="btn primary" id="saveJournalBtn">Save journal</button>
+        </div>
+
+        <div class="field" style="margin-top:12px;">
+          <label>Lesson</label>
+          <textarea id="lessonBox" style="min-height:220px;" placeholder='Hit "Generate lesson" to load today’s study.'></textarea>
+        </div>
+
+        <div class="field">
+          <label>Journal (saved per day)</label>
+          <textarea id="journalBox" style="min-height:220px;" placeholder="Write your response: what you learned, conviction, action step, prayer..."></textarea>
+        </div>
+
+        <div class="err" id="bibleErr"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- video modal -->
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <div class="modalTitle" id="modalTitle">Video</div>
+          <div class="muted" id="modalSub"></div>
+        </div>
+        <div class="modalActions">
+          <button class="btn small" id="copyStreamBtn">Copy stream link</button>
+          <a class="btn small" id="openStreamBtn" target="_blank" rel="noopener">Open stream</a>
+          <button class="btn small danger" id="deleteVideoBtn">Delete</button>
+          <button class="btn small" id="closeModalBtn">Close</button>
+        </div>
+      </div>
+      <div class="playerWrap">
+        <video id="player" controls playsinline preload="metadata"></video>
+      </div>
+      <div class="notesPanel" id="videoMetaBoxes">
+        <div class="box">
+          <h3>Q1</h3>
+          <p id="boxQ1"></p>
+        </div>
+        <div class="box">
+          <h3>Q2</h3>
+          <p id="boxQ2"></p>
+        </div>
+        <div class="box">
+          <h3>Notes</h3>
+          <p id="boxNotes"></p>
+        </div>
       </div>
     </div>
   </div>
 
-  <button id="loadDemo" style="margin-top:12px;">Load demo video</button>
-</div>
-
-<!-- ================= NOTES ================= -->
-<div id="notes" class="panel hidden">
-  <h3>Notes Document</h3>
-
-  <div class="toolbar">
-    <button data-style="bold">B</button>
-    <button data-style="italic">I</button>
-    <button data-style="underline">U</button>
-    <input type="color" id="colorPicker" />
-    <select id="fontSize">
-      <option value="14px">14</option>
-      <option value="16px">16</option>
-      <option value="20px">20</option>
-      <option value="28px">28</option>
-    </select>
-    <input type="file" id="imgUpload" accept="image/*" />
-    <button id="exportPDF">Export PDF</button>
+  <!-- news modal -->
+  <div class="overlay" id="newsOverlay">
+    <div class="modal">
+      <div class="modalTop">
+        <div>
+          <div class="modalTitle" id="newsTitle">News</div>
+          <div class="muted" id="newsSub"></div>
+        </div>
+        <div class="modalActions">
+          <a class="btn small" id="newsOpenTab" target="_blank" rel="noopener">Open in new tab</a>
+          <button class="btn small" id="closeNewsBtn">Close</button>
+        </div>
+      </div>
+      <div class="playerWrap">
+        <iframe id="newsFrame" class="iframeBox" referrerpolicy="no-referrer"></iframe>
+        <div class="err" id="newsErr"></div>
+      </div>
+    </div>
   </div>
 
-  <div id="editor" contenteditable="true">
-    This is a full document.  
-    Resize images.  
-    Color text.  
-    Journal freely.
+  <!-- toast -->
+  <div class="toast" id="toast">
+    <div class="t" id="toastTop"></div>
+    <div class="m" id="toastMsg"></div>
   </div>
-</div>
-
-<!-- ================= BIBLE ================= -->
-<div id="bible" class="panel hidden">
-  <h3>Daily Bible Study</h3>
-
-  <input id="verseInput" placeholder="John 3:16" />
-  <button id="loadVerse">Generate Lesson</button>
-
-  <div id="bibleContent" class="bible-lesson"></div>
-</div>
-
-<!-- ================= NEWS ================= -->
-<div id="news" class="panel hidden">
-  <h3>Market News Terminal</h3>
-
-  <select id="newsSelect">
-    <option value="">Select source</option>
-    <option value="https://www.forexfactory.com">Forex Factory</option>
-    <option value="https://www.investing.com">Investing.com</option>
-    <option value="https://www.marketwatch.com">MarketWatch</option>
-    <option value="https://www.bloomberg.com/markets">Bloomberg Markets</option>
-  </select>
-
-  <iframe id="newsFrame"></iframe>
-</div>
-
-</main>
 
 <script>
-/* ================= SAFETY ================= */
-window.onerror = e => console.warn("Error isolated:", e);
+  // ------------ Config ------------
+  const API_BASE = location.origin.replace(/^http:/, "https:"); // same site
+  const API = (p) => `${API_BASE}${p}`;
 
-/* ================= TABS ================= */
-document.querySelectorAll(".tab").forEach(tab => {
-  tab.onclick = () => {
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    document.querySelectorAll(".panel").forEach(p => p.classList.add("hidden"));
-    tab.classList.add("active");
-    document.getElementById(tab.dataset.tab).classList.remove("hidden");
-  };
-});
-
-/* ================= VIDEO ================= */
-const player = document.getElementById("player");
-document.getElementById("loadDemo").onclick = () => {
-  player.pause();
-  player.removeAttribute("src");
-  player.load();
-  player.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
-};
-
-/* ================= NOTES ================= */
-function applyStyle(style, value) {
-  const sel = window.getSelection();
-  if (!sel.rangeCount) return;
-  const range = sel.getRangeAt(0);
-  if (range.collapsed) return;
-  const span = document.createElement("span");
-  span.style[style] = value;
-  range.surroundContents(span);
-}
-
-document.querySelectorAll("[data-style]").forEach(btn => {
-  btn.onclick = () => {
-    const map = {
-      bold: ["fontWeight","700"],
-      italic: ["fontStyle","italic"],
-      underline: ["textDecoration","underline"]
-    };
-    applyStyle(...map[btn.dataset.style]);
-  };
-});
-document.getElementById("colorPicker").oninput = e =>
-  applyStyle("color", e.target.value);
-document.getElementById("fontSize").onchange = e =>
-  applyStyle("fontSize", e.target.value);
-
-document.getElementById("imgUpload").onchange = e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  const img = document.createElement("img");
-  img.src = URL.createObjectURL(f);
-  document.getElementById("editor").appendChild(img);
-};
-
-/* ================= BIBLE ================= */
-document.getElementById("loadVerse").onclick = async () => {
-  const ref = document.getElementById("verseInput").value || "Psalm 23:1";
-  const out = document.getElementById("bibleContent");
-  out.textContent = "Loading…";
-  try {
-    const r = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}`);
-    const d = await r.json();
-    out.innerHTML = `
-      <h4>${d.reference}</h4>
-      <p>${d.text}</p>
-      <h4>Observe</h4><p>What does this show about God?</p>
-      <h4>Interpret</h4><p>What does it mean?</p>
-      <h4>Apply</h4><p>How should this change you?</p>
-      <h4>Prayer</h4><p>Write a prayer response.</p>`;
-  } catch {
-    out.textContent = "Failed to load lesson.";
+  // ------------ Helpers ------------
+  const $ = (id) => document.getElementById(id);
+  function fmtDate(ts){
+    try{
+      const d = new Date(Number(ts));
+      return d.toLocaleString();
+    }catch{ return ""; }
   }
-};
+  function toast(top, msg){
+    $("toastTop").textContent = top || "";
+    $("toastMsg").textContent = msg || "";
+    $("toast").classList.add("show");
+    clearTimeout(window.__t);
+    window.__t = setTimeout(()=> $("toast").classList.remove("show"), 2200);
+  }
+  async function safeFetchJson(url, opts){
+    const res = await fetch(url, opts);
+    const text = await res.text();
+    let j = null;
+    try{ j = JSON.parse(text); }catch{ j = { error: "Non-JSON response", details: text }; }
+    if (!res.ok) throw new Error(j?.error ? `${j.error}${j.details ? " — " + j.details : ""}` : `HTTP ${res.status}`);
+    return j;
+  }
 
-/* ================= NEWS ================= */
-document.getElementById("newsSelect").onchange = e =>
-  document.getElementById("newsFrame").src = e.target.value;
+  // ------------ API status ------------
+  async function checkApi(){
+    try{
+      const j = await safeFetchJson(API("/api/health"));
+      $("apiText").textContent = "API: online";
+      $("led").classList.add("ok");
+      $("brandDot").style.background = "rgba(34,197,94,.55)";
+      return j;
+    }catch(e){
+      $("apiText").textContent = "API: offline";
+      $("led").classList.remove("ok");
+      $("brandDot").style.background = "rgba(239,68,68,.35)";
+      return null;
+    }
+  }
+
+  $("openApiBtn").onclick = () => window.open(API("/api/health"), "_blank");
+  $("checkApiBtn").onclick = async () => { await checkApi(); toast("Status", $("apiText").textContent); };
+  $("refreshBtn").onclick = () => location.reload();
+
+  // ------------ Tabs ------------
+  document.querySelectorAll(".tab").forEach(t => {
+    t.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+      t.classList.add("active");
+      const tab = t.dataset.tab;
+
+      ["videos","notes","news","bible"].forEach(k => {
+        document.getElementById(`tab-${k}`).style.display = (k === tab) ? "" : "none";
+      });
+
+      // nice little “tab switch” toast
+      toast("Tab", tab.toUpperCase());
+
+      // auto refresh lists
+      if (tab === "notes") loadDocs();
+      if (tab === "videos" && $("autoLoad").checked) loadVideos();
+    });
+  });
+
+  // ------------ Videos state ------------
+  let VIDEOS = [];
+  let FOLDERS = ["Unsorted"];
+  let activeFolder = "";
+  let activeVideo = null;
+
+  function computeFoldersFromVideos(videos){
+    const set = new Set(["Unsorted"]);
+    for (const v of videos){
+      const f = (v.folder || "Unsorted").trim() || "Unsorted";
+      set.add(f);
+    }
+    return Array.from(set);
+  }
+
+  async function loadFolders(){
+    // Load from API + also merge from videos later
+    try{
+      const j = await safeFetchJson(API("/api/folders"));
+      const apiFolders = (j.folders || []).map(f => f.name).filter(Boolean);
+      FOLDERS = Array.from(new Set(["Unsorted", ...apiFolders]));
+    }catch{
+      FOLDERS = ["Unsorted"];
+    }
+    renderFolderSelect();
+    renderFolderChips();
+  }
+
+  function renderFolderSelect(){
+    const sel = $("folderSelect");
+    sel.innerHTML = "";
+    for (const f of FOLDERS){
+      const opt = document.createElement("option");
+      opt.value = f;
+      opt.textContent = f;
+      sel.appendChild(opt);
+    }
+  }
+
+  function renderFolderChips(){
+    const wrap = $("folderChips");
+    wrap.innerHTML = "";
+
+    const all = document.createElement("div");
+    all.className = "chip" + (activeFolder === "" ? " active" : "");
+    all.innerHTML = `All <span class="count">${VIDEOS.length}</span>`;
+    all.onclick = () => { activeFolder = ""; renderFolderChips(); renderVideos(); };
+    wrap.appendChild(all);
+
+    // folder chips
+    const counts = {};
+    for (const v of VIDEOS){
+      const f = (v.folder || "Unsorted").trim() || "Unsorted";
+      counts[f] = (counts[f] || 0) + 1;
+    }
+
+    for (const f of FOLDERS){
+      if (f === "Unsorted" || counts[f]) {
+        const chip = document.createElement("div");
+        chip.className = "chip" + (activeFolder === f ? " active" : "");
+        chip.innerHTML = `${f} <span class="count">${counts[f] || 0}</span>`;
+        chip.dataset.folder = f;
+        chip.onclick = () => { activeFolder = (activeFolder === f ? "" : f); renderFolderChips(); renderVideos(); };
+
+        // allow drop
+        chip.ondragover = (e) => { e.preventDefault(); chip.style.borderColor = "rgba(139,92,246,.55)"; };
+        chip.ondragleave = () => { chip.style.borderColor = ""; };
+        chip.ondrop = async (e) => {
+          e.preventDefault();
+          chip.style.borderColor = "";
+          const vid = e.dataTransfer.getData("text/video-id");
+          if (!vid) return;
+          await moveVideoToFolder(vid, f);
+        };
+
+        wrap.appendChild(chip);
+      }
+    }
+
+    // + folder quick create
+    const add = document.createElement("div");
+    add.className = "chip";
+    add.textContent = "+ Folder";
+    add.onclick = async () => {
+      const name = prompt("Folder name?");
+      if (!name) return;
+      try{
+        await safeFetchJson(API("/api/folders"), {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ name })
+        });
+        toast("Folder", `Created: ${name}`);
+        await loadFolders();
+        // keep selected
+      }catch(e){
+        toast("Error", String(e.message || e));
+      }
+    };
+    wrap.appendChild(add);
+  }
+
+  async function loadVideos(){
+    $("videosErr").textContent = "";
+    $("cards").innerHTML = "";
+    $("empty").style.display = "none";
+    $("videosInfo").textContent = "Loading...";
+    try{
+      const j = await safeFetchJson(API("/api/videos"));
+      VIDEOS = j.videos || [];
+
+      // merge folders
+      const merged = new Set([...FOLDERS, ...computeFoldersFromVideos(VIDEOS)]);
+      FOLDERS = Array.from(merged);
+      renderFolderSelect();
+      renderFolderChips();
+      renderVideos();
+
+      $("videosInfo").textContent = `${VIDEOS.length} item(s)`;
+      toast("Videos", "Loaded");
+    }catch(e){
+      $("videosInfo").textContent = "";
+      $("videosErr").textContent = String(e.message || e);
+      $("empty").style.display = "block";
+    }
+  }
+
+  function filteredVideos(){
+    const q = ($("search").value || "").trim().toLowerCase();
+    let arr = VIDEOS.slice();
+
+    if (activeFolder){
+      arr = arr.filter(v => ((v.folder || "Unsorted").toLowerCase() === activeFolder.toLowerCase()));
+    }
+    if (q){
+      arr = arr.filter(v => {
+        const s = `${v.title||""} ${v.owner||""} ${v.tag||""} ${v.notes||""}`.toLowerCase();
+        return s.includes(q);
+      });
+    }
+
+    const sort = $("sortSelect").value;
+    arr.sort((a,b) => {
+      const A = Number(a.createdAt||0), B = Number(b.createdAt||0);
+      return sort === "oldest" ? (A-B) : (B-A);
+    });
+
+    return arr;
+  }
+
+  function renderVideos(){
+    const arr = filteredVideos();
+    const cards = $("cards");
+    cards.innerHTML = "";
+
+    $("videosInfo").textContent = `${arr.length} item(s)`;
+
+    if (!arr.length){
+      $("empty").style.display = "block";
+      return;
+    }
+    $("empty").style.display = "none";
+
+    for (const v of arr){
+      const card = document.createElement("div");
+      card.className = "card";
+      card.draggable = true;
+
+      card.ondragstart = (e) => {
+        e.dataTransfer.setData("text/video-id", v.id);
+        e.dataTransfer.effectAllowed = "move";
+      };
+
+      card.onclick = () => openVideo(v);
+
+      const thumb = document.createElement("div");
+      thumb.className = "thumb";
+      const play = document.createElement("div");
+      play.className = "play";
+      thumb.appendChild(play);
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+      meta.innerHTML = `
+        <div class="title">${escapeHtml(v.title || "Untitled")}</div>
+        <div class="tags">
+          ${v.owner ? `<span class="badge">${escapeHtml(v.owner)}</span>` : `<span class="badge">No owner</span>`}
+          ${v.tag ? `<span class="badge">${escapeHtml(v.tag)}</span>` : `<span class="badge">No tag</span>`}
+          <span class="badge folder">📁 ${escapeHtml(v.folder || "Unsorted")}</span>
+        </div>
+        <div class="smallLine">
+          <span>${escapeHtml(fmtDate(v.createdAt || 0))}</span>
+          <span>${escapeHtml((v.id || "").replace(/^v_/, ""))}</span>
+        </div>
+      `;
+
+      card.appendChild(thumb);
+      card.appendChild(meta);
+      cards.appendChild(card);
+
+      // Hover preview (lightweight): set video poster later if you add thumbnails.
+      // For now, we keep hover “feel” via animation only (fast + stable).
+    }
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, c => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[c]));
+  }
+
+  async function moveVideoToFolder(videoId, folderName){
+    try{
+      await safeFetchJson(API(`/api/videos/${encodeURIComponent(videoId)}`), {
+        method:"PATCH",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ folder: folderName })
+      });
+      const v = VIDEOS.find(x => x.id === videoId);
+      if (v) v.folder = folderName;
+      toast("Moved", `→ ${folderName}`);
+      renderFolderChips();
+      renderVideos();
+    }catch(e){
+      toast("Error", String(e.message || e));
+    }
+  }
+
+  // Upload
+  $("uploadBtn").onclick = async () => {
+    $("uploadErr").textContent = "";
+    const file = $("file").files?.[0];
+    if (!file) { $("uploadErr").textContent = "Pick a file first."; return; }
+
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("title", $("title").value || "");
+    fd.append("owner", $("owner").value || "");
+    fd.append("tag", $("tag").value || "");
+    fd.append("q1", $("q1").value || "");
+    fd.append("q2", $("q2").value || "");
+    fd.append("notes", $("videoNotes").value || "");
+    fd.append("folder", $("folderSelect").value || "Unsorted");
+
+    $("uploadBtn").disabled = true;
+    $("uploadBtn").textContent = "Uploading...";
+
+    try{
+      await safeFetchJson(API("/api/videos/upload"), { method:"POST", body: fd });
+      toast("Upload", "Complete");
+      clearUploadForm();
+      if ($("autoLoad").checked) await loadVideos();
+    }catch(e){
+      $("uploadErr").textContent = String(e.message || e);
+      toast("Upload failed", "Check error");
+    }finally{
+      $("uploadBtn").disabled = false;
+      $("uploadBtn").textContent = "Upload";
+    }
+  };
+
+  function clearUploadForm(){
+    $("file").value = "";
+    $("title").value = "";
+    $("owner").value = "";
+    $("tag").value = "";
+    $("q1").value = "";
+    $("q2").value = "";
+    $("videoNotes").value = "";
+    $("folderSelect").value = "Unsorted";
+  }
+  $("clearBtn").onclick = clearUploadForm;
+  $("loadBtn").onclick = loadVideos;
+
+  // search shortcuts
+  $("search").addEventListener("input", () => renderVideos());
+  $("sortSelect").addEventListener("change", () => renderVideos());
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "/") {
+      e.preventDefault();
+      $("search").focus();
+    }
+    if (e.key === "Escape") {
+      closeVideo();
+      closeNews();
+    }
+  });
+
+  // ------------ Video modal / player ------------
+  const overlay = $("overlay");
+  const player = $("player");
+
+  function openVideo(v){
+    activeVideo = v;
+    $("modalTitle").textContent = v.title || "Video";
+    $("modalSub").textContent = `${v.owner || "No owner"} • ${v.tag || "No tag"} • ${fmtDate(v.createdAt || 0)} • ${v.folder || "Unsorted"}`;
+
+    $("boxQ1").textContent = v.q1 || "—";
+    $("boxQ2").textContent = v.q2 || "—";
+    $("boxNotes").textContent = v.notes || "—";
+
+    const streamUrl = API(`/api/videos/${encodeURIComponent(v.id)}/stream`);
+    $("openStreamBtn").href = streamUrl;
+
+    // Force a fresh stream request
+    player.pause();
+    player.removeAttribute("src");
+    player.load();
+    player.src = streamUrl;
+    player.preload = "metadata";
+
+    overlay.classList.add("show");
+  }
+  function closeVideo(){
+    overlay.classList.remove("show");
+    player.pause();
+    player.removeAttribute("src");
+    player.load();
+    activeVideo = null;
+  }
+  $("closeModalBtn").onclick = closeVideo;
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeVideo();
+  });
+
+  $("copyStreamBtn").onclick = async () => {
+    if (!activeVideo) return;
+    const url = API(`/api/videos/${encodeURIComponent(activeVideo.id)}/stream`);
+    try{
+      await navigator.clipboard.writeText(url);
+      toast("Copied", "Stream link");
+    }catch{
+      toast("Copy failed", "Browser blocked clipboard");
+    }
+  };
+
+  $("deleteVideoBtn").onclick = async () => {
+    if (!activeVideo) return;
+    if (!confirm(`Delete "${activeVideo.title || "video"}"?`)) return;
+    try{
+      await safeFetchJson(API(`/api/videos/${encodeURIComponent(activeVideo.id)}`), { method:"DELETE" });
+      toast("Deleted", activeVideo.title || activeVideo.id);
+      closeVideo();
+      await loadVideos();
+    }catch(e){
+      toast("Delete failed", String(e.message || e));
+    }
+  };
+
+  // ------------ Notes Docs (Rich Editor) ------------
+  let DOCS = [];
+  let activeDocId = null;
+  let autosaveTimer = null;
+
+  async function loadDocs(){
+    $("docsErr").textContent = "";
+    try{
+      const j = await safeFetchJson(API("/api/docs"));
+      DOCS = j.docs || [];
+      renderDocList();
+      if (!activeDocId && DOCS.length) {
+        await openDoc(DOCS[0].id);
+      }
+    }catch(e){
+      $("docsErr").textContent = String(e.message || e);
+    }
+  }
+
+  function renderDocList(){
+    const list = $("docList");
+    list.innerHTML = "";
+    for (const d of DOCS){
+      const div = document.createElement("div");
+      div.className = "docListItem" + (d.id === activeDocId ? " active" : "");
+      div.onclick = () => openDoc(d.id);
+      div.innerHTML = `
+        <p class="ttl">${escapeHtml(d.title || "Untitled")}</p>
+        <p class="dt">${escapeHtml(fmtDate(d.updatedAt || d.createdAt || 0))}</p>
+      `;
+      list.appendChild(div);
+    }
+  }
+
+  async function openDoc(id){
+    activeDocId = id;
+    renderDocList();
+    $("docsErr").textContent = "";
+    try{
+      const j = await safeFetchJson(API(`/api/docs/${encodeURIComponent(id)}`));
+      const doc = j.doc;
+      $("docTitle").value = doc.title || "Untitled";
+      $("editor").innerHTML = doc.content_html || "";
+      toast("Doc", "Loaded");
+    }catch(e){
+      $("docsErr").textContent = String(e.message || e);
+    }
+  }
+
+  async function createDoc(){
+    const title = prompt("Doc title?") || "Untitled";
+    try{
+      const j = await safeFetchJson(API("/api/docs"), {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ title, content_html: "" })
+      });
+      toast("Doc", "Created");
+      await loadDocs();
+      await openDoc(j.id);
+    }catch(e){
+      toast("Error", String(e.message || e));
+    }
+  }
+
+  async function saveDoc(showToast = true){
+    if (!activeDocId) return;
+    const title = $("docTitle").value || "Untitled";
+    const content_html = $("editor").innerHTML || "";
+    try{
+      await safeFetchJson(API(`/api/docs/${encodeURIComponent(activeDocId)}`), {
+        method:"PUT",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ title, content_html })
+      });
+      if (showToast) toast("Saved", "Doc updated");
+      await loadDocs();
+    }catch(e){
+      $("docsErr").textContent = String(e.message || e);
+    }
+  }
+
+  async function deleteDoc(){
+    if (!activeDocId) return;
+    if (!confirm("Delete this doc?")) return;
+    try{
+      await safeFetchJson(API(`/api/docs/${encodeURIComponent(activeDocId)}`), { method:"DELETE" });
+      toast("Deleted", "Doc removed");
+      activeDocId = null;
+      $("editor").innerHTML = "";
+      $("docTitle").value = "";
+      await loadDocs();
+    }catch(e){
+      toast("Error", String(e.message || e));
+    }
+  }
+
+  $("newDocBtn").onclick = createDoc;
+  $("refreshDocsBtn").onclick = loadDocs;
+  $("saveDocBtn").onclick = () => saveDoc(true);
+  $("deleteDocBtn").onclick = deleteDoc;
+
+  // toolbar commands
+  document.querySelectorAll(".tool[data-cmd]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const cmd = btn.dataset.cmd;
+      document.execCommand(cmd, false, null);
+      $("editor").focus();
+    });
+  });
+
+  // font size + colors
+  $("fontSizeSel").addEventListener("change", () => {
+    const size = $("fontSizeSel").value;
+    document.execCommand("fontSize", false, "7"); // then restyle
+    // Replace <font size="7"> with spans
+    const editor = $("editor");
+    editor.querySelectorAll('font[size="7"]').forEach(el => {
+      const span = document.createElement("span");
+      span.style.fontSize = size;
+      span.innerHTML = el.innerHTML;
+      el.replaceWith(span);
+    });
+    $("editor").focus();
+  });
+
+  $("textColor").addEventListener("input", () => {
+    document.execCommand("foreColor", false, $("textColor").value);
+    $("editor").focus();
+  });
+
+  $("hiliteColor").addEventListener("input", () => {
+    document.execCommand("hiliteColor", false, $("hiliteColor").value);
+    $("editor").focus();
+  });
+
+  // image insert + resizable handles
+  $("imgInsert").addEventListener("change", async () => {
+    const f = $("imgInsert").files?.[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const wrap = document.createElement("span");
+      wrap.className = "imgWrap";
+      wrap.contentEditable = "false";
+      wrap.innerHTML = `<img src="${reader.result}" alt="image"/><span class="handle"></span>`;
+      insertNodeAtCursor(wrap);
+      setupImageResize(wrap);
+      $("imgInsert").value = "";
+      $("editor").focus();
+    };
+    reader.readAsDataURL(f);
+  });
+
+  function insertNodeAtCursor(node){
+    const sel = window.getSelection();
+    if (!sel || !sel.rangeCount) {
+      $("editor").appendChild(node);
+      return;
+    }
+    const range = sel.getRangeAt(0);
+    range.deleteContents();
+    range.insertNode(node);
+    // move cursor after node
+    range.setStartAfter(node);
+    range.setEndAfter(node);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  function setupAllImageResizers(){
+    $("editor").querySelectorAll(".imgWrap").forEach(setupImageResize);
+  }
+
+  function setupImageResize(wrap){
+    if (!wrap || wrap.__wired) return;
+    wrap.__wired = true;
+
+    const handle = wrap.querySelector(".handle");
+    const img = wrap.querySelector("img");
+    if (!handle || !img) return;
+
+    let startX=0, startW=0;
+
+    handle.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      startX = e.clientX;
+      startW = img.getBoundingClientRect().width;
+      const onMove = (ev) => {
+        const dx = ev.clientX - startX;
+        const next = Math.max(120, Math.min(900, startW + dx));
+        img.style.width = next + "px";
+      };
+      const onUp = () => {
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+      };
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
+    });
+  }
+
+  // autosave
+  $("editor").addEventListener("input", () => {
+    setupAllImageResizers();
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => saveDoc(false), 900);
+  });
+  $("docTitle").addEventListener("input", () => {
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => saveDoc(false), 900);
+  });
+
+  // ------------ News ------------
+  const NEWS_SOURCES = [
+    { name: "Forex Factory (Calendar + News)", url: "https://www.forexfactory.com/" },
+    { name: "Federal Reserve (Press Releases)", url: "https://www.federalreserve.gov/newsevents/pressreleases.htm" },
+    { name: "ECB (Press Releases)", url: "https://www.ecb.europa.eu/press/pr/date/html/index.en.html" },
+    { name: "Bank of England (News)", url: "https://www.bankofengland.co.uk/news" },
+    { name: "U.S. Bureau of Labor Statistics (News)", url: "https://www.bls.gov/news.release/" },
+    { name: "SEC (Press Releases)", url: "https://www.sec.gov/news/pressreleases" },
+    { name: "CFTC (Press Releases)", url: "https://www.cftc.gov/PressRoom/PressReleases/index.htm" },
+    { name: "IMF (News)", url: "https://www.imf.org/en/News" }
+  ];
+
+  function initNews(){
+    const sel = $("newsSource");
+    sel.innerHTML = "";
+    for (const s of NEWS_SOURCES){
+      const opt = document.createElement("option");
+      opt.value = s.url;
+      opt.textContent = s.name;
+      sel.appendChild(opt);
+    }
+  }
+
+  const newsOverlay = $("newsOverlay");
+  function openNews(url, name){
+    $("newsErr").textContent = "";
+    $("newsTitle").textContent = name || "News";
+    $("newsSub").textContent = url;
+    $("newsOpenTab").href = url;
+
+    // Attempt iframe embed
+    const frame = $("newsFrame");
+    frame.src = url;
+
+    // Some sites block iframes; detect by timeout + blur heuristic
+    const timer = setTimeout(() => {
+      $("newsErr").textContent =
+        "If this site blocks embeds, use “Open in new tab”. (Many sites set X-Frame-Options / CSP.)";
+    }, 1800);
+
+    frame.onload = () => clearTimeout(timer);
+    newsOverlay.classList.add("show");
+  }
+  function closeNews(){
+    newsOverlay.classList.remove("show");
+    $("newsFrame").src = "about:blank";
+    $("newsErr").textContent = "";
+  }
+  $("closeNewsBtn").onclick = closeNews;
+  newsOverlay.addEventListener("click", (e) => {
+    if (e.target === newsOverlay) closeNews();
+  });
+
+  $("openNewsBtn").onclick = () => {
+    const url = $("newsSource").value;
+    const name = $("newsSource").selectedOptions?.[0]?.textContent || "News";
+    openNews(url, name);
+  };
+
+  // ------------ Bible ------------
+  function initBible(){
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    $("bibleDate").value = `${yyyy}-${mm}-${dd}`;
+    $("bibleRef").value = "John 3:16";
+  }
+
+  function lessonToText(lesson){
+    if (!lesson) return "";
+    const s = lesson.steps || {};
+    const out = [];
+    out.push(lesson.title || "Daily Bible Study");
+    out.push("");
+    out.push("READ");
+    out.push(s.read?.instruction || "");
+    out.push("");
+    out.push(s.read?.passage || "");
+    out.push("");
+    out.push("OBSERVE");
+    out.push(s.observe?.instruction || "");
+    (s.observe?.prompts || []).forEach(p => out.push(`- ${p}`));
+    out.push("");
+    out.push("INTERPRET");
+    out.push(s.interpret?.instruction || "");
+    (s.interpret?.prompts || []).forEach(p => out.push(`- ${p}`));
+    out.push("");
+    out.push("APPLY");
+    out.push(s.apply?.instruction || "");
+    (s.apply?.prompts || []).forEach(p => out.push(`- ${p}`));
+    out.push("");
+    out.push("PRAYER");
+    out.push(s.prayer?.instruction || "");
+    (s.prayer?.prompts || []).forEach(p => out.push(`- ${p}`));
+    return out.join("\n");
+  }
+
+  $("genLessonBtn").onclick = async () => {
+    $("bibleErr").textContent = "";
+    const date = $("bibleDate").value.trim();
+    const ref = $("bibleRef").value.trim();
+    if (!ref) { $("bibleErr").textContent = "Enter a reference (e.g., John 3:16)"; return; }
+
+    try{
+      const j = await safeFetchJson(API(`/api/bible/lesson?date=${encodeURIComponent(date)}&ref=${encodeURIComponent(ref)}`));
+      $("lessonBox").value = lessonToText(j.lesson);
+      toast("Bible", "Lesson loaded");
+    }catch(e){
+      $("bibleErr").textContent = String(e.message || e);
+    }
+  };
+
+  $("verseOfDayBtn").onclick = () => {
+    // simple “verse of day” rotation (no external dependency)
+    const pool = ["Psalm 23:1","Proverbs 3:5-6","Romans 8:28","Philippians 4:6-7","James 1:5","Isaiah 41:10"];
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    $("bibleRef").value = pick;
+    toast("Verse", pick);
+  };
+
+  $("loadJournalBtn").onclick = async () => {
+    $("bibleErr").textContent = "";
+    const date = $("bibleDate").value.trim();
+    try{
+      const j = await safeFetchJson(API(`/api/bible/journal?date=${encodeURIComponent(date)}`));
+      if (!j.exists){
+        toast("Journal", "No entry yet");
+        return;
+      }
+      const entry = j.entry;
+      $("bibleRef").value = entry.ref || $("bibleRef").value;
+      $("lessonBox").value = lessonToText(entry.lesson);
+      $("journalBox").value = entry.journal_text || "";
+      toast("Journal", "Loaded");
+    }catch(e){
+      $("bibleErr").textContent = String(e.message || e);
+    }
+  };
+
+  $("saveJournalBtn").onclick = async () => {
+    $("bibleErr").textContent = "";
+    const date = $("bibleDate").value.trim();
+    const ref = $("bibleRef").value.trim();
+    const journal_text = $("journalBox").value || "";
+    const lesson_json = $("lessonBox").value || "";
+
+    // We save the lesson text into lesson_json if actual object isn't present
+    // (Backend accepts lesson_json string too)
+    try{
+      await safeFetchJson(API(`/api/bible/journal`), {
+        method:"PUT",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+          date,
+          ref,
+          passage: "",
+          lesson_json: lesson_json,
+          journal_text
+        })
+      });
+      toast("Journal", "Saved");
+    }catch(e){
+      $("bibleErr").textContent = String(e.message || e);
+    }
+  };
+
+  // ------------ Init ------------
+  (async function init(){
+    initNews();
+    initBible();
+    await checkApi();
+    await loadFolders();
+    if ($("autoLoad").checked) await loadVideos();
+    await loadDocs();
+  })();
 </script>
-
 </body>
 </html>
