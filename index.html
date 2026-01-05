@@ -2,21 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>TSE</title>
   <style>
     :root{
-      --bg:#070b12;
-      --panel:rgba(255,255,255,.06);
-      --panel2:rgba(255,255,255,.04);
-      --border:rgba(255,255,255,.10);
+      --bg0:#070a12;
+      --bg1:#0b1020;
+      --card:rgba(255,255,255,.06);
+      --card2:rgba(255,255,255,.08);
+      --stroke:rgba(255,255,255,.10);
       --text:rgba(255,255,255,.92);
       --muted:rgba(255,255,255,.65);
-      --good:#22c55e;
-      --bad:#ef4444;
-      --btn:rgba(255,255,255,.06);
-      --btnHover:rgba(255,255,255,.10);
-      --shadow: 0 18px 50px rgba(0,0,0,.55);
+      --muted2:rgba(255,255,255,.45);
+      --good:#33d17a;
+      --bad:#ff4d4d;
+      --shadow: 0 20px 60px rgba(0,0,0,.55);
       --r:18px;
     }
 
@@ -25,446 +25,787 @@
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
       color:var(--text);
-      background: radial-gradient(1000px 700px at 20% 10%, rgba(56,189,248,.10), transparent 55%),
-                  radial-gradient(900px 700px at 80% 25%, rgba(168,85,247,.10), transparent 55%),
-                  var(--bg);
+      background:
+        radial-gradient(1200px 800px at 70% 25%, rgba(124,58,237,.18), transparent 55%),
+        radial-gradient(1000px 700px at 15% 20%, rgba(59,130,246,.14), transparent 60%),
+        radial-gradient(900px 600px at 50% 85%, rgba(16,185,129,.08), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
       min-height:100vh;
+    }
+
+    .shell{
+      max-width: 1320px;
+      margin: 22px auto 36px;
+      padding: 0 18px;
     }
 
     .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding:18px 22px;
-      gap:16px;
+      gap: 16px;
+      margin-bottom: 16px;
     }
 
     .brand{
       display:flex;
       align-items:center;
-      gap:12px;
-      padding:12px 14px;
-      border:1px solid var(--border);
-      border-radius:999px;
-      background:var(--panel2);
-      box-shadow: var(--shadow);
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--stroke);
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
       backdrop-filter: blur(10px);
     }
     .dot{
-      width:18px;height:18px;border-radius:999px;
-      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.65), rgba(255,255,255,.08));
-      border:1px solid var(--border);
+      width: 14px; height: 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.25);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.20);
     }
     .brand h1{
-      font-size:14px;margin:0;letter-spacing:.2px;
+      font-size: 14px;
+      margin:0;
+      letter-spacing:.2px;
+      line-height:1.1;
     }
     .brand p{
-      font-size:12px;margin:2px 0 0;color:var(--muted);
+      font-size: 12px;
+      margin:0;
+      color:var(--muted);
+      line-height:1.1;
     }
 
-    .right{
-      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    .actions{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
     }
 
     .badge{
-      display:flex;align-items:center;gap:10px;
-      padding:10px 12px;border-radius:999px;
-      border:1px solid var(--border);
-      background:var(--panel2);
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
       backdrop-filter: blur(10px);
     }
-    .badge .statusDot{width:10px;height:10px;border-radius:999px;background:var(--bad);}
-    .badge.online .statusDot{background:var(--good);}
-    .badge span{font-size:13px;color:var(--muted);}
-
-    button{
-      appearance:none;
-      border:1px solid var(--border);
-      background:var(--btn);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius:12px;
-      cursor:pointer;
-      transition:.15s ease;
-      box-shadow: 0 10px 26px rgba(0,0,0,.35);
+    .badge .dot{
+      width: 10px; height: 10px;
+      background: var(--bad);
+      box-shadow: 0 0 0 2px rgba(0,0,0,.35), 0 0 22px rgba(255,77,77,.35);
     }
-    button:hover{background:var(--btnHover);transform: translateY(-1px);}
-    button:active{transform: translateY(0);}
+    .badge.ok .dot{
+      background: var(--good);
+      box-shadow: 0 0 0 2px rgba(0,0,0,.35), 0 0 22px rgba(51,209,122,.35);
+    }
+    .badge span{
+      font-size: 13px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
 
-    .wrap{
-      padding:0 22px 26px;
+    button, .btn{
+      appearance:none;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      transition: transform .06s ease, background .15s ease, border-color .15s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size: 13px;
+      backdrop-filter: blur(10px);
+    }
+    button:hover, .btn:hover{ background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.16); }
+    button:active, .btn:active{ transform: translateY(1px); }
+    button.primary{
+      background: rgba(59,130,246,.18);
+      border-color: rgba(59,130,246,.35);
     }
 
     .grid{
       display:grid;
       grid-template-columns: 360px 1fr;
-      gap:18px;
+      gap: 16px;
       align-items:start;
     }
 
-    .card{
-      border:1px solid var(--border);
-      background:var(--panel);
+    .panel{
       border-radius: var(--r);
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.05);
       box-shadow: var(--shadow);
       backdrop-filter: blur(12px);
       overflow:hidden;
     }
 
-    .cardHeader{
-      padding:14px 16px;
-      border-bottom:1px solid rgba(255,255,255,.07);
+    .panel .hdr{
+      padding: 14px 14px 10px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .panel .hdr h2{
+      margin:0;
+      font-size: 14px;
+      letter-spacing:.2px;
+    }
+    .panel .hdr .sub{
+      margin:0;
+      font-size: 12px;
+      color: var(--muted2);
+    }
+
+    .panel .body{
+      padding: 14px;
+    }
+
+    .row{
+      display:grid;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    label{
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+
+    input, select, textarea{
+      width:100%;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      outline:none;
+    }
+    textarea{ min-height: 84px; resize: vertical; }
+
+    .inline2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+
+    .hint{
+      font-size:12px;
+      color: var(--muted2);
+      line-height:1.35;
+      margin-top: 10px;
+    }
+
+    .err{
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--bad);
+      white-space: pre-wrap;
+    }
+
+    /* Videos area */
+    .videosTop{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      flex-wrap: wrap;
+    }
+    .videosTop .search{
+      flex: 1 1 360px;
+      min-width: 240px;
+    }
+    .pill{
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .card{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      border-radius: 16px;
+      overflow:hidden;
+      cursor:pointer;
+      transition: transform .08s ease, border-color .15s ease, background .15s ease;
+      position:relative;
+    }
+    .card:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,.18);
+      background: rgba(255,255,255,.07);
+    }
+
+    .thumb{
+      position:relative;
+      aspect-ratio: 16/9;
+      background: rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+    .thumb video{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+      filter: saturate(1.05) contrast(1.02);
+    }
+    .thumb .fallback{
+      position:absolute; inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: rgba(255,255,255,.35);
+      font-size: 12px;
+    }
+    .thumb .play{
+      position:absolute;
+      inset:auto 10px 10px auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.18);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+
+    .meta{
+      padding: 10px 10px 12px;
+      display:grid;
+      gap: 6px;
+    }
+    .title{
+      font-size: 13px;
+      font-weight: 650;
+      line-height: 1.2;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .subline{
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+    }
+
+    .empty{
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 16px;
+      border:1px dashed rgba(255,255,255,.12);
+      color: rgba(255,255,255,.45);
+      font-size: 13px;
+    }
+
+    /* Modal player */
+    .modal{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      z-index: 9999;
+    }
+    .modal.open{ display:flex; }
+    .modalCard{
+      width:min(1000px, 96vw);
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10,14,28,.92);
+      box-shadow: 0 24px 80px rgba(0,0,0,.65);
+      overflow:hidden;
+    }
+    .modalHdr{
       display:flex;
       align-items:center;
       justify-content:space-between;
+      gap: 10px;
+      padding: 12px 12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
     }
-    .cardHeader h2{margin:0;font-size:14px;letter-spacing:.2px}
-    .cardHeader .sub{font-size:12px;color:var(--muted)}
-    .cardBody{padding:14px 16px}
-
-    label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
-    input, select, textarea{
-      width:100%;
-      padding:10px 12px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.20);
-      color:var(--text);
-      outline:none;
+    .modalHdr .t{
+      display:flex;
+      flex-direction:column;
+      gap: 2px;
+      min-width: 0;
     }
-    textarea{min-height:90px;resize:vertical}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .actions{display:flex;gap:10px;margin-top:12px;align-items:center}
-    .hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.35}
-    .error{margin-top:10px;color:#ff5b5b;font-size:12px;white-space:pre-wrap}
-
-    .videosTop{
-      display:flex;gap:10px;align-items:center;flex-wrap:wrap;
-    }
-    .videosTop input{max-width:420px}
-    .pill{
-      padding:8px 10px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.10);
-      color:var(--muted);
-      background:rgba(255,255,255,.04);
-      font-size:12px;
-    }
-
-    #videos{
-      padding:14px 16px;
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap:12px;
-      min-height:220px;
-    }
-    .video-card{
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.05);
-      border-radius:14px;
-      padding:12px;
+    .modalHdr .t strong{
+      font-size: 13px;
       overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .video-card strong{display:block;font-size:13px;margin-bottom:6px}
-    .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
-    .meta span{border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:4px 8px;background:rgba(0,0,0,.18)}
+    .modalHdr .t span{
+      font-size: 12px;
+      color: var(--muted);
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .modalBody{
+      padding: 12px;
+      background: rgba(0,0,0,.25);
+    }
+    .modalBody video{
+      width:100%;
+      max-height: 70vh;
+      background: black;
+      border-radius: 14px;
+    }
 
     @media (max-width: 980px){
-      .grid{grid-template-columns:1fr}
+      .grid{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
 
 <body>
-  <div class="topbar">
-    <div class="brand">
-      <div class="dot"></div>
-      <div>
-        <h1>TSE</h1>
-        <p>Videos + Notes • Shared via Cloudflare (R2 + D1)</p>
-      </div>
-    </div>
-
-    <div class="right">
-      <div id="apiBadge" class="badge offline">
-        <div class="statusDot"></div>
-        <span id="apiText">API: offline</span>
-      </div>
-      <button id="openApiBtn" type="button">Open API</button>
-      <button id="checkApiBtn" type="button">Check API</button>
-      <button id="refreshBtn" type="button">Refresh</button>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="grid">
-
-      <!-- Upload -->
-      <div class="card">
-        <div class="cardHeader">
-          <h2>Upload video</h2>
-          <div class="sub">Max 500MB</div>
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <h1>TSE</h1>
+          <p>Videos + Notes · Shared via Cloudflare (R2 + D1)</p>
         </div>
-        <div class="cardBody">
-          <label for="file">Video file</label>
-          <input id="file" type="file" accept="video/*" />
+      </div>
 
-          <label for="title">Title</label>
-          <input id="title" placeholder="e.g., NQ Scalps — Jan 4" />
+      <div class="actions">
+        <div id="apiBadge" class="badge"><div class="dot"></div><span>API: checking…</span></div>
+        <a class="btn" id="openApiBtn" target="_blank" rel="noreferrer">Open API</a>
+        <button id="checkApiBtn">Check API</button>
+        <button id="refreshBtn">Refresh</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Upload panel -->
+      <div class="panel">
+        <div class="hdr">
+          <div>
+            <h2>Upload video</h2>
+            <p class="sub">Shared — appears for everyone using this site</p>
+          </div>
+          <div class="pill">Max 500MB</div>
+        </div>
+
+        <div class="body">
+          <div class="row">
+            <label>Video file</label>
+            <input id="file" type="file" accept="video/*" />
+          </div>
 
           <div class="row">
-            <div>
-              <label for="owner">Owner</label>
+            <label>Title</label>
+            <input id="title" placeholder="e.g., NQ Scalps — Jan 4" />
+          </div>
+
+          <div class="inline2">
+            <div class="row">
+              <label>Owner</label>
               <select id="owner">
                 <option value="">(none)</option>
                 <option value="Aiden">Aiden</option>
                 <option value="Landon">Landon</option>
               </select>
             </div>
-            <div>
-              <label for="tag">Sort tag</label>
+            <div class="row">
+              <label>Sort tag</label>
               <input id="tag" placeholder="Trade Review / Setups / etc" />
             </div>
           </div>
 
-          <label for="q1">Description Q1</label>
-          <input id="q1" placeholder="What was the setup?" />
+          <div class="row">
+            <label>Description Q1</label>
+            <input id="q1" placeholder="What was the setup?" />
+          </div>
+          <div class="row">
+            <label>Description Q2</label>
+            <input id="q2" placeholder="What did you learn?" />
+          </div>
 
-          <label for="q2">Description Q2</label>
-          <input id="q2" placeholder="What did you learn?" />
+          <div class="row">
+            <label>Notes (optional)</label>
+            <textarea id="notes" placeholder="Write notes attached to this video…"></textarea>
+          </div>
 
-          <label for="notes">Notes (optional)</label>
-          <textarea id="notes" placeholder="Write notes attached to this video..."></textarea>
-
-          <div class="actions">
-            <button id="uploadBtn" type="button">Upload</button>
-            <button id="clearBtn" type="button">Clear</button>
+          <div class="inline2">
+            <button class="primary" id="uploadBtn">Upload</button>
+            <button id="clearBtn">Clear</button>
           </div>
 
           <div class="hint">
-            Tip: keep clips under 500MB for fastest uploads.
-            If you ever see “TypeError: Load failed”, that means the request didn’t complete (usually wrong endpoint or a thrown error response).
+            Tip: keep clips under 500MB for fastest uploads. If you see “Load failed” it usually means the request didn’t complete
+            (wrong endpoint, missing binding, or server returned non-JSON).
           </div>
-
-          <div id="uploadError" class="error" style="display:none;"></div>
+          <div id="uploadErr" class="err"></div>
         </div>
       </div>
 
-      <!-- Videos -->
-      <div class="card">
-        <div class="cardHeader">
+      <!-- Videos panel -->
+      <div class="panel">
+        <div class="hdr">
+          <div>
+            <h2>Videos</h2>
+            <p class="sub">YouTube-style cards · hover to preview</p>
+          </div>
+          <button id="loadBtn">Load</button>
+        </div>
+
+        <div class="body">
           <div class="videosTop">
-            <h2 style="margin:0;">Videos</h2>
-            <input id="search" placeholder="Search videos by title, owner, tag..." />
-            <span id="count" class="pill">0 items</span>
+            <input class="search" id="search" placeholder="Search videos by title, owner, tag…" />
+            <div class="pill" id="countPill">0 items</div>
           </div>
-          <button id="loadBtn" type="button">Load</button>
+
+          <div id="cards" class="cards"></div>
+          <div id="empty" class="empty" style="display:none;">No videos. Upload one, then click <b>Load</b>.</div>
+
+          <div id="listErr" class="err"></div>
         </div>
-
-        <div id="videos"></div>
       </div>
+    </div>
+  </div>
 
+  <!-- Modal -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true">
+    <div class="modalCard">
+      <div class="modalHdr">
+        <div class="t">
+          <strong id="mTitle">Video</strong>
+          <span id="mSub">—</span>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <a class="btn" id="mOpen" target="_blank" rel="noreferrer">Open stream</a>
+          <button id="mClose">Close</button>
+        </div>
+      </div>
+      <div class="modalBody">
+        <video id="mVideo" controls playsinline></video>
+      </div>
     </div>
   </div>
 
   <script>
-    const API = "https://api.tseapp.com";
+    // IMPORTANT: point UI at the API Worker domain
+    const API_BASE = "https://api.tseapp.com";
 
-    const els = {
-      badge: document.getElementById("apiBadge"),
-      apiText: document.getElementById("apiText"),
-      openApiBtn: document.getElementById("openApiBtn"),
-      checkApiBtn: document.getElementById("checkApiBtn"),
-      refreshBtn: document.getElementById("refreshBtn"),
-      loadBtn: document.getElementById("loadBtn"),
-      uploadBtn: document.getElementById("uploadBtn"),
-      clearBtn: document.getElementById("clearBtn"),
-      videos: document.getElementById("videos"),
-      count: document.getElementById("count"),
-      search: document.getElementById("search"),
-      uploadError: document.getElementById("uploadError"),
+    const el = (id) => document.getElementById(id);
 
-      file: document.getElementById("file"),
-      title: document.getElementById("title"),
-      owner: document.getElementById("owner"),
-      tag: document.getElementById("tag"),
-      q1: document.getElementById("q1"),
-      q2: document.getElementById("q2"),
-      notes: document.getElementById("notes"),
-    };
+    const apiBadge = el("apiBadge");
+    const openApiBtn = el("openApiBtn");
+    const checkApiBtn = el("checkApiBtn");
+    const refreshBtn = el("refreshBtn");
 
-    function setApi(ok) {
-      els.badge.classList.toggle("online", ok);
-      els.badge.classList.toggle("offline", !ok);
-      els.apiText.textContent = ok ? "API: online" : "API: offline";
+    const fileEl = el("file");
+    const titleEl = el("title");
+    const ownerEl = el("owner");
+    const tagEl = el("tag");
+    const q1El = el("q1");
+    const q2El = el("q2");
+    const notesEl = el("notes");
+    const uploadBtn = el("uploadBtn");
+    const clearBtn = el("clearBtn");
+    const uploadErr = el("uploadErr");
+
+    const loadBtn = el("loadBtn");
+    const searchEl = el("search");
+    const cardsEl = el("cards");
+    const emptyEl = el("empty");
+    const countPill = el("countPill");
+    const listErr = el("listErr");
+
+    const modal = el("modal");
+    const mClose = el("mClose");
+    const mTitle = el("mTitle");
+    const mSub = el("mSub");
+    const mVideo = el("mVideo");
+    const mOpen = el("mOpen");
+
+    openApiBtn.href = `${API_BASE}/api/health`;
+
+    function setBadge(ok, text) {
+      apiBadge.classList.toggle("ok", !!ok);
+      apiBadge.querySelector("span").textContent = text;
     }
 
-    async function checkApi() {
+    async function checkAPI() {
       try {
-        const r = await fetch(`${API}/api/health`, { method: "GET" });
-        await r.json();
-        setApi(true);
-        return true;
-      } catch {
-        setApi(false);
+        const r = await fetch(`${API_BASE}/api/health`, { method: "GET" });
+        const j = await r.json().catch(() => null);
+        if (!r.ok) throw new Error(j?.details || j?.error || `HTTP ${r.status}`);
+        const good = !!j?.ok;
+        const bindings = j?.bindings ? ` (D1:${j.bindings.d1 ? "✓" : "×"} R2:${j.bindings.r2 ? "✓" : "×"})` : "";
+        setBadge(good, good ? `API: online${bindings}` : "API: offline");
+        return good;
+      } catch (e) {
+        setBadge(false, "API: offline");
         return false;
       }
     }
 
-    function showUploadError(msg) {
-      els.uploadError.style.display = "block";
-      els.uploadError.textContent = msg;
+    function clearUploadForm() {
+      fileEl.value = "";
+      titleEl.value = "";
+      ownerEl.value = "";
+      tagEl.value = "";
+      q1El.value = "";
+      q2El.value = "";
+      notesEl.value = "";
+      uploadErr.textContent = "";
     }
 
-    function clearUploadError() {
-      els.uploadError.style.display = "none";
-      els.uploadError.textContent = "";
+    clearBtn.addEventListener("click", clearUploadForm);
+    refreshBtn.addEventListener("click", async () => {
+      await checkAPI();
+      await loadVideos();
+    });
+    checkApiBtn.addEventListener("click", checkAPI);
+
+    function streamUrlFor(id) {
+      return `${API_BASE}/api/videos/${encodeURIComponent(id)}/stream`;
     }
 
-    function clearForm() {
-      els.file.value = "";
-      els.title.value = "";
-      els.owner.value = "";
-      els.tag.value = "";
-      els.q1.value = "";
-      els.q2.value = "";
-      els.notes.value = "";
-      clearUploadError();
+    function fmtTime(ts) {
+      if (!ts) return "";
+      try {
+        return new Date(ts).toLocaleString();
+      } catch { return ""; }
     }
 
-    function normalize(s) {
-      return String(s || "").toLowerCase();
-    }
+    // Hover preview (muted autoplay) — safe & lightweight
+    function wireHoverPreview(videoEl) {
+      let started = false;
 
-    function renderVideos(videos) {
-      const q = normalize(els.search.value);
-      const filtered = videos.filter(v => {
-        if (!q) return true;
-        return (
-          normalize(v.title).includes(q) ||
-          normalize(v.owner).includes(q) ||
-          normalize(v.tag).includes(q)
-        );
+      const start = async () => {
+        if (started) return;
+        started = true;
+        videoEl.muted = true;
+        videoEl.playsInline = true;
+        videoEl.loop = true;
+        try { await videoEl.play(); } catch {}
+      };
+
+      const stop = () => {
+        started = false;
+        try { videoEl.pause(); videoEl.currentTime = 0; } catch {}
+      };
+
+      videoEl.addEventListener("mouseenter", start);
+      videoEl.addEventListener("mouseleave", stop);
+
+      // Also stop if tab loses focus
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stop();
       });
+    }
 
-      els.count.textContent = `${filtered.length} item${filtered.length === 1 ? "" : "s"}`;
-      els.videos.innerHTML = "";
+    function openModal(v) {
+      const url = streamUrlFor(v.id);
+      mTitle.textContent = v.title || "(untitled)";
+      mSub.textContent = `${v.owner || "(no owner)"} · ${v.tag || "(no tag)"} · ${fmtTime(v.createdAt) || ""}`.trim();
+      mVideo.src = url;
+      mOpen.href = url;
+      modal.classList.add("open");
+      setTimeout(() => { try { mVideo.play(); } catch {} }, 0);
+    }
 
-      if (filtered.length === 0) {
-        els.videos.innerHTML = `<div class="video-card" style="opacity:.8;">
-          <strong>No videos</strong>
-          <div class="meta"><span>Upload one, then click Load</span></div>
-        </div>`;
-        return;
-      }
+    function closeModal() {
+      modal.classList.remove("open");
+      try { mVideo.pause(); } catch {}
+      mVideo.src = "";
+    }
 
-      for (const v of filtered) {
+    mClose.addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    function render(videos) {
+      cardsEl.innerHTML = "";
+      listErr.textContent = "";
+
+      countPill.textContent = `${videos.length} item${videos.length === 1 ? "" : "s"}`;
+      emptyEl.style.display = videos.length ? "none" : "block";
+
+      for (const v of videos) {
         const card = document.createElement("div");
-        card.className = "video-card";
-        card.innerHTML = `
-          <strong>${escapeHtml(v.title || "Untitled")}</strong>
-          <div class="meta">
-            ${v.owner ? `<span>${escapeHtml(v.owner)}</span>` : ""}
-            ${v.tag ? `<span>${escapeHtml(v.tag)}</span>` : ""}
-          </div>
-        `;
-        els.videos.appendChild(card);
+        card.className = "card";
+
+        const thumb = document.createElement("div");
+        thumb.className = "thumb";
+
+        const vid = document.createElement("video");
+        vid.src = streamUrlFor(v.id);
+        vid.preload = "metadata";
+        vid.muted = true;
+        vid.playsInline = true;
+
+        const fallback = document.createElement("div");
+        fallback.className = "fallback";
+        fallback.textContent = "Preview";
+
+        // If stream fails, keep fallback visible
+        vid.addEventListener("loadeddata", () => { fallback.style.display = "none"; });
+        vid.addEventListener("error", () => { fallback.style.display = "flex"; });
+
+        const play = document.createElement("div");
+        play.className = "play";
+        play.innerHTML = "▶︎";
+
+        thumb.appendChild(vid);
+        thumb.appendChild(fallback);
+        thumb.appendChild(play);
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        const t = document.createElement("div");
+        t.className = "title";
+        t.textContent = v.title || "(untitled)";
+
+        const sub = document.createElement("div");
+        sub.className = "subline";
+
+        const left = document.createElement("span");
+        left.textContent = v.owner || "(no owner)";
+
+        const right = document.createElement("span");
+        right.textContent = v.tag || "";
+
+        sub.appendChild(left);
+        sub.appendChild(right);
+
+        meta.appendChild(t);
+        meta.appendChild(sub);
+
+        card.appendChild(thumb);
+        card.appendChild(meta);
+
+        // hover preview + click modal
+        wireHoverPreview(vid);
+        card.addEventListener("click", () => openModal(v));
+
+        cardsEl.appendChild(card);
       }
     }
 
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function filterVideos(videos, q) {
+      q = (q || "").trim().toLowerCase();
+      if (!q) return videos;
+      return videos.filter(v => {
+        const hay = `${v.title||""} ${v.owner||""} ${v.tag||""} ${v.q1||""} ${v.q2||""} ${v.notes||""}`.toLowerCase();
+        return hay.includes(q);
+      });
     }
 
     let lastVideos = [];
 
     async function loadVideos() {
       try {
-        const res = await fetch(`${API}/api/videos`, { method: "GET" });
-        const data = await res.json();
-        lastVideos = Array.isArray(data.videos) ? data.videos : [];
-        renderVideos(lastVideos);
-      } catch (err) {
-        console.error(err);
-        setApi(false);
-        els.videos.innerHTML = `<div class="video-card"><strong>Load failed</strong><div class="meta"><span>Check API + refresh</span></div></div>`;
+        const r = await fetch(`${API_BASE}/api/videos`, { method: "GET" });
+        const j = await r.json().catch(() => null);
+        if (!r.ok) throw new Error(j?.details || j?.error || `HTTP ${r.status}`);
+        lastVideos = Array.isArray(j?.videos) ? j.videos : [];
+        render(filterVideos(lastVideos, searchEl.value));
+      } catch (e) {
+        listErr.textContent = `Load failed: ${e.message || e}`;
+        render([]);
       }
     }
 
-    async function uploadVideo() {
-      clearUploadError();
+    loadBtn.addEventListener("click", loadVideos);
 
-      const file = els.file.files[0];
+    searchEl.addEventListener("input", () => {
+      render(filterVideos(lastVideos, searchEl.value));
+    });
+
+    uploadBtn.addEventListener("click", async () => {
+      uploadErr.textContent = "";
+      const file = fileEl.files?.[0];
       if (!file) {
-        showUploadError("Choose a file first.");
+        uploadErr.textContent = "Choose a video file first.";
         return;
       }
 
-      // Basic sanity: avoid blank metadata
-      const title = els.title.value.trim();
-      const owner = els.owner.value.trim();
-      const tag = els.tag.value.trim();
-      const q1 = els.q1.value.trim();
-      const q2 = els.q2.value.trim();
-      const notes = els.notes.value.trim();
-
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("title", title);
-      fd.append("owner", owner);
-      fd.append("tag", tag);
-      fd.append("q1", q1);
-      fd.append("q2", q2);
-      fd.append("notes", notes);
-
       try {
-        const res = await fetch(`${API}/api/videos/upload`, {
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = "Uploading…";
+
+        const fd = new FormData();
+
+        // MUST be "file" — matches the Worker
+        fd.append("file", file, file.name);
+
+        fd.append("title", titleEl.value || "");
+        fd.append("owner", ownerEl.value || "");
+        fd.append("tag", tagEl.value || "");
+        fd.append("q1", q1El.value || "");
+        fd.append("q2", q2El.value || "");
+        fd.append("notes", notesEl.value || "");
+
+        const r = await fetch(`${API_BASE}/api/videos/upload`, {
           method: "POST",
           body: fd
         });
 
-        // Read as text first so we can show useful errors even if JSON parse fails
-        const text = await res.text();
-        let data = null;
-        try { data = JSON.parse(text); } catch { /* keep raw text */ }
+        const j = await r.json().catch(() => null);
+        if (!r.ok) throw new Error(j?.details || j?.error || `HTTP ${r.status}`);
 
-        if (!res.ok) {
-          const msg = (data && (data.details || data.error)) ? (data.details || data.error) : text;
-          throw new Error(msg || `HTTP ${res.status}`);
+        // Auto refresh list after upload
+        await loadVideos();
+
+        // Optional: open the uploaded video immediately
+        if (j?.id) {
+          const v = lastVideos.find(x => x.id === j.id) || { id: j.id, title: titleEl.value, owner: ownerEl.value, tag: tagEl.value, createdAt: j.createdAt };
+          openModal(v);
         }
 
-        setApi(true);
-
-        // Immediately refresh list
-        await loadVideos();
-        // optional: clear the form after success
-        // clearForm();
-
-      } catch (err) {
-        console.error(err);
-        showUploadError("Upload failed: " + err.message);
+        clearUploadForm();
+      } catch (e) {
+        uploadErr.textContent = `Upload failed: ${e.message || e}`;
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = "Upload";
       }
-    }
+    });
 
-    // Buttons
-    els.openApiBtn.addEventListener("click", () => window.open(`${API}/api/health`, "_blank"));
-    els.checkApiBtn.addEventListener("click", async () => { await checkApi(); });
-    els.refreshBtn.addEventListener("click", async () => { await checkApi(); await loadVideos(); });
-    els.loadBtn.addEventListener("click", loadVideos);
-    els.uploadBtn.addEventListener("click", uploadVideo);
-    els.clearBtn.addEventListener("click", clearForm);
-    els.search.addEventListener("input", () => renderVideos(lastVideos));
-
-    // Init
-    (async function init(){
-      await checkApi();
-      // don’t auto-load if you don’t want it:
+    // boot
+    (async () => {
+      await checkAPI();
+      // lazy load on open (you can auto-load if you want):
       // await loadVideos();
-      renderVideos([]);
     })();
   </script>
 </body>
