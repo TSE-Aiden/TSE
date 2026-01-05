@@ -2,614 +2,227 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>TSE</title>
   <style>
-    :root{
-      --bg:#071018;
-      --panel:rgba(255,255,255,.06);
-      --panel2:rgba(255,255,255,.08);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.65);
-      --border:rgba(255,255,255,.12);
-      --good:#5ef0a6;
-      --bad:#ff5c7a;
-      --warn:#ffd36a;
-      --accent:#7cc7ff;
-      --shadow: 0 12px 30px rgba(0,0,0,.35);
-      --radius:18px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background: radial-gradient(900px 600px at 20% 0%, rgba(124,199,255,.18), transparent 60%),
-                  radial-gradient(800px 600px at 80% 100%, rgba(94,240,166,.12), transparent 60%),
-                  var(--bg);
-      color:var(--text);
-    }
-    .topbar{
-      display:flex; gap:12px; align-items:center; justify-content:space-between;
-      padding:18px 18px 10px;
-      max-width:1200px; margin:0 auto;
-    }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-      padding:10px 12px;
-      border:1px solid var(--border);
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      border-radius:999px;
-      box-shadow:var(--shadow);
-    }
-    .logo{
-      width:28px; height:28px; border-radius:10px;
-      background: radial-gradient(circle at 30% 30%, rgba(124,199,255,.9), rgba(94,240,166,.55) 55%, rgba(255,255,255,.08));
-      border:1px solid rgba(255,255,255,.18);
-    }
-    .brand h1{font-size:14px; margin:0; letter-spacing:.3px}
-    .brand p{font-size:12px; margin:0; color:var(--muted)}
-    .right{
-      display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;
-    }
-    .badge{
-      display:flex; align-items:center; gap:10px;
-      padding:10px 12px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.06);
-      border-radius:999px;
-    }
-    .dot{width:10px;height:10px;border-radius:999px;background:var(--warn);box-shadow:0 0 0 3px rgba(255,211,106,.12)}
-    .dot.ok{background:var(--good); box-shadow:0 0 0 3px rgba(94,240,166,.12)}
-    .dot.bad{background:var(--bad); box-shadow:0 0 0 3px rgba(255,92,122,.12)}
-    button{
-      appearance:none;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      padding:10px 12px;
-      border-radius:12px;
-      cursor:pointer;
-    }
-    button:hover{background:rgba(255,255,255,.09)}
-    button.primary{
-      border-color:rgba(124,199,255,.35);
-      background:rgba(124,199,255,.12);
-    }
-    .tabs{
-      display:flex; gap:10px;
-      padding:10px;
-      border:1px solid var(--border);
-      background:rgba(255,255,255,.05);
-      border-radius:999px;
-      box-shadow:var(--shadow);
-    }
-    .tab{padding:9px 12px; border-radius:999px; border:1px solid transparent; color:var(--muted)}
-    .tab.active{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.12); color:var(--text)}
-    .wrap{
-      max-width:1200px; margin:0 auto; padding:10px 18px 26px;
-      display:grid; grid-template-columns: 380px 1fr; gap:16px;
-    }
-    .card{
-      border:1px solid var(--border);
-      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .card .head{
-      padding:14px 14px 8px;
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
-    }
-    .card .head h2{margin:0; font-size:14px}
-    .card .head small{color:var(--muted)}
-    .card .body{padding:14px}
-    label{display:block; font-size:12px; color:var(--muted); margin:10px 0 6px}
-    input, select, textarea{
-      width:100%;
-      padding:10px 11px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(0,0,0,.15);
-      color:var(--text);
-      outline:none;
-    }
-    textarea{min-height:84px; resize:vertical}
-    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
-    .actions{display:flex; gap:10px; margin-top:12px}
-    .muted{color:var(--muted); font-size:12px}
-    .error{color:var(--bad); font-size:12px; margin-top:10px; white-space:pre-wrap}
-    .ok{color:var(--good); font-size:12px; margin-top:10px; white-space:pre-wrap}
-    .toolbar{
-      display:flex; gap:10px; align-items:center; justify-content:space-between;
-      padding:14px; border-bottom:1px solid var(--border);
-    }
-    .toolbar .left{display:flex; gap:10px; align-items:center; flex:1}
-    .toolbar .right{display:flex; gap:10px; align-items:center}
-    .list{padding:14px}
-    .videoItem{
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.04);
-      border-radius:14px;
-      padding:12px;
-      display:flex; gap:12px; align-items:flex-start;
-      margin-bottom:10px;
-    }
-    .thumb{
-      width:120px; height:70px; border-radius:12px;
-      background:rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.12);
-      flex:0 0 auto;
-      display:flex; align-items:center; justify-content:center;
-      color:var(--muted); font-size:12px;
-    }
-    .meta{flex:1}
-    .meta .t{font-weight:600; margin-bottom:4px}
-    .meta .s{color:var(--muted); font-size:12px}
-    .pill{
-      display:inline-flex; align-items:center;
-      font-size:11px; padding:4px 8px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.04);
-      color:var(--muted);
-      margin-right:6px;
-    }
-    .footerNote{
-      padding:12px 14px;
-      border-top:1px solid var(--border);
-      color:var(--muted);
-      font-size:12px;
-    }
-    @media (max-width: 980px){
-      .wrap{grid-template-columns: 1fr}
-    }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#0b0f14; color:#e7eef7; }
+    .row { display:flex; gap:16px; padding:16px; }
+    .card { background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.10); border-radius:16px; padding:16px; width: 420px; }
+    .badge { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); }
+    .dot { width:10px; height:10px; border-radius:50%; background:#ff4d4d; }
+    .dot.ok { background:#2ee59d; }
+    button { appearance:none; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#e7eef7; padding:10px 12px; border-radius:12px; cursor:pointer; }
+    input, select, textarea { width:100%; margin-top:8px; padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25); color:#e7eef7; }
+    .err { color:#ff6b6b; white-space:pre-wrap; margin-top:8px; font-size:13px; }
+    .ok { color:#2ee59d; white-space:pre-wrap; margin-top:8px; font-size:13px; }
+    .grow { flex:1; }
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo"></div>
-      <div>
-        <h1>TSE</h1>
-        <p>Videos + Notes • Shared via Cloudflare (R2 + D1)</p>
-      </div>
+
+<div class="row" style="align-items:center; justify-content:space-between;">
+  <div class="badge">
+    <div id="dot" class="dot"></div>
+    <div id="apiText">API: checking…</div>
+  </div>
+  <div style="display:flex; gap:10px;">
+    <button id="openApiBtn" type="button">Open API</button>
+    <button id="checkBtn" type="button">Check API</button>
+    <button id="refreshBtn" type="button">Refresh</button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="card">
+    <h3 style="margin:0 0 12px 0;">Upload video</h3>
+
+    <label>Video file</label>
+    <input id="file" type="file" accept="video/*" />
+
+    <label>Title</label>
+    <input id="title" placeholder="e.g., NQ Scalps — Jan 4" />
+
+    <label>Owner</label>
+    <select id="owner">
+      <option value="">(none)</option>
+      <option value="Aiden">Aiden</option>
+      <option value="Landon">Landon</option>
+    </select>
+
+    <label>Sort tag</label>
+    <input id="tag" placeholder="Trade Review / Setups / etc" />
+
+    <label>Description Q1</label>
+    <input id="q1" placeholder="What was the setup?" />
+
+    <label>Description Q2</label>
+    <input id="q2" placeholder="What did you learn?" />
+
+    <label>Notes (optional)</label>
+    <textarea id="notes" rows="4" placeholder="Write notes attached to this video…"></textarea>
+
+    <div style="display:flex; gap:10px; margin-top:12px;">
+      <button id="uploadBtn" type="button">Upload</button>
+      <button id="clearBtn" type="button">Clear</button>
     </div>
 
-    <div class="right">
-      <div class="tabs" role="tablist" aria-label="Views">
-        <div class="tab active" id="tabVideos" role="tab" tabindex="0">Videos</div>
-        <div class="tab" id="tabNotes" role="tab" tabindex="0">Notes</div>
-      </div>
-
-      <div class="badge" title="API status based on /api/health">
-        <div class="dot bad" id="apiDot"></div>
-        <div style="display:flex; flex-direction:column; line-height:1.1">
-          <div style="font-size:12px; color:var(--muted)">API:</div>
-          <div style="font-size:12px" id="apiText">offline</div>
-        </div>
-      </div>
-
-      <button id="btnLogin" class="">Open API</button>
-      <button id="btnCheck" class="primary">Check API</button>
-      <button id="btnRefresh">Refresh</button>
-    </div>
+    <div id="uploadMsg" class="err"></div>
   </div>
 
-  <div class="wrap">
-    <!-- LEFT: upload -->
-    <div class="card" id="cardUpload">
-      <div class="head">
-        <div>
-          <h2>Upload video</h2>
-          <small>Shared — appears for everyone using this site</small>
-        </div>
-        <small>Max 500MB</small>
-      </div>
-      <div class="body">
-        <label>Video file</label>
-        <input id="file" type="file" accept="video/*" />
-
-        <div class="muted" style="margin-top:6px">
-          Tip: keep clips under 500MB for fastest uploads.
-        </div>
-
-        <label>Title</label>
-        <input id="title" placeholder="e.g., NQ Scalps — Jan 4" />
-
-        <div class="row">
-          <div>
-            <label>Owner (Aiden or Landon)</label>
-            <select id="owner">
-              <option value="Aiden">Aiden</option>
-              <option value="Landon">Landon</option>
-            </select>
-          </div>
-          <div>
-            <label>Sort tag</label>
-            <select id="tag">
-              <option value="Trade Review">Trade Review</option>
-              <option value="Setups">Setups</option>
-              <option value="Psychology">Psychology</option>
-              <option value="Lessons">Lessons</option>
-            </select>
-          </div>
-        </div>
-
-        <label>Description Q1</label>
-        <input id="q1" placeholder="What was the setup?" />
-
-        <label>Description Q2</label>
-        <input id="q2" placeholder="What did you learn?" />
-
-        <label>Notes (optional)</label>
-        <textarea id="notes" placeholder="Write notes attached to this video..."></textarea>
-
-        <div class="actions">
-          <button id="btnUpload" class="primary">Upload</button>
-          <button id="btnClear">Clear</button>
-        </div>
-
-        <div class="muted" style="margin-top:10px" id="uploadState">Idle</div>
-        <div class="error" id="uploadErr" style="display:none"></div>
-        <div class="ok" id="uploadOk" style="display:none"></div>
-      </div>
-
-      <div class="footerNote">
-        If you ever see 401/403 in console: open the API URL once in a new tab (it may set a session), then refresh.
-        <br/>
-        Current API base: <span id="apiBaseText"></span>
-      </div>
+  <div class="card grow">
+    <h3 style="margin:0 0 12px 0;">Videos</h3>
+    <div style="display:flex; gap:10px; margin-bottom:10px;">
+      <button id="loadBtn" type="button">Load</button>
     </div>
-
-    <!-- RIGHT: list -->
-    <div class="card" id="cardList">
-      <div class="toolbar">
-        <div class="left">
-          <input id="search" placeholder="Search videos by title, owner, notes..." />
-          <select id="sort" style="max-width:140px">
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="owner">Owner</option>
-            <option value="title">Title</option>
-          </select>
-          <button id="btnLoad" class="primary">Load</button>
-        </div>
-        <div class="right muted">
-          <span id="count">0</span> items
-        </div>
-      </div>
-
-      <div class="list" id="list"></div>
-      <div class="error" id="listErr" style="display:none"></div>
-    </div>
+    <div id="listMsg" class="err"></div>
+    <div id="list" style="margin-top:10px;"></div>
   </div>
+</div>
 
 <script>
-  // ✅ HARD-LOCK the API to ONE host
+  // IMPORTANT: Always hit the API subdomain to avoid Pages/GitHub routing conflicts.
   const API_BASE = "https://api.tseapp.com";
-  document.getElementById("apiBaseText").textContent = API_BASE;
 
-  // If you ever later add a key-based write gate, you can set this:
-  // const WRITE_KEY = ""; // optional
-  const WRITE_KEY = "";
+  const dot = document.getElementById("dot");
+  const apiText = document.getElementById("apiText");
+  const uploadMsg = document.getElementById("uploadMsg");
+  const listMsg = document.getElementById("listMsg");
+  const list = document.getElementById("list");
 
-  const els = {
-    apiDot: document.getElementById("apiDot"),
-    apiText: document.getElementById("apiText"),
-    btnLogin: document.getElementById("btnLogin"),
-    btnCheck: document.getElementById("btnCheck"),
-    btnRefresh: document.getElementById("btnRefresh"),
+  document.getElementById("openApiBtn").onclick = () => window.open(`${API_BASE}/api/health`, "_blank");
+  document.getElementById("checkBtn").onclick = () => checkApi();
+  document.getElementById("refreshBtn").onclick = () => location.reload();
 
-    file: document.getElementById("file"),
-    title: document.getElementById("title"),
-    owner: document.getElementById("owner"),
-    tag: document.getElementById("tag"),
-    q1: document.getElementById("q1"),
-    q2: document.getElementById("q2"),
-    notes: document.getElementById("notes"),
-
-    btnUpload: document.getElementById("btnUpload"),
-    btnClear: document.getElementById("btnClear"),
-    uploadState: document.getElementById("uploadState"),
-    uploadErr: document.getElementById("uploadErr"),
-    uploadOk: document.getElementById("uploadOk"),
-
-    search: document.getElementById("search"),
-    sort: document.getElementById("sort"),
-    btnLoad: document.getElementById("btnLoad"),
-    list: document.getElementById("list"),
-    listErr: document.getElementById("listErr"),
-    count: document.getElementById("count"),
+  document.getElementById("loadBtn").onclick = () => loadVideos();
+  document.getElementById("uploadBtn").onclick = () => upload();
+  document.getElementById("clearBtn").onclick = () => {
+    ["file","title","tag","q1","q2","notes"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el.type === "file") el.value = "";
+      else el.value = "";
+    });
+    document.getElementById("owner").value = "";
+    uploadMsg.textContent = "";
   };
 
-  function setApiStatus(state, detail = "") {
-    els.apiDot.classList.remove("ok","bad");
-    if (state === "online") {
-      els.apiDot.classList.add("ok");
-      els.apiText.textContent = "online";
-    } else if (state === "checking") {
-      els.apiDot.classList.add("bad");
-      els.apiText.textContent = "checking…";
-    } else {
-      els.apiDot.classList.add("bad");
-      els.apiText.textContent = detail ? `offline (${detail})` : "offline";
-    }
+  function setApiStatus(ok, detail="") {
+    dot.classList.toggle("ok", !!ok);
+    apiText.textContent = ok ? "API: online" : `API: offline${detail ? " ("+detail+")" : ""}`;
   }
 
-  function showErr(el, msg) {
-    el.style.display = "block";
-    el.textContent = msg;
-  }
-  function hideErr(el) {
-    el.style.display = "none";
-    el.textContent = "";
-  }
-
-  // Small fetch helper with timeout + retry
-  async function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
-    const controller = new AbortController();
-    const id = setTimeout(() => controller.abort(), timeoutMs);
+  async function safeJson(response) {
+    // Never assume JSON — read text first so we can show real errors.
+    const text = await response.text();
     try {
-      const res = await fetch(url, { ...options, signal: controller.signal });
-      return res;
-    } finally {
-      clearTimeout(id);
+      return { ok: true, data: JSON.parse(text), raw: text };
+    } catch {
+      return { ok: false, data: null, raw: text };
     }
   }
 
-  async function fetchJson(url, options = {}, tries = 2) {
-    let lastErr;
-    for (let attempt = 1; attempt <= tries; attempt++) {
-      try {
-        const res = await fetchWithTimeout(url, options, 20000);
-        const text = await res.text();
-        // If CORS blocks, we won’t even get here — it will throw before res
-        if (!res.ok) {
-          // try parse json error but don’t require it
-          let details = text;
-          try { details = JSON.stringify(JSON.parse(text)); } catch {}
-          throw new Error(`HTTP ${res.status}: ${details}`);
-        }
-        try {
-          return JSON.parse(text);
-        } catch {
-          throw new Error(`Non-JSON response: ${text.slice(0,200)}`);
-        }
-      } catch (e) {
-        lastErr = e;
-        // brief backoff
-        if (attempt < tries) await new Promise(r => setTimeout(r, 450 * attempt));
-      }
-    }
-    throw lastErr;
-  }
-
-  // ✅ Reliable online check: ONLY depends on /api/health
   async function checkApi() {
-    setApiStatus("checking");
+    setApiStatus(false, "checking…");
     try {
-      const data = await fetchJson(`${API_BASE}/api/health`, {
-        method: "GET",
-        mode: "cors",
-        cache: "no-store",
-        headers: { "Accept": "application/json" }
-      }, 2);
-
-      if (data && data.ok === true) {
-        setApiStatus("online");
-        return true;
+      const res = await fetch(`${API_BASE}/api/health`, { method: "GET" });
+      const parsed = await safeJson(res);
+      if (!res.ok) {
+        setApiStatus(false, `HTTP ${res.status}`);
+        return;
       }
-      // Health responded but not ok
-      setApiStatus("offline", "bad health");
-      return false;
+      if (parsed.ok && parsed.data && parsed.data.ok === true) {
+        setApiStatus(true);
+      } else {
+        setApiStatus(false, "bad JSON");
+      }
     } catch (e) {
-      // This is where CORS/network shows up
-      setApiStatus("offline", "network/CORS");
-      return false;
+      setApiStatus(false, "network/CORS");
     }
   }
 
-  function buildHeaders() {
-    const h = { "Accept": "application/json" };
-    if (WRITE_KEY) h["x-tse-key"] = WRITE_KEY;
-    return h;
-  }
-
-  // Loads list
   async function loadVideos() {
-    hideErr(els.listErr);
-    els.list.innerHTML = "";
-    els.count.textContent = "0";
+    listMsg.textContent = "";
+    list.textContent = "";
+    await checkApi();
 
-    // Don’t auto-fail if “offline” badge is stale — just try.
     try {
-      const data = await fetchJson(`${API_BASE}/api/videos`, {
-        method: "GET",
-        mode: "cors",
-        cache: "no-store",
-        headers: buildHeaders(),
-      }, 2);
+      const res = await fetch(`${API_BASE}/api/videos`, { method: "GET" });
+      const parsed = await safeJson(res);
 
-      const vids = Array.isArray(data.videos) ? data.videos : [];
-      const q = (els.search.value || "").toLowerCase().trim();
-      let filtered = vids.filter(v => {
-        const blob = [
-          v.title, v.owner, v.tag, v.q1, v.q2, v.notes
-        ].filter(Boolean).join(" ").toLowerCase();
-        return q ? blob.includes(q) : true;
-      });
-
-      const sort = els.sort.value;
-      filtered.sort((a,b) => {
-        const ad = a.createdAt || a.created_at || a.created || 0;
-        const bd = b.createdAt || b.created_at || b.created || 0;
-
-        if (sort === "newest") return (bd||0) - (ad||0);
-        if (sort === "oldest") return (ad||0) - (bd||0);
-        if (sort === "owner") return String(a.owner||"").localeCompare(String(b.owner||""));
-        if (sort === "title") return String(a.title||"").localeCompare(String(b.title||""));
-        return 0;
-      });
-
-      els.count.textContent = String(filtered.length);
-
-      if (!filtered.length) {
-        els.list.innerHTML = `<div class="muted">No videos yet.</div>`;
+      if (!res.ok) {
+        listMsg.textContent = `Load failed: HTTP ${res.status}\n${parsed.raw}`;
+        return;
+      }
+      if (!parsed.ok) {
+        listMsg.textContent = `Load failed: Non-JSON response\n${parsed.raw}`;
         return;
       }
 
-      for (const v of filtered) {
-        const title = v.title || "(untitled)";
-        const owner = v.owner || "—";
-        const tag = v.tag || "—";
-        const created = v.createdAt || v.created_at || v.created || null;
-        const createdNice = created ? new Date(created).toLocaleString() : "—";
-
-        // Your worker likely returns a url field for playback/download
-        const url = v.url || v.playUrl || v.downloadUrl || v.r2Url || "";
-
-        const el = document.createElement("div");
-        el.className = "videoItem";
-        el.innerHTML = `
-          <div class="thumb">video</div>
-          <div class="meta">
-            <div class="t">${escapeHtml(title)}</div>
-            <div class="s">
-              <span class="pill">${escapeHtml(owner)}</span>
-              <span class="pill">${escapeHtml(tag)}</span>
-              <span class="pill">${escapeHtml(createdNice)}</span>
-            </div>
-            ${v.q1 ? `<div class="s" style="margin-top:6px"><b class="muted">Q1:</b> ${escapeHtml(v.q1)}</div>` : ``}
-            ${v.q2 ? `<div class="s"><b class="muted">Q2:</b> ${escapeHtml(v.q2)}</div>` : ``}
-            ${v.notes ? `<div class="s"><b class="muted">Notes:</b> ${escapeHtml(v.notes)}</div>` : ``}
-            ${url ? `<div style="margin-top:10px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--accent)">Open video</a></div>` : ``}
-          </div>
-        `;
-        els.list.appendChild(el);
+      const videos = parsed.data.videos || [];
+      if (!videos.length) {
+        list.textContent = "0 items";
+        return;
       }
 
-      // If list works, API is definitely reachable from fetch -> mark online
-      setApiStatus("online");
+      for (const v of videos) {
+        const el = document.createElement("div");
+        el.style.padding = "10px";
+        el.style.border = "1px solid rgba(255,255,255,.10)";
+        el.style.borderRadius = "12px";
+        el.style.marginBottom = "10px";
+        el.textContent = `${v.title || "(untitled)"} — ${v.owner || "?"} — ${new Date(v.createdAt || Date.now()).toLocaleString()}`;
+        list.appendChild(el);
+      }
     } catch (e) {
-      showErr(els.listErr, `Network error while loading: ${String(e.message || e)}`);
-      // Keep the API badge accurate
-      setApiStatus("offline", "network/CORS");
+      listMsg.textContent = `Load failed (network/CORS): ${e?.message || e}`;
     }
   }
 
-  // Upload
-  async function uploadVideo() {
-    hideErr(els.uploadErr);
-    els.uploadOk.style.display = "none";
-    els.uploadOk.textContent = "";
+  async function upload() {
+    uploadMsg.textContent = "";
+    await checkApi();
 
-    const file = els.file.files && els.file.files[0];
+    const file = document.getElementById("file").files[0];
     if (!file) {
-      showErr(els.uploadErr, "Pick a video file first.");
-      return;
-    }
-    if (file.size > 500 * 1024 * 1024) {
-      showErr(els.uploadErr, "File is over 500MB. Please choose a smaller clip.");
+      uploadMsg.textContent = "Pick a video file first.";
       return;
     }
 
-    const title = els.title.value.trim();
-    if (!title) {
-      showErr(els.uploadErr, "Title is required.");
-      return;
-    }
-
-    els.uploadState.textContent = "Uploading…";
-
-    // Worker expects FormData (most likely)
     const fd = new FormData();
     fd.append("file", file);
-    fd.append("title", title);
-    fd.append("owner", els.owner.value);
-    fd.append("tag", els.tag.value);
-    fd.append("q1", els.q1.value.trim());
-    fd.append("q2", els.q2.value.trim());
-    fd.append("notes", els.notes.value.trim());
-
-    // 🔑 optional key header
-    const headers = {};
-    if (WRITE_KEY) headers["x-tse-key"] = WRITE_KEY;
+    fd.append("title", document.getElementById("title").value || "");
+    fd.append("owner", document.getElementById("owner").value || "");
+    fd.append("tag", document.getElementById("tag").value || "");
+    fd.append("q1", document.getElementById("q1").value || "");
+    fd.append("q2", document.getElementById("q2").value || "");
+    fd.append("notes", document.getElementById("notes").value || "");
 
     try {
-      // Try the most common endpoint used in Workers-based upload APIs:
-      // POST /api/videos (multipart)
-      const data = await fetchJson(`${API_BASE}/api/videos`, {
-        method: "POST",
-        mode: "cors",
-        cache: "no-store",
-        headers,
-        body: fd
-      }, 2);
+      const res = await fetch(`${API_BASE}/api/videos`, { method: "POST", body: fd });
+      const parsed = await safeJson(res);
 
-      els.uploadState.textContent = "Upload complete.";
-      els.uploadOk.style.display = "block";
-      els.uploadOk.textContent = `Uploaded ✅ ${data && data.id ? `(id: ${data.id})` : ""}`;
+      if (!res.ok) {
+        uploadMsg.textContent = `Upload failed: HTTP ${res.status}\n${parsed.raw}`;
+        return;
+      }
+      if (!parsed.ok) {
+        uploadMsg.textContent = `Upload failed: Non-JSON response\n${parsed.raw}`;
+        return;
+      }
 
-      setApiStatus("online");
+      uploadMsg.className = "ok";
+      uploadMsg.textContent = "Upload complete ✅";
       await loadVideos();
     } catch (e) {
-      els.uploadState.textContent = "Upload failed.";
-      showErr(els.uploadErr,
-        `Upload failed (network/CORS or API error).\n\n${String(e.message || e)}\n\nIf this says “TypeError: Load failed”, that’s CORS/preflight.`
-      );
-      setApiStatus("offline", "network/CORS");
+      uploadMsg.className = "err";
+      uploadMsg.textContent = `Upload failed (network/CORS): ${e?.message || e}`;
     }
   }
 
-  function clearForm() {
-    els.file.value = "";
-    els.title.value = "";
-    els.q1.value = "";
-    els.q2.value = "";
-    els.notes.value = "";
-    els.uploadState.textContent = "Idle";
-    hideErr(els.uploadErr);
-    els.uploadOk.style.display = "none";
-    els.uploadOk.textContent = "";
-  }
-
-  // Utils
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, s => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
-    }[s]));
-  }
-
-  // Buttons
-  els.btnLogin.addEventListener("click", () => {
-    // Since there is no Access login, this is just a “quick open” to prove it works
-    window.open(`${API_BASE}/api/health`, "_blank", "noopener");
-  });
-
-  els.btnCheck.addEventListener("click", async () => {
+  // boot
+  (async () => {
     await checkApi();
-  });
-
-  els.btnRefresh.addEventListener("click", async () => {
-    await checkApi();
-    await loadVideos();
-  });
-
-  els.btnLoad.addEventListener("click", loadVideos);
-  els.search.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") loadVideos();
-  });
-
-  els.btnUpload.addEventListener("click", uploadVideo);
-  els.btnClear.addEventListener("click", clearForm);
-
-  // Boot
-  (async function init(){
-    // Check once (won’t break anything if it fails)
-    await checkApi();
-    // Don’t auto-load list on first paint (optional). If you want it, uncomment:
-    // await loadVideos();
   })();
 </script>
+
 </body>
 </html>
