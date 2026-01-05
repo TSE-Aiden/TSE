@@ -165,6 +165,7 @@
       font-size: 13px;
       backdrop-filter: blur(10px);
       user-select:none;
+      white-space: nowrap;
     }
     button:hover, .btn:hover{
       background: rgba(255,255,255,.10);
@@ -179,6 +180,11 @@
     button.danger{
       background: rgba(255,77,77,.12);
       border-color: rgba(255,77,77,.25);
+    }
+    button.small, .btn.small{
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 12px;
     }
 
     .grid{
@@ -263,7 +269,7 @@
       white-space: pre-wrap;
     }
 
-    /* Videos area */
+    /* Videos top controls */
     .videosTop{
       display:flex;
       gap: 10px;
@@ -271,8 +277,8 @@
       flex-wrap: wrap;
     }
     .videosTop .search{
-      flex: 1 1 360px;
-      min-width: 240px;
+      flex: 1 1 320px;
+      min-width: 220px;
     }
 
     .pill{
@@ -294,6 +300,83 @@
       accent-color: #60a5fa;
     }
 
+    /* Folders bar */
+    .foldersBar{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,.07);
+    }
+    .foldersLeft{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      flex: 1 1 auto;
+      min-width: 240px;
+    }
+    .foldersRight{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content:flex-end;
+    }
+
+    .folderChip{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      color: rgba(255,255,255,.80);
+      font-size: 12px;
+      cursor:pointer;
+      transition: transform .12s var(--ease), background .15s var(--ease), border-color .15s var(--ease);
+      user-select:none;
+      position:relative;
+    }
+    .folderChip:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.18);
+    }
+    .folderChip.active{
+      background: rgba(59,130,246,.16);
+      border-color: rgba(59,130,246,.38);
+      color: rgba(255,255,255,.92);
+      box-shadow: 0 14px 42px rgba(0,0,0,.35);
+    }
+    .folderChip .count{
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color: rgba(255,255,255,.72);
+      font-size: 11px;
+    }
+    .folderChip .kebab{
+      opacity: .55;
+      font-weight: 700;
+      padding: 0 4px;
+      border-radius: 8px;
+    }
+    .folderChip:hover .kebab{ opacity: .85; }
+
+    /* droppable highlight */
+    .folderChip.droppable{
+      outline: 2px dashed rgba(96,165,250,.55);
+      outline-offset: 2px;
+      background: rgba(59,130,246,.16);
+      border-color: rgba(59,130,246,.38);
+    }
+
+    /* Cards */
     .cards{
       display:grid;
       grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -323,6 +406,16 @@
       box-shadow: 0 18px 50px rgba(0,0,0,.45);
     }
 
+    /* Drag state */
+    .card.dragging{
+      opacity: .65;
+      transform: scale(.98);
+      border-color: rgba(96,165,250,.55);
+      background: rgba(59,130,246,.10);
+      box-shadow: 0 24px 60px rgba(0,0,0,.55);
+      cursor: grabbing;
+    }
+
     .thumb{
       position:relative;
       aspect-ratio: 16/9;
@@ -337,12 +430,12 @@
       filter: saturate(1.05) contrast(1.02);
       transform: scale(1.02);
       transition: transform .35s var(--ease), filter .35s var(--ease);
+      pointer-events: none; /* so dragging feels clean */
     }
     .card:hover .thumb video{
       transform: scale(1.06);
       filter: saturate(1.12) contrast(1.05);
     }
-
     .thumb::after{
       content:"";
       position:absolute;
@@ -350,7 +443,6 @@
       background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,.45));
       pointer-events:none;
     }
-
     .thumb .fallback{
       position:absolute; inset:0;
       display:flex;
@@ -360,6 +452,7 @@
       font-size: 12px;
       background: rgba(0,0,0,.15);
       backdrop-filter: blur(2px);
+      pointer-events:none;
     }
     .thumb .play{
       position:absolute;
@@ -375,6 +468,7 @@
       backdrop-filter: blur(10px);
       box-shadow: 0 12px 30px rgba(0,0,0,.35);
       transition: transform .18s var(--ease);
+      pointer-events:none;
     }
     .card:hover .thumb .play{ transform: scale(1.06); }
 
@@ -706,7 +800,7 @@
           </div>
 
           <div class="hint">
-            Tip: press <b>/</b> to focus search. Press <b>Esc</b> to close the player.
+            Tip: Drag any video card into a folder chip. Press <b>/</b> to focus search. Press <b>Esc</b> to close the player.
           </div>
           <div id="uploadErr" class="err"></div>
         </div>
@@ -717,7 +811,7 @@
         <div class="hdr">
           <div>
             <h2>Videos</h2>
-            <p class="sub">YouTube-style cards · hover to preview</p>
+            <p class="sub">YouTube-style cards · hover to preview · drag into folders</p>
           </div>
           <button id="loadBtn">Load</button>
         </div>
@@ -742,6 +836,15 @@
             <div class="pill" id="countPill">0 items</div>
           </div>
 
+          <!-- Folders -->
+          <div class="foldersBar">
+            <div class="foldersLeft" id="foldersLeft"></div>
+            <div class="foldersRight">
+              <button class="small" id="newFolderBtn">+ Folder</button>
+              <button class="small" id="manageFoldersBtn">Manage</button>
+            </div>
+          </div>
+
           <div id="cards" class="cards"></div>
           <div id="empty" class="empty" style="display:none;">No videos. Upload one, then click <b>Load</b>.</div>
 
@@ -760,10 +863,10 @@
           <span id="mSub">—</span>
         </div>
         <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-          <button id="mCopy" class="btn">Copy stream link</button>
-          <a class="btn" id="mOpen" target="_blank" rel="noreferrer">Open stream</a>
-          <button id="mDelete" class="danger">Delete</button>
-          <button id="mClose">Close</button>
+          <button id="mCopy" class="btn small">Copy stream link</button>
+          <a class="btn small" id="mOpen" target="_blank" rel="noreferrer">Open stream</a>
+          <button id="mDelete" class="danger small">Delete</button>
+          <button id="mClose" class="small">Close</button>
         </div>
       </div>
 
@@ -775,7 +878,7 @@
         <div class="notesWrap">
           <div class="notesHdr">
             <strong>Notes</strong>
-            <button id="mToggleNotes" class="btn" style="padding:8px 10px;">Collapse</button>
+            <button id="mToggleNotes" class="btn small">Collapse</button>
           </div>
           <div id="mNotesBody" class="notesBody">
             <div class="kv">
@@ -802,7 +905,6 @@
   <script>
     // API Worker domain
     const API_BASE = "https://api.tseapp.com";
-
     const el = (id) => document.getElementById(id);
 
     // Top controls
@@ -833,6 +935,11 @@
     const countPill = el("countPill");
     const listErr = el("listErr");
 
+    // Folders
+    const foldersLeft = el("foldersLeft");
+    const newFolderBtn = el("newFolderBtn");
+    const manageFoldersBtn = el("manageFoldersBtn");
+
     // Modal
     const modal = el("modal");
     const mClose = el("mClose");
@@ -850,7 +957,6 @@
 
     // Toasts
     const toasts = el("toasts");
-
     openApiBtn.href = `${API_BASE}/api/health`;
 
     // ---------- Toast helpers ----------
@@ -900,7 +1006,263 @@
       }
     }
 
+    // ---------- Local storage keys ----------
+    const AUTOLOAD_KEY = "tse_autoload";
+    const FOLDERS_KEY = "tse_folders_v1";     // array of folder names (strings)
+    const ASSIGN_KEY  = "tse_folder_map_v1";  // { [videoId]: folderName }
+
+    // ---------- Folders state ----------
+    let folders = [];          // ["Setups", "Mistakes", ...]
+    let folderMap = {};        // { id: "Setups" }
+    let activeFolder = "__ALL__"; // "__ALL__" or folder name
+
+    function loadFolderState(){
+      try{
+        const f = JSON.parse(localStorage.getItem(FOLDERS_KEY) || "[]");
+        folders = Array.isArray(f) ? f.filter(x => typeof x === "string" && x.trim().length) : [];
+      }catch{ folders = []; }
+
+      try{
+        const m = JSON.parse(localStorage.getItem(ASSIGN_KEY) || "{}");
+        folderMap = (m && typeof m === "object") ? m : {};
+      }catch{ folderMap = {}; }
+
+      // If active folder was deleted, revert to All
+      if (activeFolder !== "__ALL__" && !folders.includes(activeFolder)) activeFolder = "__ALL__";
+    }
+
+    function saveFolderState(){
+      localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
+      localStorage.setItem(ASSIGN_KEY, JSON.stringify(folderMap));
+    }
+
+    function normalizeFolderName(name){
+      return (name || "").toString().trim().replace(/\s+/g, " ");
+    }
+
+    function folderCounts(videos){
+      const counts = {};
+      for (const name of folders) counts[name] = 0;
+      for (const v of videos){
+        const f = folderMap[v.id];
+        if (f && counts[f] !== undefined) counts[f] += 1;
+      }
+      return counts;
+    }
+
+    function renderFolders(videos){
+      foldersLeft.innerHTML = "";
+      const counts = folderCounts(videos);
+
+      // All chip
+      const allChip = document.createElement("div");
+      allChip.className = `folderChip ${activeFolder === "__ALL__" ? "active" : ""}`;
+      allChip.innerHTML = `<span>All</span><span class="count">${videos.length}</span>`;
+      allChip.addEventListener("click", () => { activeFolder = "__ALL__"; applyView(); renderFolders(lastVideos); });
+      wireFolderDropTarget(allChip, "__ALL__");
+      foldersLeft.appendChild(allChip);
+
+      // Folder chips
+      for (const name of folders){
+        const chip = document.createElement("div");
+        chip.className = `folderChip ${activeFolder === name ? "active" : ""}`;
+        chip.innerHTML = `<span>${escapeHtml(name)}</span><span class="count">${counts[name] || 0}</span><span class="kebab" title="Manage">⋯</span>`;
+
+        chip.addEventListener("click", (e) => {
+          // click on kebab triggers manage
+          if (e.target && e.target.classList.contains("kebab")) {
+            e.stopPropagation();
+            manageSingleFolder(name);
+            return;
+          }
+          activeFolder = name;
+          applyView();
+          renderFolders(lastVideos);
+        });
+
+        wireFolderDropTarget(chip, name);
+        foldersLeft.appendChild(chip);
+      }
+    }
+
+    function manageSingleFolder(name){
+      const action = prompt(
+        `Folder: "${name}"\n\nType:\n- rename:<new name>\n- delete\n\nExample: rename:My Setups`,
+        ""
+      );
+      if (!action) return;
+
+      const v = action.trim();
+      if (v.toLowerCase() === "delete"){
+        const ok = confirm(`Delete folder "${name}"?\n\nVideos won’t be deleted — they’ll become unassigned.`);
+        if (!ok) return;
+
+        folders = folders.filter(x => x !== name);
+        // unassign any videos in that folder
+        for (const k of Object.keys(folderMap)){
+          if (folderMap[k] === name) delete folderMap[k];
+        }
+        if (activeFolder === name) activeFolder = "__ALL__";
+        saveFolderState();
+        renderFolders(lastVideos);
+        applyView();
+        toast("", "Folder deleted", `"${name}" removed.`);
+        return;
+      }
+
+      if (v.toLowerCase().startsWith("rename:")){
+        const newName = normalizeFolderName(v.slice(7));
+        if (!newName) return toast("warn","Rename failed","New name is empty.");
+        if (folders.includes(newName)) return toast("warn","Rename failed","A folder with that name already exists.");
+        folders = folders.map(x => x === name ? newName : x);
+        for (const k of Object.keys(folderMap)){
+          if (folderMap[k] === name) folderMap[k] = newName;
+        }
+        if (activeFolder === name) activeFolder = newName;
+        saveFolderState();
+        renderFolders(lastVideos);
+        applyView();
+        toast("", "Folder renamed", `"${name}" → "${newName}".`);
+        return;
+      }
+
+      toast("warn","Unknown command","Use: rename:<new name> or delete");
+    }
+
+    function createFolder(){
+      const name = normalizeFolderName(prompt("New folder name:", "Setups"));
+      if (!name) return;
+      if (folders.includes(name)) return toast("warn","Folder exists","That folder already exists.");
+      folders.push(name);
+      saveFolderState();
+      renderFolders(lastVideos);
+      toast("", "Folder created", `"${name}" added.`);
+    }
+
+    function manageFolders(){
+      const msg =
+`Folders:
+${folders.length ? folders.map((f,i)=>`${i+1}. ${f}`).join("\n") : "(none)"}
+
+Commands:
+- add:<name>
+- rename:<old>=> <new>
+- delete:<name>
+- clear (removes all folders + assignments)
+
+Example:
+rename:Setups=> A+ Setups`;
+      const cmd = prompt(msg, "");
+      if (!cmd) return;
+
+      const s = cmd.trim();
+
+      if (s.toLowerCase() === "clear"){
+        const ok = confirm("Clear all folders + assignments? This is local-only.");
+        if (!ok) return;
+        folders = [];
+        folderMap = {};
+        activeFolder = "__ALL__";
+        saveFolderState();
+        renderFolders(lastVideos);
+        applyView();
+        toast("", "Cleared", "All folders removed.");
+        return;
+      }
+
+      if (s.toLowerCase().startsWith("add:")){
+        const name = normalizeFolderName(s.slice(4));
+        if (!name) return toast("warn","Add failed","Name is empty.");
+        if (folders.includes(name)) return toast("warn","Add failed","Folder already exists.");
+        folders.push(name);
+        saveFolderState();
+        renderFolders(lastVideos);
+        toast("", "Folder created", `"${name}" added.`);
+        return;
+      }
+
+      if (s.toLowerCase().startsWith("delete:")){
+        const name = normalizeFolderName(s.slice(7));
+        if (!folders.includes(name)) return toast("warn","Delete failed","Folder not found.");
+        const ok = confirm(`Delete folder "${name}"? Videos become unassigned.`);
+        if (!ok) return;
+        folders = folders.filter(x => x !== name);
+        for (const k of Object.keys(folderMap)){
+          if (folderMap[k] === name) delete folderMap[k];
+        }
+        if (activeFolder === name) activeFolder = "__ALL__";
+        saveFolderState();
+        renderFolders(lastVideos);
+        applyView();
+        toast("", "Folder deleted", `"${name}" removed.`);
+        return;
+      }
+
+      if (s.toLowerCase().startsWith("rename:")){
+        const rest = s.slice(7);
+        const parts = rest.split("=>");
+        if (parts.length !== 2) return toast("warn","Rename failed","Use rename:<old>=> <new>");
+        const oldName = normalizeFolderName(parts[0]);
+        const newName = normalizeFolderName(parts[1]);
+        if (!folders.includes(oldName)) return toast("warn","Rename failed","Old folder not found.");
+        if (!newName) return toast("warn","Rename failed","New name is empty.");
+        if (folders.includes(newName)) return toast("warn","Rename failed","New name already exists.");
+
+        folders = folders.map(x => x === oldName ? newName : x);
+        for (const k of Object.keys(folderMap)){
+          if (folderMap[k] === oldName) folderMap[k] = newName;
+        }
+        if (activeFolder === oldName) activeFolder = newName;
+
+        saveFolderState();
+        renderFolders(lastVideos);
+        applyView();
+        toast("", "Folder renamed", `"${oldName}" → "${newName}".`);
+        return;
+      }
+
+      toast("warn","Unknown command","Use add:/rename:/delete:/clear");
+    }
+
+    function assignVideoToFolder(videoId, folder){
+      if (!videoId) return;
+      if (folder === "__ALL__") {
+        delete folderMap[videoId]; // unassign
+        saveFolderState();
+        toast("", "Unassigned", "Video removed from folder.");
+        return;
+      }
+      if (!folders.includes(folder)) return;
+      folderMap[videoId] = folder;
+      saveFolderState();
+      toast("", "Moved", `Video moved to "${folder}".`);
+    }
+
+    function wireFolderDropTarget(chipEl, folderName){
+      chipEl.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        chipEl.classList.add("droppable");
+        e.dataTransfer.dropEffect = "move";
+      });
+      chipEl.addEventListener("dragleave", () => chipEl.classList.remove("droppable"));
+      chipEl.addEventListener("drop", (e) => {
+        e.preventDefault();
+        chipEl.classList.remove("droppable");
+        const id = e.dataTransfer.getData("text/plain");
+        if (!id) return;
+        assignVideoToFolder(id, folderName);
+        renderFolders(lastVideos);
+        applyView();
+      });
+    }
+
     // ---------- Utilities ----------
+    function escapeHtml(str){
+      return (str || "").replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+      }[c]));
+    }
+
     function clearUploadForm() {
       fileEl.value = "";
       titleEl.value = "";
@@ -959,7 +1321,8 @@
 
       const url = streamUrlFor(v.id);
       mTitle.textContent = v.title || "(untitled)";
-      mSub.textContent = `${v.owner || "(no owner)"} · ${v.tag || "(no tag)"} · ${fmtTime(v.createdAt) || ""}`.trim();
+      const folder = folderMap[v.id] ? ` · Folder: ${folderMap[v.id]}` : "";
+      mSub.textContent = `${v.owner || "(no owner)"} · ${v.tag || "(no tag)"} · ${fmtTime(v.createdAt) || ""}${folder}`.trim();
 
       mQ1.textContent = v.q1 ? v.q1 : "—";
       mQ2.textContent = v.q2 ? v.q2 : "—";
@@ -996,7 +1359,6 @@
       }
     });
 
-    // Optional delete: works if Worker supports DELETE /api/videos/:id
     async function deleteCurrentVideo() {
       if (!currentVideo?.id) return;
 
@@ -1012,11 +1374,11 @@
         const r = await fetch(`${API_BASE}/api/videos/${encodeURIComponent(id)}`, { method: "DELETE" });
         const j = await safeJson(r);
 
-        if (!r.ok) {
-          // if endpoint not supported, handle nicely
-          const msg = j?.details || j?.error || `HTTP ${r.status}`;
-          throw new Error(msg);
-        }
+        if (!r.ok) throw new Error(j?.details || j?.error || `HTTP ${r.status}`);
+
+        // also clear folder assignment locally
+        delete folderMap[id];
+        saveFolderState();
 
         toast("", "Deleted", `"${title}" removed.`);
         closeModal();
@@ -1042,10 +1404,14 @@
       });
     }
 
+    function applyFolderFilter(videos){
+      if (activeFolder === "__ALL__") return videos;
+      return videos.filter(v => folderMap[v.id] === activeFolder);
+    }
+
     function sortVideos(videos, mode){
       const arr = [...videos];
       const m = mode || "newest";
-
       const alpha = (a,b) => a.localeCompare(b);
       const lc = (x) => (x || "").toLowerCase();
 
@@ -1078,6 +1444,18 @@
       for (const v of videos) {
         const card = document.createElement("div");
         card.className = "card";
+        card.draggable = true;
+
+        card.addEventListener("dragstart", (e) => {
+          card.classList.add("dragging");
+          e.dataTransfer.setData("text/plain", v.id);
+          e.dataTransfer.effectAllowed = "move";
+        });
+        card.addEventListener("dragend", () => {
+          card.classList.remove("dragging");
+          // remove droppable highlight on all chips just in case
+          document.querySelectorAll(".folderChip.droppable").forEach(x => x.classList.remove("droppable"));
+        });
 
         const thumb = document.createElement("div");
         thumb.className = "thumb";
@@ -1116,3 +1494,196 @@
         const ownerChip = document.createElement("div");
         ownerChip.className = "chip";
         ownerChip.textContent = v.owner || "No owner";
+
+        const tagChip = document.createElement("div");
+        tagChip.className = "chip muted";
+        tagChip.textContent = v.tag || "No tag";
+
+        const folder = folderMap[v.id];
+        const folderChip = document.createElement("div");
+        folderChip.className = "chip muted";
+        folderChip.textContent = folder ? `📁 ${folder}` : "📁 Unassigned";
+
+        chips.appendChild(ownerChip);
+        chips.appendChild(tagChip);
+        chips.appendChild(folderChip);
+
+        const sub = document.createElement("div");
+        sub.className = "subline";
+
+        const left = document.createElement("span");
+        left.textContent = fmtTime(v.createdAt) || "";
+
+        const right = document.createElement("span");
+        right.textContent = v.id ? v.id.slice(0,8) : "";
+
+        sub.appendChild(left);
+        sub.appendChild(right);
+
+        meta.appendChild(t);
+        meta.appendChild(chips);
+        meta.appendChild(sub);
+
+        card.appendChild(thumb);
+        card.appendChild(meta);
+
+        wireHoverPreview(vid);
+
+        // click opens modal (ignore drag click)
+        card.addEventListener("click", (e) => {
+          // If user just dragged, prevent accidental open
+          if (card.classList.contains("dragging")) return;
+          openModal(v);
+        });
+
+        cardsEl.appendChild(card);
+      }
+    }
+
+    function applyView(){
+      // Clean assignments for videos that no longer exist (optional hygiene)
+      const ids = new Set(lastVideos.map(v => v.id));
+      let changed = false;
+      for (const k of Object.keys(folderMap)){
+        if (!ids.has(k)) { delete folderMap[k]; changed = true; }
+      }
+      if (changed) saveFolderState();
+
+      const filtered = filterVideos(lastVideos, searchEl.value);
+      const folderFiltered = applyFolderFilter(filtered);
+      const sorted = sortVideos(folderFiltered, sortEl.value);
+      render(sorted);
+
+      // folder chips always show counts for ALL videos (not filtered by search),
+      // so user can see true folder sizes; but they remain droppable.
+      renderFolders(lastVideos);
+    }
+
+    async function loadVideos() {
+      try {
+        listErr.textContent = "";
+        showSkeletons(8);
+
+        const r = await fetch(`${API_BASE}/api/videos`, { method: "GET" });
+        const j = await safeJson(r);
+        if (!r.ok) throw new Error(j?.details || j?.error || `HTTP ${r.status}`);
+
+        lastVideos = Array.isArray(j?.videos) ? j.videos : [];
+
+        // Make sure folder state exists & counts render correctly
+        applyView();
+      } catch (e) {
+        lastVideos = [];
+        cardsEl.innerHTML = "";
+        emptyEl.style.display = "none";
+        listErr.textContent = `Load failed: ${e.message || e}`;
+        toast("err", "Load failed", (e && e.message) ? e.message : String(e));
+        renderFolders([]);
+      }
+    }
+
+    // ---------- Upload ----------
+    async function uploadVideo() {
+      uploadErr.textContent = "";
+      const file = fileEl.files?.[0];
+      if (!file) {
+        uploadErr.textContent = "Choose a video file first.";
+        return;
+      }
+
+      try {
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = "Uploading…";
+
+        const fd = new FormData();
+        fd.append("file", file, file.name); // must be "file"
+
+        fd.append("title", titleEl.value || "");
+        fd.append("owner", ownerEl.value || "");
+        fd.append("tag", tagEl.value || "");
+        fd.append("q1", q1El.value || "");
+        fd.append("q2", q2El.value || "");
+        fd.append("notes", notesEl.value || "");
+
+        const r = await fetch(`${API_BASE}/api/videos/upload`, {
+          method: "POST",
+          body: fd
+        });
+
+        const j = await safeJson(r);
+        if (!r.ok) throw new Error(j?.details || j?.error || `HTTP ${r.status}`);
+
+        toast("", "Uploaded", "Video uploaded successfully.");
+
+        await loadVideos();
+
+        // open newly uploaded if possible
+        if (j?.id) {
+          const v = lastVideos.find(x => x.id === j.id) || {
+            id: j.id,
+            title: titleEl.value,
+            owner: ownerEl.value,
+            tag: tagEl.value,
+            q1: q1El.value,
+            q2: q2El.value,
+            notes: notesEl.value,
+            createdAt: j.createdAt
+          };
+          openModal(v);
+        }
+
+        clearUploadForm();
+      } catch (e) {
+        uploadErr.textContent = `Upload failed: ${e.message || e}`;
+        toast("err", "Upload failed", (e && e.message) ? e.message : String(e));
+      } finally {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = "Upload";
+      }
+    }
+
+    // ---------- Events ----------
+    clearBtn.addEventListener("click", clearUploadForm);
+    uploadBtn.addEventListener("click", uploadVideo);
+    loadBtn.addEventListener("click", loadVideos);
+
+    refreshBtn.addEventListener("click", async () => {
+      await checkAPI();
+      await loadVideos();
+    });
+    checkApiBtn.addEventListener("click", checkAPI);
+
+    searchEl.addEventListener("input", applyView);
+    sortEl.addEventListener("change", applyView);
+
+    // keyboard shortcuts
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+      if (e.key === "/" && document.activeElement !== searchEl &&
+          document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        searchEl.focus();
+      }
+    });
+
+    // Auto-load toggle (persist)
+    autoLoadEl.checked = localStorage.getItem(AUTOLOAD_KEY) === "1";
+    autoLoadEl.addEventListener("change", () => {
+      localStorage.setItem(AUTOLOAD_KEY, autoLoadEl.checked ? "1" : "0");
+      toast("", "Saved", `Auto-load is now ${autoLoadEl.checked ? "ON" : "OFF"}.`);
+    });
+
+    // Folder buttons
+    newFolderBtn.addEventListener("click", createFolder);
+    manageFoldersBtn.addEventListener("click", manageFolders);
+
+    // ---------- Boot ----------
+    (async () => {
+      loadFolderState();
+      await checkAPI();
+      renderFolders([]); // show initial bar (All only)
+      if (autoLoadEl.checked) await loadVideos();
+    })();
+  </script>
+</body>
+</html>
