@@ -1,271 +1,263 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
+<meta charset="UTF-8" />
 <title>TSE</title>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <style>
-/* ===== THEME ===== */
-:root{
-  --bg:#070a12;
-  --panel:rgba(255,255,255,.08);
-  --panel2:rgba(255,255,255,.12);
-  --stroke:rgba(255,255,255,.14);
-  --text:#fff;
-  --muted:rgba(255,255,255,.6);
-  --accent:#7c5cff;
-  --radius:16px;
-}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+:root {
+  --bg: #0b0e14;
+  --panel: #121826;
+  --border: #1f2a44;
+  --accent: #6d7cff;
+  --text: #e6e9f2;
 }
 
-/* ===== LAYOUT ===== */
-header{
-  padding:14px 20px;
-  border-bottom:1px solid var(--stroke);
-  display:flex;
-  justify-content:space-between;
-}
-.tabs{display:flex;gap:10px}
-.tab{
-  padding:8px 14px;
-  border-radius:999px;
-  border:1px solid var(--stroke);
-  background:var(--panel);
-  cursor:pointer;
-}
-.tab.active{background:rgba(124,92,255,.3)}
-
-main{padding:16px}
-.section{display:none}
-.section.active{display:block}
-
-/* ===== SPLIT VIEW ===== */
-.split{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-@media(max-width:900px){
-  .split{grid-template-columns:1fr}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: radial-gradient(1200px 600px at 50% -200px, #1a2140, var(--bg));
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
 }
 
-/* ===== PLAYER ===== */
-video{width:100%;border-radius:14px;background:#000}
-
-/* ===== DOC SYSTEM ===== */
-.doc{
-  background:var(--panel);
-  border:1px solid var(--stroke);
-  border-radius:14px;
-  padding:10px;
-}
-.docTabs{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-  margin-bottom:6px;
-}
-.docTab{
-  padding:6px 10px;
-  border-radius:10px;
-  border:1px solid var(--stroke);
-  cursor:pointer;
-}
-.docTab.active{background:rgba(124,92,255,.25)}
-.toolbar{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
-  margin-bottom:6px;
-}
-.toolbar button,input[type=color],select{
-  background:var(--panel2);
-  border:1px solid var(--stroke);
-  color:var(--text);
-  border-radius:8px;
-  padding:6px;
-}
-.editor{
-  min-height:260px;
-  background:#000;
-  padding:10px;
-  border-radius:10px;
-}
-.editor img{
-  max-width:100%;
-  border-radius:10px;
-  cursor:pointer;
-}
-.editor img.selected{
-  outline:2px solid var(--accent);
+header {
+  padding: 16px 24px;
+  font-weight: 700;
+  letter-spacing: .5px;
 }
 
-/* ===== NEWS ===== */
-.modal{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.65);
-  display:none;
-  align-items:center;
-  justify-content:center;
+.tabs {
+  display: flex;
+  gap: 10px;
+  padding: 0 24px;
 }
-.modal.show{display:flex}
-.modal iframe{
-  width:92vw;
-  height:92vh;
-  border-radius:16px;
-  border:none;
+
+.tab {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #161d34;
+  cursor: pointer;
+  opacity: .7;
+}
+.tab.active { background: var(--accent); opacity: 1; }
+
+main { padding: 24px; }
+
+.panel {
+  background: linear-gradient(180deg, #141a30, #0e1324);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.hidden { display: none; }
+
+video {
+  width: 100%;
+  background: black;
+  border-radius: 12px;
+}
+
+/* NOTES */
+.toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.toolbar button, .toolbar select, .toolbar input {
+  background: #1a2140;
+  color: white;
+  border: 1px solid #2a3470;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+#editor {
+  min-height: 240px;
+  padding: 12px;
+  background: #0a0f1f;
+  border: 1px solid #2a3470;
+  border-radius: 10px;
+  outline: none;
+}
+#editor img {
+  max-width: 100%;
+  resize: both;
+  overflow: auto;
+  border: 1px dashed #555;
+}
+
+/* NEWS */
+iframe {
+  width: 100%;
+  height: 70vh;
+  border: none;
+  border-radius: 12px;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-  <b>TSE</b>
-  <div class="tabs">
-    <div class="tab active" data-tab="videos">Videos</div>
-    <div class="tab" data-tab="news">News</div>
-  </div>
-</header>
+<header>TSE</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="videos">Videos</div>
+  <div class="tab" data-tab="notes">Notes</div>
+  <div class="tab" data-tab="bible">Daily Bible Study</div>
+  <div class="tab" data-tab="news">News</div>
+</div>
 
 <main>
 
-<!-- ===== VIDEOS + NOTES ===== -->
-<section id="videos" class="section active">
-
-<div class="split">
-
-<!-- PLAYER -->
-<div>
-  <video id="video" controls></video>
-  <button onclick="insertTimestamp()">+ Timestamp</button>
+<!-- VIDEOS -->
+<div id="videos" class="panel">
+  <h3>Video Player</h3>
+  <video id="player" controls></video>
+  <button id="loadDemo">Load demo video</button>
 </div>
 
-<!-- DOCS -->
-<div class="doc">
-
-  <div class="docTabs" id="docTabs"></div>
+<!-- NOTES -->
+<div id="notes" class="panel hidden">
+  <h3>Notes</h3>
 
   <div class="toolbar">
-    <button onclick="cmd('bold')">B</button>
-    <button onclick="cmd('italic')">I</button>
-    <button onclick="cmd('underline')">U</button>
-    <select onchange="cmd('fontSize',this.value)">
-      <option value="3">Text</option>
-      <option value="4">Large</option>
-      <option value="5">XL</option>
+    <button data-style="bold">B</button>
+    <button data-style="italic">I</button>
+    <button data-style="underline">U</button>
+    <input type="color" id="colorPicker" />
+    <select id="fontSize">
+      <option value="14px">14</option>
+      <option value="16px">16</option>
+      <option value="20px">20</option>
+      <option value="28px">28</option>
     </select>
-    <input type="color" onchange="cmd('foreColor',this.value)">
-    <button onclick="exportPDF()">Export PDF</button>
-    <button onclick="addDoc()">+ Doc</button>
+    <input type="file" id="imgUpload" accept="image/*" />
   </div>
 
-  <div id="editor" class="editor" contenteditable></div>
-
+  <div id="editor" contenteditable="true">
+    Start writing notes…
+  </div>
 </div>
+
+<!-- BIBLE -->
+<div id="bible" class="panel hidden">
+  <h3>Daily Bible Study</h3>
+
+  <input id="verseInput" placeholder="John 3:16" />
+  <button id="loadVerse">Generate Lesson</button>
+
+  <div id="bibleContent"></div>
 </div>
-</section>
 
-<!-- ===== NEWS ===== -->
-<section id="news" class="section">
-<h2>Market News</h2>
-<button onclick="openNews('https://www.forexfactory.com')">Forex Factory</button>
-<button onclick="openNews('https://www.reuters.com/markets')">Reuters</button>
-<button onclick="openNews('https://www.investing.com')">Investing.com</button>
-<button onclick="openNews('https://www.bloomberg.com/markets')">Bloomberg</button>
-<button onclick="openNews('https://www.cmegroup.com/market-data/economic-calendar.html')">CME Calendar</button>
-</section>
+<!-- NEWS -->
+<div id="news" class="panel hidden">
+  <h3>Market News</h3>
 
-</main>
+  <select id="newsSelect">
+    <option value="">Select source</option>
+    <option value="https://www.forexfactory.com">Forex Factory</option>
+    <option value="https://www.investing.com">Investing.com</option>
+    <option value="https://www.marketwatch.com">MarketWatch</option>
+    <option value="https://www.bloomberg.com/markets">Bloomberg Markets</option>
+  </select>
 
-<div id="newsModal" class="modal" onclick="this.classList.remove('show')">
   <iframe id="newsFrame"></iframe>
 </div>
 
+</main>
+
 <script>
-/* ===== TABS ===== */
-document.querySelectorAll('.tab').forEach(t=>{
-  t.onclick=()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'))
-    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'))
-    t.classList.add('active')
-    document.getElementById(t.dataset.tab).classList.add('active')
+/* ---------- GLOBAL SAFETY ---------- */
+window.onerror = (msg) => {
+  console.error("JS error prevented crash:", msg);
+};
+
+/* ---------- TABS ---------- */
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.add("hidden"));
+    tab.classList.add("active");
+    document.getElementById(tab.dataset.tab).classList.remove("hidden");
+  };
+});
+
+/* ---------- VIDEO ---------- */
+const player = document.getElementById("player");
+document.getElementById("loadDemo").onclick = () => {
+  try {
+    player.pause();
+    player.removeAttribute("src");
+    player.load();
+    player.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
+  } catch {}
+};
+
+/* ---------- NOTES (NO execCommand) ---------- */
+function applyStyle(style, value) {
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  if (range.collapsed) return;
+  const span = document.createElement("span");
+  span.style[style] = value;
+  range.surroundContents(span);
+}
+
+document.querySelectorAll("[data-style]").forEach(btn => {
+  btn.onclick = () => {
+    const map = {
+      bold: ["fontWeight", "700"],
+      italic: ["fontStyle", "italic"],
+      underline: ["textDecoration", "underline"]
+    };
+    applyStyle(...map[btn.dataset.style]);
+  };
+});
+
+document.getElementById("colorPicker").oninput =
+  e => applyStyle("color", e.target.value);
+document.getElementById("fontSize").onchange =
+  e => applyStyle("fontSize", e.target.value);
+
+document.getElementById("imgUpload").onchange = e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const img = document.createElement("img");
+  img.src = URL.createObjectURL(file);
+  document.getElementById("editor").appendChild(img);
+};
+
+/* ---------- BIBLE API ---------- */
+document.getElementById("loadVerse").onclick = async () => {
+  const ref = document.getElementById("verseInput").value || "John 3:16";
+  const out = document.getElementById("bibleContent");
+  out.innerHTML = "Loading…";
+
+  try {
+    const res = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}`);
+    const data = await res.json();
+    out.innerHTML = `
+      <h4>${data.reference}</h4>
+      <p>${data.text}</p>
+      <hr/>
+      <b>Observe:</b> What does this reveal about God?<br/>
+      <b>Interpret:</b> What does it mean?<br/>
+      <b>Apply:</b> How should this change you?<br/>
+      <b>Prayer:</b> Write a short prayer.
+    `;
+  } catch {
+    out.textContent = "Failed to load verse.";
   }
-})
+};
 
-/* ===== DOC STATE ===== */
-let docs={
-  active:'doc-1',
-  docs:{
-    'doc-1':{title:'Notes',html:''}
-  }
-}
-
-/* ===== DOC UI ===== */
-function renderTabs(){
-  const el=document.getElementById('docTabs')
-  el.innerHTML=''
-  Object.entries(docs.docs).forEach(([id,d])=>{
-    const t=document.createElement('div')
-    t.className='docTab'+(docs.active===id?' active':'')
-    t.textContent=d.title
-    t.onclick=()=>switchDoc(id)
-    el.appendChild(t)
-  })
-}
-function switchDoc(id){
-  saveDoc()
-  docs.active=id
-  document.getElementById('editor').innerHTML=docs.docs[id].html
-  renderTabs()
-}
-function saveDoc(){
-  docs.docs[docs.active].html=document.getElementById('editor').innerHTML
-  localStorage.setItem('tse-docs',JSON.stringify(docs))
-}
-function addDoc(){
-  const id='doc-'+Date.now()
-  docs.docs[id]={title:'New Doc',html:''}
-  switchDoc(id)
-}
-
-/* ===== COMMANDS ===== */
-function cmd(c,v=null){document.execCommand(c,false,v)}
-
-/* ===== TIMESTAMPS ===== */
-function insertTimestamp(){
-  const t=Math.floor(document.getElementById('video').currentTime)
-  document.execCommand('insertHTML',false,
-    `<span style="color:#7c5cff;cursor:pointer" onclick="document.getElementById('video').currentTime=${t}">[${t}s]</span> `
-  )
-}
-
-/* ===== EXPORT PDF ===== */
-function exportPDF(){
-  const w=window.open('')
-  w.document.write(`<html><body>${document.getElementById('editor').innerHTML}</body></html>`)
-  w.print()
-}
-
-/* ===== NEWS ===== */
-function openNews(url){
-  document.getElementById('newsFrame').src=url
-  document.getElementById('newsModal').classList.add('show')
-}
-
-/* ===== INIT ===== */
-const saved=localStorage.getItem('tse-docs')
-if(saved){docs=JSON.parse(saved)}
-renderTabs()
-switchDoc(docs.active)
-setInterval(saveDoc,2000)
+/* ---------- NEWS ---------- */
+document.getElementById("newsSelect").onchange = e => {
+  document.getElementById("newsFrame").src = e.target.value;
+};
 </script>
 
 </body>
