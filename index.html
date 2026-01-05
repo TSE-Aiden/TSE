@@ -2,1423 +2,614 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>TSE</title>
-  <meta name="color-scheme" content="dark" />
   <style>
     :root{
-      --bg:#070b14;
-      --panel: rgba(255,255,255,.06);
-      --panel2: rgba(255,255,255,.08);
-      --stroke: rgba(255,255,255,.10);
-      --stroke2: rgba(255,255,255,.16);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.62);
-      --muted2: rgba(255,255,255,.45);
-      --accent: #5dd6ff;
-      --good:#47d18a;
-      --warn:#ffcc66;
-      --bad:#ff6b7a;
-      --shadow: 0 20px 60px rgba(0,0,0,.55);
-      --radius: 18px;
-      --radius2: 14px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --bg:#071018;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.08);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.65);
+      --border:rgba(255,255,255,.12);
+      --good:#5ef0a6;
+      --bad:#ff5c7a;
+      --warn:#ffd36a;
+      --accent:#7cc7ff;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius:18px;
     }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+    *{box-sizing:border-box}
     body{
       margin:0;
-      font-family: var(--sans);
-      color: var(--text);
-      background:
-        radial-gradient(1200px 700px at 18% 5%, rgba(93,214,255,.14), transparent 55%),
-        radial-gradient(900px 600px at 85% 12%, rgba(71,209,138,.10), transparent 55%),
-        radial-gradient(1000px 700px at 70% 90%, rgba(255,107,122,.08), transparent 60%),
-        linear-gradient(180deg, #070b14 0%, #050815 100%);
-      overflow-x:hidden;
-    }
-    a{ color:inherit; }
-    .wrap{
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 22px 18px 44px;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(900px 600px at 20% 0%, rgba(124,199,255,.18), transparent 60%),
+                  radial-gradient(800px 600px at 80% 100%, rgba(94,240,166,.12), transparent 60%),
+                  var(--bg);
+      color:var(--text);
     }
     .topbar{
-      position: sticky;
-      top:0;
-      z-index: 50;
-      padding: 14px 0 12px;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      background: linear-gradient(180deg, rgba(7,11,20,.86), rgba(7,11,20,.55));
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-    .topbar-inner{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 18px;
+      display:flex; gap:12px; align-items:center; justify-content:space-between;
+      padding:18px 18px 10px;
+      max-width:1200px; margin:0 auto;
     }
     .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width: 220px;
+      display:flex; align-items:center; gap:12px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border-radius:999px;
+      box-shadow:var(--shadow);
     }
     .logo{
-      width:38px; height:38px;
-      border-radius: 12px;
-      background: radial-gradient(circle at 30% 30%, rgba(93,214,255,.9), rgba(71,209,138,.55), rgba(255,255,255,.04));
-      box-shadow: 0 10px 24px rgba(0,0,0,.45);
-      border: 1px solid rgba(255,255,255,.14);
+      width:28px; height:28px; border-radius:10px;
+      background: radial-gradient(circle at 30% 30%, rgba(124,199,255,.9), rgba(94,240,166,.55) 55%, rgba(255,255,255,.08));
+      border:1px solid rgba(255,255,255,.18);
     }
-    .brand h1{
-      font-size: 16px;
-      margin:0;
-      line-height:1.1;
-      letter-spacing:.3px;
+    .brand h1{font-size:14px; margin:0; letter-spacing:.3px}
+    .brand p{font-size:12px; margin:0; color:var(--muted)}
+    .right{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;
     }
-    .brand p{
-      margin:0;
-      font-size: 12px;
-      color: var(--muted);
+    .badge{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+      border-radius:999px;
     }
-
-    .seg{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08);
-    }
-    .seg button{
-      border:0;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: transparent;
-      color: var(--muted);
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--warn);box-shadow:0 0 0 3px rgba(255,211,106,.12)}
+    .dot.ok{background:var(--good); box-shadow:0 0 0 3px rgba(94,240,166,.12)}
+    .dot.bad{background:var(--bad); box-shadow:0 0 0 3px rgba(255,92,122,.12)}
+    button{
+      appearance:none;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
       cursor:pointer;
-      font-weight: 650;
-      letter-spacing:.2px;
     }
-    .seg button.active{
-      color: var(--text);
-      background: rgba(255,255,255,.10);
-      border: 1px solid rgba(255,255,255,.12);
+    button:hover{background:rgba(255,255,255,.09)}
+    button.primary{
+      border-color:rgba(124,199,255,.35);
+      background:rgba(124,199,255,.12);
     }
-
-    .statusbar{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      min-width: 320px;
+    .tabs{
+      display:flex; gap:10px;
+      padding:10px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.05);
+      border-radius:999px;
+      box-shadow:var(--shadow);
     }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      color: var(--muted);
-      font-size: 12px;
-      user-select:none;
-    }
-    .dot{
-      width:8px;height:8px;border-radius:50%;
-      background: var(--muted2);
-      box-shadow: 0 0 0 3px rgba(255,255,255,.06);
-    }
-    .dot.good{ background: var(--good); box-shadow: 0 0 0 3px rgba(71,209,138,.14); }
-    .dot.warn{ background: var(--warn); box-shadow: 0 0 0 3px rgba(255,204,102,.14); }
-    .dot.bad{ background: var(--bad); box-shadow: 0 0 0 3px rgba(255,107,122,.14); }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      cursor:pointer;
-      box-shadow: 0 10px 26px rgba(0,0,0,.22);
-      font-weight: 650;
-    }
-    .btn:hover{ background: rgba(255,255,255,.09); }
-    .btn:active{ transform: translateY(1px); }
-    .btn.secondary{
-      background: rgba(255,255,255,.04);
-      color: var(--muted);
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 420px 1fr;
-      gap: 16px;
-      margin-top: 18px;
-    }
-    @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
-      .brand{ min-width:auto; }
-      .statusbar{ min-width:auto; justify-content:flex-start; }
+    .tab{padding:9px 12px; border-radius:999px; border:1px solid transparent; color:var(--muted)}
+    .tab.active{background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.12); color:var(--text)}
+    .wrap{
+      max-width:1200px; margin:0 auto; padding:10px 18px 26px;
+      display:grid; grid-template-columns: 380px 1fr; gap:16px;
     }
     .card{
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      border:1px solid var(--border);
+      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
       overflow:hidden;
     }
-    .card .hd{
-      padding: 14px 14px 12px;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+    .card .head{
+      padding:14px 14px 8px;
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
     }
-    .card .hd h2{
-      margin:0;
-      font-size: 14px;
-      letter-spacing:.2px;
-    }
-    .card .hd small{
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .card .bd{ padding: 14px; }
-
-    .field{ display:flex; flex-direction:column; gap:8px; margin-bottom: 12px; }
-    .row{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    @media (max-width: 980px){ .row{ grid-template-columns:1fr; } }
-
-    label{ font-size: 12px; color: var(--muted); }
-    input[type="text"], input[type="search"], textarea, select{
+    .card .head h2{margin:0; font-size:14px}
+    .card .head small{color:var(--muted)}
+    .card .body{padding:14px}
+    label{display:block; font-size:12px; color:var(--muted); margin:10px 0 6px}
+    input, select, textarea{
       width:100%;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-      color: var(--text);
+      padding:10px 11px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.15);
+      color:var(--text);
       outline:none;
     }
-    textarea{ min-height: 92px; resize: vertical; }
-    input[type="file"]{
-      width:100%;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px dashed rgba(255,255,255,.18);
-      background: rgba(0,0,0,.16);
-      color: var(--muted);
-      outline:none;
+    textarea{min-height:84px; resize:vertical}
+    .row{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+    .actions{display:flex; gap:10px; margin-top:12px}
+    .muted{color:var(--muted); font-size:12px}
+    .error{color:var(--bad); font-size:12px; margin-top:10px; white-space:pre-wrap}
+    .ok{color:var(--good); font-size:12px; margin-top:10px; white-space:pre-wrap}
+    .toolbar{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding:14px; border-bottom:1px solid var(--border);
     }
-
-    .actions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top: 10px;
-    }
-
-    .progress{
-      margin-top: 12px;
-      width:100%;
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      overflow:hidden;
-    }
-    .bar{
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg, rgba(93,214,255,.95), rgba(71,209,138,.9));
-      border-radius: 999px;
-      transition: width .2s ease;
-    }
-    .msg{
-      margin-top: 10px;
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.35;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .msg.good{ color: rgba(71,209,138,.95); }
-    .msg.bad{ color: rgba(255,107,122,.95); }
-    .msg.warn{ color: rgba(255,204,102,.95); }
-
-    .list-head{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .list-head .spacer{ flex:1; }
-    .list{
-      padding: 12px 14px 16px;
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 12px;
-    }
-    @media (max-width: 980px){ .list{ grid-template-columns:1fr; } }
-
-    .vcard{
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      overflow:hidden;
-      position:relative;
-      transition: transform .16s ease, background .16s ease, border-color .16s ease;
-    }
-    .vcard:hover{
-      transform: translateY(-2px);
-      border-color: rgba(93,214,255,.22);
-      background: rgba(255,255,255,.06);
+    .toolbar .left{display:flex; gap:10px; align-items:center; flex:1}
+    .toolbar .right{display:flex; gap:10px; align-items:center}
+    .list{padding:14px}
+    .videoItem{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      border-radius:14px;
+      padding:12px;
+      display:flex; gap:12px; align-items:flex-start;
+      margin-bottom:10px;
     }
     .thumb{
-      aspect-ratio: 16/9;
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.25));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      position:relative;
-      overflow:hidden;
+      width:120px; height:70px; border-radius:12px;
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.12);
+      flex:0 0 auto;
+      display:flex; align-items:center; justify-content:center;
+      color:var(--muted); font-size:12px;
     }
-    .thumb video{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      opacity: .0;
-      transition: opacity .18s ease;
+    .meta{flex:1}
+    .meta .t{font-weight:600; margin-bottom:4px}
+    .meta .s{color:var(--muted); font-size:12px}
+    .pill{
+      display:inline-flex; align-items:center;
+      font-size:11px; padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      color:var(--muted);
+      margin-right:6px;
     }
-    .thumb .placeholder{
-      padding: 10px 12px;
-      color: var(--muted);
-      text-align:center;
-      font-size: 12px;
+    .footerNote{
+      padding:12px 14px;
+      border-top:1px solid var(--border);
+      color:var(--muted);
+      font-size:12px;
     }
-    .vcard:hover .thumb video{
-      opacity: 1;
+    @media (max-width: 980px){
+      .wrap{grid-template-columns: 1fr}
     }
-    .vmeta{
-      padding: 12px 12px 14px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .vtitle{
-      font-weight: 750;
-      font-size: 13px;
-      letter-spacing:.2px;
-      line-height: 1.2;
-    }
-    .vsub{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
-      font-size: 12px;
-      color: var(--muted);
-    }
-    .vactions{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top: 6px;
-    }
-    .linkbtn{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.04);
-      color: var(--text);
-      text-decoration:none;
-      font-weight: 650;
-      font-size: 12px;
-      cursor:pointer;
-    }
-    .linkbtn:hover{ background: rgba(255,255,255,.08); }
-
-    /* Notes editor */
-    .notes-wrap{
-      display:grid;
-      grid-template-columns: 320px 1fr;
-      gap: 14px;
-    }
-    @media (max-width: 980px){ .notes-wrap{ grid-template-columns:1fr; } }
-
-    .notes-list{
-      padding: 10px;
-    }
-    .note-item{
-      padding: 10px 10px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      margin-bottom: 10px;
-      cursor:pointer;
-    }
-    .note-item.active{
-      border-color: rgba(93,214,255,.22);
-      background: rgba(93,214,255,.06);
-    }
-    .note-item .t{ font-weight: 750; font-size: 13px; margin-bottom: 6px; }
-    .note-item .d{ color: var(--muted); font-size: 12px; }
-
-    .editor-top{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex-wrap:wrap;
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-    }
-    .editor-top input{
-      max-width: 340px;
-      flex: 1;
-    }
-    .toolbar{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .tool{
-      font-family: var(--sans);
-      padding: 8px 10px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-      color: var(--text);
-      cursor:pointer;
-      font-weight: 650;
-      font-size: 12px;
-    }
-    .tool:hover{ background: rgba(255,255,255,.08); }
-
-    .editor{
-      min-height: 520px;
-      padding: 18px 16px 26px;
-      outline:none;
-      line-height: 1.6;
-      font-size: 14px;
-    }
-    .editor:empty:before{
-      content: "Type your notes… Drag & drop images in here.";
-      color: rgba(255,255,255,.35);
-    }
-
-    /* Scalable images inside editor */
-    .img-wrap{
-      display:inline-block;
-      position:relative;
-      max-width:100%;
-      margin: 8px 0;
-    }
-    .img-wrap img{
-      display:block;
-      max-width: 100%;
-      height: auto;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: 0 10px 26px rgba(0,0,0,.28);
-      user-select:none;
-      -webkit-user-drag: none;
-    }
-    .img-wrap.selected{
-      outline: 2px solid rgba(93,214,255,.55);
-      outline-offset: 3px;
-      border-radius: 14px;
-    }
-    .handle{
-      position:absolute;
-      width: 14px; height: 14px;
-      border-radius: 6px;
-      background: rgba(93,214,255,.95);
-      border: 2px solid rgba(0,0,0,.55);
-      box-shadow: 0 8px 16px rgba(0,0,0,.35);
-      right: -6px;
-      bottom: -6px;
-      cursor: nwse-resize;
-      display:none;
-    }
-    .img-wrap.selected .handle{ display:block; }
-
-    .kbd{
-      font-family: var(--mono);
-      padding: 2px 6px;
-      border-radius: 8px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .footer-tip{
-      padding: 10px 14px 14px;
-      font-size: 12px;
-      color: var(--muted2);
-      border-top: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.02);
-    }
-    .mono{ font-family: var(--mono); }
   </style>
 </head>
 <body>
   <div class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <h1>TSE</h1>
-          <p>Videos + Notes • Shared via Cloudflare (R2 + D1)</p>
+    <div class="brand">
+      <div class="logo"></div>
+      <div>
+        <h1>TSE</h1>
+        <p>Videos + Notes • Shared via Cloudflare (R2 + D1)</p>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="tabs" role="tablist" aria-label="Views">
+        <div class="tab active" id="tabVideos" role="tab" tabindex="0">Videos</div>
+        <div class="tab" id="tabNotes" role="tab" tabindex="0">Notes</div>
+      </div>
+
+      <div class="badge" title="API status based on /api/health">
+        <div class="dot bad" id="apiDot"></div>
+        <div style="display:flex; flex-direction:column; line-height:1.1">
+          <div style="font-size:12px; color:var(--muted)">API:</div>
+          <div style="font-size:12px" id="apiText">offline</div>
         </div>
       </div>
 
-      <div class="seg" role="tablist" aria-label="Section">
-        <button id="tabVideos" class="active" role="tab" aria-selected="true">Videos</button>
-        <button id="tabNotes" role="tab" aria-selected="false">Notes</button>
-      </div>
-
-      <div class="statusbar">
-        <div class="pill" id="apiPill" title="API status">
-          <span class="dot bad" id="apiDot"></span>
-          <span id="apiText">API: offline</span>
-        </div>
-        <button class="btn secondary" id="btnLoginApi" title="Opens the API health endpoint in a new tab to complete Cloudflare Access login">
-          Login to API
-        </button>
-        <button class="btn secondary" id="btnCheckApi">Check API</button>
-        <button class="btn" id="btnRefresh">Refresh</button>
-      </div>
+      <button id="btnLogin" class="">Open API</button>
+      <button id="btnCheck" class="primary">Check API</button>
+      <button id="btnRefresh">Refresh</button>
     </div>
   </div>
 
   <div class="wrap">
-    <!-- VIDEOS VIEW -->
-    <section id="viewVideos">
-      <div class="grid">
-        <!-- Upload card -->
-        <div class="card">
-          <div class="hd">
-            <h2>Upload video</h2>
-            <small class="mono">Max 500MB</small>
+    <!-- LEFT: upload -->
+    <div class="card" id="cardUpload">
+      <div class="head">
+        <div>
+          <h2>Upload video</h2>
+          <small>Shared — appears for everyone using this site</small>
+        </div>
+        <small>Max 500MB</small>
+      </div>
+      <div class="body">
+        <label>Video file</label>
+        <input id="file" type="file" accept="video/*" />
+
+        <div class="muted" style="margin-top:6px">
+          Tip: keep clips under 500MB for fastest uploads.
+        </div>
+
+        <label>Title</label>
+        <input id="title" placeholder="e.g., NQ Scalps — Jan 4" />
+
+        <div class="row">
+          <div>
+            <label>Owner (Aiden or Landon)</label>
+            <select id="owner">
+              <option value="Aiden">Aiden</option>
+              <option value="Landon">Landon</option>
+            </select>
           </div>
-          <div class="bd">
-            <div class="field">
-              <label>Video file</label>
-              <input id="videoFile" type="file" accept="video/*" />
-              <div class="msg" id="fileHint">Tip: keep clips under 500MB for fastest uploads.</div>
-            </div>
-
-            <div class="field">
-              <label>Title</label>
-              <input id="title" type="text" placeholder="e.g., NQ Scalps — Jan 4" />
-            </div>
-
-            <div class="row">
-              <div class="field">
-                <label>Owner (Aiden or Landon)</label>
-                <select id="owner">
-                  <option value="Aiden">Aiden</option>
-                  <option value="Landon">Landon</option>
-                </select>
-              </div>
-              <div class="field">
-                <label>Sort tag</label>
-                <select id="tag">
-                  <option value="Trade Review">Trade Review</option>
-                  <option value="Strategy">Strategy</option>
-                  <option value="Recap">Recap</option>
-                  <option value="Lesson">Lesson</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="field">
-              <label>Description Q1</label>
-              <input id="q1" type="text" placeholder="What was the setup?" />
-            </div>
-            <div class="field">
-              <label>Description Q2</label>
-              <input id="q2" type="text" placeholder="What did you learn?" />
-            </div>
-            <div class="field">
-              <label>Notes (optional)</label>
-              <textarea id="vnotes" placeholder="Write notes attached to this video…"></textarea>
-            </div>
-
-            <div class="actions">
-              <button class="btn" id="btnUpload">Upload</button>
-              <button class="btn secondary" id="btnClear">Clear</button>
-            </div>
-
-            <div class="progress" aria-label="Upload progress">
-              <div class="bar" id="uploadBar"></div>
-            </div>
-            <div class="msg" id="uploadMsg">Idle</div>
-          </div>
-
-          <div class="footer-tip">
-            If uploads/list calls fail with <span class="kbd">401/403</span>, click <b>Login to API</b> once to complete Cloudflare Access, then refresh.
+          <div>
+            <label>Sort tag</label>
+            <select id="tag">
+              <option value="Trade Review">Trade Review</option>
+              <option value="Setups">Setups</option>
+              <option value="Psychology">Psychology</option>
+              <option value="Lessons">Lessons</option>
+            </select>
           </div>
         </div>
 
-        <!-- List card -->
-        <div class="card">
-          <div class="hd">
-            <div class="list-head" style="width:100%;">
-              <h2 style="margin-right:6px;">Videos</h2>
-              <span class="spacer"></span>
-              <small id="countText">0 items</small>
-            </div>
-          </div>
-          <div class="bd" style="padding:12px 14px 10px;">
-            <div class="list-head">
-              <input id="search" type="search" placeholder="Search videos by title, owner, notes…" />
-              <select id="sort">
-                <option value="new">Newest</option>
-                <option value="old">Oldest</option>
-                <option value="owner">Owner</option>
-                <option value="tag">Tag</option>
-              </select>
-              <button class="btn" id="btnLoad">Load</button>
-            </div>
-            <div class="msg" id="listMsg" style="margin-top:10px;"></div>
-          </div>
-          <div class="list" id="videoList"></div>
+        <label>Description Q1</label>
+        <input id="q1" placeholder="What was the setup?" />
+
+        <label>Description Q2</label>
+        <input id="q2" placeholder="What did you learn?" />
+
+        <label>Notes (optional)</label>
+        <textarea id="notes" placeholder="Write notes attached to this video..."></textarea>
+
+        <div class="actions">
+          <button id="btnUpload" class="primary">Upload</button>
+          <button id="btnClear">Clear</button>
+        </div>
+
+        <div class="muted" style="margin-top:10px" id="uploadState">Idle</div>
+        <div class="error" id="uploadErr" style="display:none"></div>
+        <div class="ok" id="uploadOk" style="display:none"></div>
+      </div>
+
+      <div class="footerNote">
+        If you ever see 401/403 in console: open the API URL once in a new tab (it may set a session), then refresh.
+        <br/>
+        Current API base: <span id="apiBaseText"></span>
+      </div>
+    </div>
+
+    <!-- RIGHT: list -->
+    <div class="card" id="cardList">
+      <div class="toolbar">
+        <div class="left">
+          <input id="search" placeholder="Search videos by title, owner, notes..." />
+          <select id="sort" style="max-width:140px">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="owner">Owner</option>
+            <option value="title">Title</option>
+          </select>
+          <button id="btnLoad" class="primary">Load</button>
+        </div>
+        <div class="right muted">
+          <span id="count">0</span> items
         </div>
       </div>
-    </section>
 
-    <!-- NOTES VIEW -->
-    <section id="viewNotes" style="display:none;">
-      <div class="card">
-        <div class="hd">
-          <h2>Notes</h2>
-          <small>Local (saved in this browser)</small>
-        </div>
-
-        <div class="notes-wrap" style="padding: 14px;">
-          <div class="card" style="box-shadow:none;">
-            <div class="hd">
-              <h2 style="font-size:13px;">Documents</h2>
-              <button class="btn" id="btnNewNote">New</button>
-            </div>
-            <div class="bd notes-list" id="notesList"></div>
-          </div>
-
-          <div class="card" style="box-shadow:none;">
-            <div class="editor-top">
-              <input id="noteTitle" type="text" placeholder="Untitled" />
-              <div class="toolbar" aria-label="Toolbar">
-                <button class="tool" data-cmd="bold"><b>B</b></button>
-                <button class="tool" data-cmd="italic"><i>I</i></button>
-                <button class="tool" data-cmd="underline"><u>U</u></button>
-                <button class="tool" data-cmd="insertUnorderedList">• List</button>
-                <button class="tool" id="btnInsertImage">Insert image</button>
-                <input id="imgPicker" type="file" accept="image/*" style="display:none;" />
-                <button class="tool" id="btnExportNote">Export .html</button>
-              </div>
-              <span class="pill" title="Auto-saves as you type"><span class="dot good"></span> Auto-save</span>
-            </div>
-            <div id="editor" class="editor" contenteditable="true"></div>
-            <div class="footer-tip">
-              Drag & drop images into the editor. Click an image then drag the corner handle to resize. Delete an image with <span class="kbd">Backspace</span>.
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+      <div class="list" id="list"></div>
+      <div class="error" id="listErr" style="display:none"></div>
+    </div>
   </div>
 
 <script>
-/**
- * ============================
- *  CONFIG
- * ============================
- * If you ever move the API, update this ONE value.
- */
-const API_BASE = "https://api.tseapp.com"; // your Worker route host
+  // ✅ HARD-LOCK the API to ONE host
+  const API_BASE = "https://api.tseapp.com";
+  document.getElementById("apiBaseText").textContent = API_BASE;
 
-/**
- * ============================
- *  UTIL
- * ============================
- */
-const $ = (id) => document.getElementById(id);
+  // If you ever later add a key-based write gate, you can set this:
+  // const WRITE_KEY = ""; // optional
+  const WRITE_KEY = "";
 
-function setApi(state, text){
-  const dot = $("apiDot");
-  const label = $("apiText");
-  label.textContent = text;
-  dot.classList.remove("good","warn","bad");
-  dot.classList.add(state === "good" ? "good" : state === "warn" ? "warn" : "bad");
-}
+  const els = {
+    apiDot: document.getElementById("apiDot"),
+    apiText: document.getElementById("apiText"),
+    btnLogin: document.getElementById("btnLogin"),
+    btnCheck: document.getElementById("btnCheck"),
+    btnRefresh: document.getElementById("btnRefresh"),
 
-function setMsg(el, msg, tone=""){
-  el.classList.remove("good","bad","warn");
-  if(tone) el.classList.add(tone);
-  el.textContent = msg;
-}
+    file: document.getElementById("file"),
+    title: document.getElementById("title"),
+    owner: document.getElementById("owner"),
+    tag: document.getElementById("tag"),
+    q1: document.getElementById("q1"),
+    q2: document.getElementById("q2"),
+    notes: document.getElementById("notes"),
 
-function fmtBytes(n){
-  if(!Number.isFinite(n)) return "";
-  const units=["B","KB","MB","GB"];
-  let i=0, v=n;
-  while(v>=1024 && i<units.length-1){ v/=1024; i++; }
-  return `${v.toFixed(i===0?0:1)} ${units[i]}`;
-}
+    btnUpload: document.getElementById("btnUpload"),
+    btnClear: document.getElementById("btnClear"),
+    uploadState: document.getElementById("uploadState"),
+    uploadErr: document.getElementById("uploadErr"),
+    uploadOk: document.getElementById("uploadOk"),
 
-function fmtDate(ts){
-  if(!ts) return "";
-  const d = typeof ts === "number" ? new Date(ts) : new Date(ts);
-  if(String(d)==="Invalid Date") return "";
-  return d.toLocaleString();
-}
+    search: document.getElementById("search"),
+    sort: document.getElementById("sort"),
+    btnLoad: document.getElementById("btnLoad"),
+    list: document.getElementById("list"),
+    listErr: document.getElementById("listErr"),
+    count: document.getElementById("count"),
+  };
 
-function safeText(x){ return (x ?? "").toString(); }
-
-/**
- * ============================
- *  TABS
- * ============================
- */
-function showTab(which){
-  const isVideos = which === "videos";
-  $("viewVideos").style.display = isVideos ? "" : "none";
-  $("viewNotes").style.display = isVideos ? "none" : "";
-
-  $("tabVideos").classList.toggle("active", isVideos);
-  $("tabNotes").classList.toggle("active", !isVideos);
-  $("tabVideos").setAttribute("aria-selected", String(isVideos));
-  $("tabNotes").setAttribute("aria-selected", String(!isVideos));
-}
-$("tabVideos").addEventListener("click", ()=>showTab("videos"));
-$("tabNotes").addEventListener("click", ()=>showTab("notes"));
-
-/**
- * ============================
- *  API STATUS CHECK
- * ============================
- * IMPORTANT:
- * Because Cloudflare Access sits in front, fetch() may return 401/403 when you're not logged in.
- * That means "reachable", not "offline".
- */
-async function checkApi(){
-  try{
-    const r = await fetch(API_BASE + "/api/health", {
-      method: "GET",
-      credentials: "include",
-      cache: "no-store",
-      redirect: "follow",
-    });
-
-    // Access protected (reachable)
-    if (r.status === 401 || r.status === 403) {
-      setApi("warn", "API: login required");
-      return true;
+  function setApiStatus(state, detail = "") {
+    els.apiDot.classList.remove("ok","bad");
+    if (state === "online") {
+      els.apiDot.classList.add("ok");
+      els.apiText.textContent = "online";
+    } else if (state === "checking") {
+      els.apiDot.classList.add("bad");
+      els.apiText.textContent = "checking…";
+    } else {
+      els.apiDot.classList.add("bad");
+      els.apiText.textContent = detail ? `offline (${detail})` : "offline";
     }
+  }
 
-    if(!r.ok){
-      setApi("bad", `API: ${r.status}`);
+  function showErr(el, msg) {
+    el.style.display = "block";
+    el.textContent = msg;
+  }
+  function hideErr(el) {
+    el.style.display = "none";
+    el.textContent = "";
+  }
+
+  // Small fetch helper with timeout + retry
+  async function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      return res;
+    } finally {
+      clearTimeout(id);
+    }
+  }
+
+  async function fetchJson(url, options = {}, tries = 2) {
+    let lastErr;
+    for (let attempt = 1; attempt <= tries; attempt++) {
+      try {
+        const res = await fetchWithTimeout(url, options, 20000);
+        const text = await res.text();
+        // If CORS blocks, we won’t even get here — it will throw before res
+        if (!res.ok) {
+          // try parse json error but don’t require it
+          let details = text;
+          try { details = JSON.stringify(JSON.parse(text)); } catch {}
+          throw new Error(`HTTP ${res.status}: ${details}`);
+        }
+        try {
+          return JSON.parse(text);
+        } catch {
+          throw new Error(`Non-JSON response: ${text.slice(0,200)}`);
+        }
+      } catch (e) {
+        lastErr = e;
+        // brief backoff
+        if (attempt < tries) await new Promise(r => setTimeout(r, 450 * attempt));
+      }
+    }
+    throw lastErr;
+  }
+
+  // ✅ Reliable online check: ONLY depends on /api/health
+  async function checkApi() {
+    setApiStatus("checking");
+    try {
+      const data = await fetchJson(`${API_BASE}/api/health`, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-store",
+        headers: { "Accept": "application/json" }
+      }, 2);
+
+      if (data && data.ok === true) {
+        setApiStatus("online");
+        return true;
+      }
+      // Health responded but not ok
+      setApiStatus("offline", "bad health");
+      return false;
+    } catch (e) {
+      // This is where CORS/network shows up
+      setApiStatus("offline", "network/CORS");
       return false;
     }
+  }
 
-    const j = await r.json().catch(()=>null);
-    if(j && j.ok){
-      setApi("good", "API: online");
-      return true;
+  function buildHeaders() {
+    const h = { "Accept": "application/json" };
+    if (WRITE_KEY) h["x-tse-key"] = WRITE_KEY;
+    return h;
+  }
+
+  // Loads list
+  async function loadVideos() {
+    hideErr(els.listErr);
+    els.list.innerHTML = "";
+    els.count.textContent = "0";
+
+    // Don’t auto-fail if “offline” badge is stale — just try.
+    try {
+      const data = await fetchJson(`${API_BASE}/api/videos`, {
+        method: "GET",
+        mode: "cors",
+        cache: "no-store",
+        headers: buildHeaders(),
+      }, 2);
+
+      const vids = Array.isArray(data.videos) ? data.videos : [];
+      const q = (els.search.value || "").toLowerCase().trim();
+      let filtered = vids.filter(v => {
+        const blob = [
+          v.title, v.owner, v.tag, v.q1, v.q2, v.notes
+        ].filter(Boolean).join(" ").toLowerCase();
+        return q ? blob.includes(q) : true;
+      });
+
+      const sort = els.sort.value;
+      filtered.sort((a,b) => {
+        const ad = a.createdAt || a.created_at || a.created || 0;
+        const bd = b.createdAt || b.created_at || b.created || 0;
+
+        if (sort === "newest") return (bd||0) - (ad||0);
+        if (sort === "oldest") return (ad||0) - (bd||0);
+        if (sort === "owner") return String(a.owner||"").localeCompare(String(b.owner||""));
+        if (sort === "title") return String(a.title||"").localeCompare(String(b.title||""));
+        return 0;
+      });
+
+      els.count.textContent = String(filtered.length);
+
+      if (!filtered.length) {
+        els.list.innerHTML = `<div class="muted">No videos yet.</div>`;
+        return;
+      }
+
+      for (const v of filtered) {
+        const title = v.title || "(untitled)";
+        const owner = v.owner || "—";
+        const tag = v.tag || "—";
+        const created = v.createdAt || v.created_at || v.created || null;
+        const createdNice = created ? new Date(created).toLocaleString() : "—";
+
+        // Your worker likely returns a url field for playback/download
+        const url = v.url || v.playUrl || v.downloadUrl || v.r2Url || "";
+
+        const el = document.createElement("div");
+        el.className = "videoItem";
+        el.innerHTML = `
+          <div class="thumb">video</div>
+          <div class="meta">
+            <div class="t">${escapeHtml(title)}</div>
+            <div class="s">
+              <span class="pill">${escapeHtml(owner)}</span>
+              <span class="pill">${escapeHtml(tag)}</span>
+              <span class="pill">${escapeHtml(createdNice)}</span>
+            </div>
+            ${v.q1 ? `<div class="s" style="margin-top:6px"><b class="muted">Q1:</b> ${escapeHtml(v.q1)}</div>` : ``}
+            ${v.q2 ? `<div class="s"><b class="muted">Q2:</b> ${escapeHtml(v.q2)}</div>` : ``}
+            ${v.notes ? `<div class="s"><b class="muted">Notes:</b> ${escapeHtml(v.notes)}</div>` : ``}
+            ${url ? `<div style="margin-top:10px"><a href="${url}" target="_blank" rel="noopener" style="color:var(--accent)">Open video</a></div>` : ``}
+          </div>
+        `;
+        els.list.appendChild(el);
+      }
+
+      // If list works, API is definitely reachable from fetch -> mark online
+      setApiStatus("online");
+    } catch (e) {
+      showErr(els.listErr, `Network error while loading: ${String(e.message || e)}`);
+      // Keep the API badge accurate
+      setApiStatus("offline", "network/CORS");
     }
-
-    setApi("warn", "API: online (unexpected)");
-    return true;
-  }catch(e){
-    setApi("bad", "API: offline");
-    return false;
-  }
-}
-
-$("btnCheckApi").addEventListener("click", checkApi);
-$("btnLoginApi").addEventListener("click", ()=>{
-  // open a new tab so you can do the Cloudflare Access login and set cookies
-  window.open(API_BASE + "/api/health", "_blank");
-});
-
-$("btnRefresh").addEventListener("click", async ()=>{
-  await checkApi();
-  await loadVideos();
-});
-
-/**
- * ============================
- *  VIDEOS: LOAD/LIST
- * ============================
- */
-let videoCache = [];
-
-function normalizeVideo(v){
-  // make the UI robust to missing fields
-  return {
-    id: v.id ?? v.videoId ?? v.key ?? "",
-    title: safeText(v.title),
-    owner: safeText(v.owner),
-    tag: safeText(v.tag),
-    q1: safeText(v.q1),
-    q2: safeText(v.q2),
-    notes: safeText(v.notes),
-    url: v.url ?? v.playUrl ?? v.downloadUrl ?? "",
-    createdAt: v.createdAt ?? v.created_at ?? v.ts ?? "",
-    size: v.size ?? v.bytes ?? null,
-    duration: v.duration ?? v.seconds ?? null,
-  };
-}
-
-function applyFilters(list){
-  const q = $("search").value.trim().toLowerCase();
-  const sort = $("sort").value;
-
-  let out = list;
-
-  if(q){
-    out = out.filter(v=>{
-      const blob = `${v.title} ${v.owner} ${v.tag} ${v.q1} ${v.q2} ${v.notes}`.toLowerCase();
-      return blob.includes(q);
-    });
   }
 
-  out = [...out];
-  if(sort === "new"){
-    out.sort((a,b)=> new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  }else if(sort === "old"){
-    out.sort((a,b)=> new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-  }else if(sort === "owner"){
-    out.sort((a,b)=> (a.owner||"").localeCompare(b.owner||"") || (b.title||"").localeCompare(a.title||""));
-  }else if(sort === "tag"){
-    out.sort((a,b)=> (a.tag||"").localeCompare(b.tag||"") || (b.title||"").localeCompare(a.title||""));
-  }
+  // Upload
+  async function uploadVideo() {
+    hideErr(els.uploadErr);
+    els.uploadOk.style.display = "none";
+    els.uploadOk.textContent = "";
 
-  return out;
-}
-
-function renderVideos(list){
-  const wrap = $("videoList");
-  wrap.innerHTML = "";
-
-  $("countText").textContent = `${list.length} item${list.length===1?"":"s"}`;
-
-  if(list.length === 0){
-    const empty = document.createElement("div");
-    empty.className = "msg";
-    empty.textContent = "No videos yet. Upload one on the left.";
-    empty.style.gridColumn = "1 / -1";
-    wrap.appendChild(empty);
-    return;
-  }
-
-  for(const v of list){
-    const c = document.createElement("div");
-    c.className = "vcard";
-
-    const thumb = document.createElement("div");
-    thumb.className = "thumb";
-
-    const vid = document.createElement("video");
-    vid.muted = true;
-    vid.playsInline = true;
-    vid.preload = "metadata";
-    // Only set src if we have a URL
-    if(v.url) vid.src = v.url;
-
-    const ph = document.createElement("div");
-    ph.className = "placeholder";
-    ph.textContent = v.url ? "Hover to preview" : "No playback URL (API didn't return one).";
-
-    thumb.appendChild(vid);
-    thumb.appendChild(ph);
-    c.appendChild(thumb);
-
-    // hover preview
-    c.addEventListener("mouseenter", ()=>{
-      if(!v.url) return;
-      vid.currentTime = 0;
-      vid.play().catch(()=>{});
-    });
-    c.addEventListener("mouseleave", ()=>{
-      try { vid.pause(); } catch(_){}
-    });
-
-    const meta = document.createElement("div");
-    meta.className = "vmeta";
-
-    const title = document.createElement("div");
-    title.className = "vtitle";
-    title.textContent = v.title || "(untitled)";
-    meta.appendChild(title);
-
-    const sub = document.createElement("div");
-    sub.className = "vsub";
-    sub.appendChild(chip(`Owner: ${v.owner || "—"}`));
-    if(v.tag) sub.appendChild(chip(v.tag));
-    if(v.size) sub.appendChild(chip(fmtBytes(v.size)));
-    if(v.createdAt) sub.appendChild(chip(fmtDate(v.createdAt)));
-    meta.appendChild(sub);
-
-    // q1/q2 preview
-    const qa = document.createElement("div");
-    qa.style.color = "rgba(255,255,255,.68)";
-    qa.style.fontSize = "12px";
-    qa.style.lineHeight = "1.35";
-    const q1 = v.q1 ? `Q1: ${v.q1}` : "";
-    const q2 = v.q2 ? `Q2: ${v.q2}` : "";
-    qa.textContent = [q1,q2].filter(Boolean).join(" • ");
-    meta.appendChild(qa);
-
-    const acts = document.createElement("div");
-    acts.className = "vactions";
-
-    if(v.url){
-      const open = document.createElement("a");
-      open.className = "linkbtn";
-      open.href = v.url;
-      open.target = "_blank";
-      open.rel = "noopener";
-      open.textContent = "Open";
-      acts.appendChild(open);
-
-      const dl = document.createElement("a");
-      dl.className = "linkbtn";
-      dl.href = v.url;
-      dl.download = "";
-      dl.textContent = "Download";
-      acts.appendChild(dl);
+    const file = els.file.files && els.file.files[0];
+    if (!file) {
+      showErr(els.uploadErr, "Pick a video file first.");
+      return;
     }
-
-    const copy = document.createElement("button");
-    copy.className = "linkbtn";
-    copy.textContent = "Copy JSON";
-    copy.addEventListener("click", async ()=>{
-      await navigator.clipboard.writeText(JSON.stringify(v, null, 2));
-      setMsg($("listMsg"), "Copied video JSON to clipboard.", "good");
-      setTimeout(()=>setMsg($("listMsg"), ""), 1300);
-    });
-    acts.appendChild(copy);
-
-    meta.appendChild(acts);
-    c.appendChild(meta);
-
-    wrap.appendChild(c);
-  }
-
-  function chip(txt){
-    const s = document.createElement("span");
-    s.className = "chip";
-    s.textContent = txt;
-    return s;
-  }
-}
-
-async function loadVideos(){
-  const msg = $("listMsg");
-  setMsg(msg, "Loading…");
-
-  // If API is "offline" because login is needed, still try list
-  try{
-    const r = await fetch(API_BASE + "/api/videos", {
-      method: "GET",
-      credentials: "include",
-      cache: "no-store",
-    });
-
-    if(r.status === 401 || r.status === 403){
-      setMsg(msg, "Login required. Click “Login to API”, complete Cloudflare Access, then click Load/Refresh.", "warn");
-      // Keep current list visible, but update api badge
-      setApi("warn", "API: login required");
+    if (file.size > 500 * 1024 * 1024) {
+      showErr(els.uploadErr, "File is over 500MB. Please choose a smaller clip.");
       return;
     }
 
-    if(!r.ok){
-      const t = await r.text().catch(()=> "");
-      setMsg(msg, `List failed (${r.status}). ${t}`.trim(), "bad");
+    const title = els.title.value.trim();
+    if (!title) {
+      showErr(els.uploadErr, "Title is required.");
       return;
     }
 
-    const j = await r.json();
-    const arr = Array.isArray(j) ? j : (j.videos || j.items || []);
-    videoCache = arr.map(normalizeVideo);
+    els.uploadState.textContent = "Uploading…";
 
-    const filtered = applyFilters(videoCache);
-    renderVideos(filtered);
-    setMsg(msg, `Loaded ${videoCache.length} videos.`, "good");
-    setTimeout(()=>setMsg(msg, ""), 1400);
+    // Worker expects FormData (most likely)
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("title", title);
+    fd.append("owner", els.owner.value);
+    fd.append("tag", els.tag.value);
+    fd.append("q1", els.q1.value.trim());
+    fd.append("q2", els.q2.value.trim());
+    fd.append("notes", els.notes.value.trim());
 
-    // update badge based on success
-    setApi("good", "API: online");
-  }catch(e){
-    setMsg(msg, `Network error while loading: ${String(e)}`, "bad");
-    setApi("bad", "API: offline");
-  }
-}
+    // 🔑 optional key header
+    const headers = {};
+    if (WRITE_KEY) headers["x-tse-key"] = WRITE_KEY;
 
-$("btnLoad").addEventListener("click", loadVideos);
-$("search").addEventListener("input", ()=>renderVideos(applyFilters(videoCache)));
-$("sort").addEventListener("change", ()=>renderVideos(applyFilters(videoCache)));
+    try {
+      // Try the most common endpoint used in Workers-based upload APIs:
+      // POST /api/videos (multipart)
+      const data = await fetchJson(`${API_BASE}/api/videos`, {
+        method: "POST",
+        mode: "cors",
+        cache: "no-store",
+        headers,
+        body: fd
+      }, 2);
 
-/**
- * ============================
- *  VIDEOS: UPLOAD (XHR for progress)
- * ============================
- */
-function resetUploadUI(){
-  $("uploadBar").style.width = "0%";
-  setMsg($("uploadMsg"), "Idle");
-}
+      els.uploadState.textContent = "Upload complete.";
+      els.uploadOk.style.display = "block";
+      els.uploadOk.textContent = `Uploaded ✅ ${data && data.id ? `(id: ${data.id})` : ""}`;
 
-function clearUploadForm(){
-  $("videoFile").value = "";
-  $("title").value = "";
-  $("owner").value = "Aiden";
-  $("tag").value = "Trade Review";
-  $("q1").value = "";
-  $("q2").value = "";
-  $("vnotes").value = "";
-  resetUploadUI();
-}
-
-$("btnClear").addEventListener("click", clearUploadForm);
-
-$("videoFile").addEventListener("change", ()=>{
-  const f = $("videoFile").files?.[0];
-  if(!f){
-    $("fileHint").textContent = "Tip: keep clips under 500MB for fastest uploads.";
-    return;
-  }
-  const over = f.size > 500 * 1024 * 1024;
-  $("fileHint").textContent = `${f.name} • ${fmtBytes(f.size)}${over ? " • OVER 500MB (will be rejected)" : ""}`;
-  $("fileHint").className = "msg " + (over ? "bad" : "");
-});
-
-function uploadVideo(){
-  const f = $("videoFile").files?.[0];
-  if(!f){
-    setMsg($("uploadMsg"), "Choose a video file first.", "warn");
-    return;
-  }
-  if(f.size > 500 * 1024 * 1024){
-    setMsg($("uploadMsg"), "File is over 500MB. Choose a smaller clip.", "bad");
-    return;
-  }
-
-  const title = $("title").value.trim();
-  const owner = $("owner").value;
-  const tag = $("tag").value;
-  const q1 = $("q1").value.trim();
-  const q2 = $("q2").value.trim();
-  const notes = $("vnotes").value.trim();
-
-  if(!title){
-    setMsg($("uploadMsg"), "Add a title so it’s searchable.", "warn");
-    return;
-  }
-
-  resetUploadUI();
-  setMsg($("uploadMsg"), "Uploading…", "warn");
-
-  const fd = new FormData();
-  fd.append("file", f, f.name);
-  fd.append("title", title);
-  fd.append("owner", owner);
-  fd.append("tag", tag);
-  fd.append("q1", q1);
-  fd.append("q2", q2);
-  fd.append("notes", notes);
-
-  const xhr = new XMLHttpRequest();
-  xhr.open("POST", API_BASE + "/api/videos", true);
-  xhr.withCredentials = true; // Cloudflare Access cookie
-  xhr.timeout = 15 * 60 * 1000; // 15 min (big uploads)
-
-  xhr.upload.onprogress = (ev)=>{
-    if(ev.lengthComputable){
-      const p = Math.round((ev.loaded / ev.total) * 100);
-      $("uploadBar").style.width = p + "%";
-      setMsg($("uploadMsg"), `Uploading… ${p}% (${fmtBytes(ev.loaded)} / ${fmtBytes(ev.total)})`, "warn");
-    }else{
-      setMsg($("uploadMsg"), `Uploading… ${fmtBytes(ev.loaded)}`, "warn");
+      setApiStatus("online");
+      await loadVideos();
+    } catch (e) {
+      els.uploadState.textContent = "Upload failed.";
+      showErr(els.uploadErr,
+        `Upload failed (network/CORS or API error).\n\n${String(e.message || e)}\n\nIf this says “TypeError: Load failed”, that’s CORS/preflight.`
+      );
+      setApiStatus("offline", "network/CORS");
     }
-  };
+  }
 
-  xhr.onerror = ()=>{
-    setMsg($("uploadMsg"), "Upload failed (network). If you see “API: login required”, click Login to API, then try again.", "bad");
-  };
+  function clearForm() {
+    els.file.value = "";
+    els.title.value = "";
+    els.q1.value = "";
+    els.q2.value = "";
+    els.notes.value = "";
+    els.uploadState.textContent = "Idle";
+    hideErr(els.uploadErr);
+    els.uploadOk.style.display = "none";
+    els.uploadOk.textContent = "";
+  }
 
-  xhr.ontimeout = ()=>{
-    setMsg($("uploadMsg"), "Upload timed out. Try again (or upload a smaller file).", "bad");
-  };
+  // Utils
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, s => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+    }[s]));
+  }
 
-  xhr.onload = async ()=>{
-    // Access login needed
-    if(xhr.status === 401 || xhr.status === 403){
-      setApi("warn", "API: login required");
-      setMsg($("uploadMsg"), "Login required. Click “Login to API”, complete Cloudflare Access, then upload again.", "warn");
-      return;
-    }
+  // Buttons
+  els.btnLogin.addEventListener("click", () => {
+    // Since there is no Access login, this is just a “quick open” to prove it works
+    window.open(`${API_BASE}/api/health`, "_blank", "noopener");
+  });
 
-    if(xhr.status < 200 || xhr.status >= 300){
-      const body = xhr.responseText || "";
-      setMsg($("uploadMsg"), `Upload failed (${xhr.status}). ${body}`.trim(), "bad");
-      return;
-    }
+  els.btnCheck.addEventListener("click", async () => {
+    await checkApi();
+  });
 
-    $("uploadBar").style.width = "100%";
-    setMsg($("uploadMsg"), "Upload complete. Refreshing list…", "good");
-    setApi("good", "API: online");
-
+  els.btnRefresh.addEventListener("click", async () => {
+    await checkApi();
     await loadVideos();
-    setTimeout(()=>setMsg($("uploadMsg"), "Done.", "good"), 800);
-  };
-
-  xhr.send(fd);
-}
-
-$("btnUpload").addEventListener("click", uploadVideo);
-
-/**
- * ============================
- *  NOTES (local)
- * ============================
- */
-const NOTES_KEY = "tse.notes.v1";
-let notes = [];
-let activeNoteId = null;
-
-function loadNotes(){
-  try{
-    notes = JSON.parse(localStorage.getItem(NOTES_KEY) || "[]");
-  }catch{
-    notes = [];
-  }
-  if(!Array.isArray(notes)) notes = [];
-  if(notes.length === 0){
-    const id = crypto.randomUUID();
-    notes.push({ id, title: "Untitled", html: "", updatedAt: Date.now() });
-    activeNoteId = id;
-    saveNotes();
-  }else if(!activeNoteId){
-    activeNoteId = notes[0].id;
-  }
-}
-
-function saveNotes(){
-  localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
-}
-
-function setActiveNote(id){
-  activeNoteId = id;
-  const n = notes.find(x=>x.id===id);
-  if(!n) return;
-
-  $("noteTitle").value = n.title || "Untitled";
-  $("editor").innerHTML = n.html || "";
-  renderNotesList();
-  clearImageSelection();
-}
-
-function renderNotesList(){
-  const list = $("notesList");
-  list.innerHTML = "";
-
-  const sorted = [...notes].sort((a,b)=> (b.updatedAt||0) - (a.updatedAt||0));
-  for(const n of sorted){
-    const item = document.createElement("div");
-    item.className = "note-item" + (n.id===activeNoteId ? " active" : "");
-    item.addEventListener("click", ()=>setActiveNote(n.id));
-
-    const t = document.createElement("div");
-    t.className = "t";
-    t.textContent = n.title || "Untitled";
-
-    const d = document.createElement("div");
-    d.className = "d";
-    d.textContent = n.updatedAt ? ("Updated " + new Date(n.updatedAt).toLocaleString()) : "";
-
-    item.appendChild(t);
-    item.appendChild(d);
-    list.appendChild(item);
-  }
-}
-
-function upsertActiveNote(){
-  const idx = notes.findIndex(x=>x.id===activeNoteId);
-  if(idx === -1) return;
-  notes[idx] = {
-    ...notes[idx],
-    title: $("noteTitle").value.trim() || "Untitled",
-    html: $("editor").innerHTML,
-    updatedAt: Date.now()
-  };
-  saveNotes();
-  renderNotesList();
-}
-
-$("btnNewNote").addEventListener("click", ()=>{
-  const id = crypto.randomUUID();
-  notes.unshift({ id, title: "Untitled", html: "", updatedAt: Date.now() });
-  saveNotes();
-  setActiveNote(id);
-});
-
-$("noteTitle").addEventListener("input", upsertActiveNote);
-$("editor").addEventListener("input", upsertActiveNote);
-
-document.querySelectorAll(".tool[data-cmd]").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    const cmd = btn.getAttribute("data-cmd");
-    document.execCommand(cmd, false, null);
-    $("editor").focus();
-    upsertActiveNote();
   });
-});
 
-$("btnInsertImage").addEventListener("click", ()=> $("imgPicker").click());
-$("imgPicker").addEventListener("change", async ()=>{
-  const f = $("imgPicker").files?.[0];
-  if(!f) return;
-  const dataUrl = await fileToDataURL(f);
-  insertImageAtCaret(dataUrl, f.name);
-  $("imgPicker").value = "";
-  upsertActiveNote();
-});
-
-/**
- * Drag & drop images into editor
- */
-$("editor").addEventListener("dragover", (e)=>{
-  e.preventDefault();
-});
-$("editor").addEventListener("drop", async (e)=>{
-  e.preventDefault();
-  const dt = e.dataTransfer;
-  const files = [...(dt?.files || [])];
-  const imgs = files.filter(f=>f.type.startsWith("image/"));
-  if(imgs.length === 0) return;
-
-  // Insert images where the drop happens
-  const range = document.caretRangeFromPoint?.(e.clientX, e.clientY);
-  if(range){
-    const sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
-
-  for(const f of imgs){
-    const dataUrl = await fileToDataURL(f);
-    insertImageAtCaret(dataUrl, f.name);
-  }
-  upsertActiveNote();
-});
-
-function fileToDataURL(file){
-  return new Promise((resolve, reject)=>{
-    const r = new FileReader();
-    r.onload = ()=>resolve(r.result);
-    r.onerror = reject;
-    r.readAsDataURL(file);
+  els.btnLoad.addEventListener("click", loadVideos);
+  els.search.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") loadVideos();
   });
-}
 
-/**
- * Insert scalable image wrapper
- */
-function insertImageAtCaret(src, alt="image"){
-  const wrap = document.createElement("span");
-  wrap.className = "img-wrap";
-  wrap.contentEditable = "false";
+  els.btnUpload.addEventListener("click", uploadVideo);
+  els.btnClear.addEventListener("click", clearForm);
 
-  const img = document.createElement("img");
-  img.src = src;
-  img.alt = alt;
-
-  // default width (scalable)
-  img.style.width = "520px";
-  img.style.maxWidth = "100%";
-
-  const handle = document.createElement("span");
-  handle.className = "handle";
-
-  wrap.appendChild(img);
-  wrap.appendChild(handle);
-
-  // Insert node
-  insertNodeAtCaret(wrap);
-
-  // Add trailing space so user can continue typing
-  insertNodeAtCaret(document.createTextNode(" "));
-
-  // Select it for resizing
-  selectImageWrap(wrap);
-}
-
-function insertNodeAtCaret(node){
-  const sel = window.getSelection();
-  if(!sel || sel.rangeCount === 0){
-    $("editor").appendChild(node);
-    return;
-  }
-  const range = sel.getRangeAt(0);
-  range.deleteContents();
-  range.insertNode(node);
-  // move caret after inserted node
-  range.setStartAfter(node);
-  range.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(range);
-}
-
-let selectedWrap = null;
-let resizing = false;
-let startX = 0;
-let startW = 0;
-
-function clearImageSelection(){
-  if(selectedWrap){
-    selectedWrap.classList.remove("selected");
-  }
-  selectedWrap = null;
-}
-
-function selectImageWrap(wrap){
-  clearImageSelection();
-  selectedWrap = wrap;
-  wrap.classList.add("selected");
-}
-
-$("editor").addEventListener("click", (e)=>{
-  const wrap = e.target.closest?.(".img-wrap");
-  if(wrap){
-    e.preventDefault();
-    selectImageWrap(wrap);
-  }else{
-    clearImageSelection();
-  }
-});
-
-$("editor").addEventListener("keydown", (e)=>{
-  if((e.key === "Backspace" || e.key === "Delete") && selectedWrap){
-    e.preventDefault();
-    selectedWrap.remove();
-    clearImageSelection();
-    upsertActiveNote();
-  }
-});
-
-$("editor").addEventListener("mousedown", (e)=>{
-  const handle = e.target.closest?.(".handle");
-  if(!handle) return;
-  const wrap = handle.parentElement;
-  if(!wrap) return;
-  e.preventDefault();
-  selectImageWrap(wrap);
-
-  const img = wrap.querySelector("img");
-  if(!img) return;
-
-  resizing = true;
-  startX = e.clientX;
-  startW = img.getBoundingClientRect().width;
-
-  const onMove = (ev)=>{
-    if(!resizing) return;
-    const dx = ev.clientX - startX;
-    const newW = Math.max(120, Math.min(1200, startW + dx));
-    img.style.width = newW + "px";
-  };
-
-  const onUp = ()=>{
-    resizing = false;
-    window.removeEventListener("mousemove", onMove);
-    window.removeEventListener("mouseup", onUp);
-    upsertActiveNote();
-  };
-
-  window.addEventListener("mousemove", onMove);
-  window.addEventListener("mouseup", onUp);
-});
-
-/**
- * Export note as HTML file
- */
-$("btnExportNote").addEventListener("click", ()=>{
-  const n = notes.find(x=>x.id===activeNoteId);
-  if(!n) return;
-  const title = (n.title || "note").replace(/[^\w\- ]+/g, "").trim() || "note";
-  const html = `<!doctype html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${escapeHtml(n.title || "Note")}</title></head>
-<body>
-<h1>${escapeHtml(n.title || "Untitled")}</h1>
-<hr/>
-${n.html || ""}
-</body></html>`;
-  const blob = new Blob([html], { type: "text/html" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${title}.html`;
-  a.click();
-  setTimeout(()=>URL.revokeObjectURL(url), 1000);
-});
-
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, (c)=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-  }[c]));
-}
-
-/**
- * ============================
- *  BOOT
- * ============================
- */
-(async function init(){
-  loadNotes();
-  renderNotesList();
-  setActiveNote(activeNoteId);
-
-  await checkApi();
-  // don't auto-load videos on first paint; but if you want, uncomment:
-  // await loadVideos();
-})();
+  // Boot
+  (async function init(){
+    // Check once (won’t break anything if it fails)
+    await checkApi();
+    // Don’t auto-load list on first paint (optional). If you want it, uncomment:
+    // await loadVideos();
+  })();
 </script>
 </body>
 </html>
