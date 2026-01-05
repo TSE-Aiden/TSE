@@ -5,224 +5,467 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>TSE</title>
   <style>
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; background:#0b0f14; color:#e7eef7; }
-    .row { display:flex; gap:16px; padding:16px; }
-    .card { background: rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.10); border-radius:16px; padding:16px; width: 420px; }
-    .badge { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); }
-    .dot { width:10px; height:10px; border-radius:50%; background:#ff4d4d; }
-    .dot.ok { background:#2ee59d; }
-    button { appearance:none; border:1px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#e7eef7; padding:10px 12px; border-radius:12px; cursor:pointer; }
-    input, select, textarea { width:100%; margin-top:8px; padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25); color:#e7eef7; }
-    .err { color:#ff6b6b; white-space:pre-wrap; margin-top:8px; font-size:13px; }
-    .ok { color:#2ee59d; white-space:pre-wrap; margin-top:8px; font-size:13px; }
-    .grow { flex:1; }
+    :root{
+      --bg:#070b12;
+      --panel:rgba(255,255,255,.06);
+      --panel2:rgba(255,255,255,.04);
+      --border:rgba(255,255,255,.10);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.65);
+      --good:#22c55e;
+      --bad:#ef4444;
+      --btn:rgba(255,255,255,.06);
+      --btnHover:rgba(255,255,255,.10);
+      --shadow: 0 18px 50px rgba(0,0,0,.55);
+      --r:18px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background: radial-gradient(1000px 700px at 20% 10%, rgba(56,189,248,.10), transparent 55%),
+                  radial-gradient(900px 700px at 80% 25%, rgba(168,85,247,.10), transparent 55%),
+                  var(--bg);
+      min-height:100vh;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:18px 22px;
+      gap:16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 14px;
+      border:1px solid var(--border);
+      border-radius:999px;
+      background:var(--panel2);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+    .dot{
+      width:18px;height:18px;border-radius:999px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.65), rgba(255,255,255,.08));
+      border:1px solid var(--border);
+    }
+    .brand h1{
+      font-size:14px;margin:0;letter-spacing:.2px;
+    }
+    .brand p{
+      font-size:12px;margin:2px 0 0;color:var(--muted);
+    }
+
+    .right{
+      display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    }
+
+    .badge{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 12px;border-radius:999px;
+      border:1px solid var(--border);
+      background:var(--panel2);
+      backdrop-filter: blur(10px);
+    }
+    .badge .statusDot{width:10px;height:10px;border-radius:999px;background:var(--bad);}
+    .badge.online .statusDot{background:var(--good);}
+    .badge span{font-size:13px;color:var(--muted);}
+
+    button{
+      appearance:none;
+      border:1px solid var(--border);
+      background:var(--btn);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      transition:.15s ease;
+      box-shadow: 0 10px 26px rgba(0,0,0,.35);
+    }
+    button:hover{background:var(--btnHover);transform: translateY(-1px);}
+    button:active{transform: translateY(0);}
+
+    .wrap{
+      padding:0 22px 26px;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap:18px;
+      align-items:start;
+    }
+
+    .card{
+      border:1px solid var(--border);
+      background:var(--panel);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      overflow:hidden;
+    }
+
+    .cardHeader{
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.07);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .cardHeader h2{margin:0;font-size:14px;letter-spacing:.2px}
+    .cardHeader .sub{font-size:12px;color:var(--muted)}
+    .cardBody{padding:14px 16px}
+
+    label{display:block;font-size:12px;color:var(--muted);margin:10px 0 6px}
+    input, select, textarea{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.20);
+      color:var(--text);
+      outline:none;
+    }
+    textarea{min-height:90px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .actions{display:flex;gap:10px;margin-top:12px;align-items:center}
+    .hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.35}
+    .error{margin-top:10px;color:#ff5b5b;font-size:12px;white-space:pre-wrap}
+
+    .videosTop{
+      display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+    }
+    .videosTop input{max-width:420px}
+    .pill{
+      padding:8px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--muted);
+      background:rgba(255,255,255,.04);
+      font-size:12px;
+    }
+
+    #videos{
+      padding:14px 16px;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap:12px;
+      min-height:220px;
+    }
+    .video-card{
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+      border-radius:14px;
+      padding:12px;
+      overflow:hidden;
+    }
+    .video-card strong{display:block;font-size:13px;margin-bottom:6px}
+    .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap}
+    .meta span{border:1px solid rgba(255,255,255,.10);border-radius:999px;padding:4px 8px;background:rgba(0,0,0,.18)}
+
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
   </style>
 </head>
+
 <body>
-
-<div class="row" style="align-items:center; justify-content:space-between;">
-  <div class="badge">
-    <div id="dot" class="dot"></div>
-    <div id="apiText">API: checking…</div>
-  </div>
-  <div style="display:flex; gap:10px;">
-    <button id="openApiBtn" type="button">Open API</button>
-    <button id="checkBtn" type="button">Check API</button>
-    <button id="refreshBtn" type="button">Refresh</button>
-  </div>
-</div>
-
-<div class="row">
-  <div class="card">
-    <h3 style="margin:0 0 12px 0;">Upload video</h3>
-
-    <label>Video file</label>
-    <input id="file" type="file" accept="video/*" />
-
-    <label>Title</label>
-    <input id="title" placeholder="e.g., NQ Scalps — Jan 4" />
-
-    <label>Owner</label>
-    <select id="owner">
-      <option value="">(none)</option>
-      <option value="Aiden">Aiden</option>
-      <option value="Landon">Landon</option>
-    </select>
-
-    <label>Sort tag</label>
-    <input id="tag" placeholder="Trade Review / Setups / etc" />
-
-    <label>Description Q1</label>
-    <input id="q1" placeholder="What was the setup?" />
-
-    <label>Description Q2</label>
-    <input id="q2" placeholder="What did you learn?" />
-
-    <label>Notes (optional)</label>
-    <textarea id="notes" rows="4" placeholder="Write notes attached to this video…"></textarea>
-
-    <div style="display:flex; gap:10px; margin-top:12px;">
-      <button id="uploadBtn" type="button">Upload</button>
-      <button id="clearBtn" type="button">Clear</button>
+  <div class="topbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <div>
+        <h1>TSE</h1>
+        <p>Videos + Notes • Shared via Cloudflare (R2 + D1)</p>
+      </div>
     </div>
 
-    <div id="uploadMsg" class="err"></div>
-  </div>
-
-  <div class="card grow">
-    <h3 style="margin:0 0 12px 0;">Videos</h3>
-    <div style="display:flex; gap:10px; margin-bottom:10px;">
-      <button id="loadBtn" type="button">Load</button>
+    <div class="right">
+      <div id="apiBadge" class="badge offline">
+        <div class="statusDot"></div>
+        <span id="apiText">API: offline</span>
+      </div>
+      <button id="openApiBtn" type="button">Open API</button>
+      <button id="checkApiBtn" type="button">Check API</button>
+      <button id="refreshBtn" type="button">Refresh</button>
     </div>
-    <div id="listMsg" class="err"></div>
-    <div id="list" style="margin-top:10px;"></div>
   </div>
-</div>
 
-<script>
-  // IMPORTANT: Always hit the API subdomain to avoid Pages/GitHub routing conflicts.
-  const API_BASE = "https://api.tseapp.com";
+  <div class="wrap">
+    <div class="grid">
 
-  const dot = document.getElementById("dot");
-  const apiText = document.getElementById("apiText");
-  const uploadMsg = document.getElementById("uploadMsg");
-  const listMsg = document.getElementById("listMsg");
-  const list = document.getElementById("list");
+      <!-- Upload -->
+      <div class="card">
+        <div class="cardHeader">
+          <h2>Upload video</h2>
+          <div class="sub">Max 500MB</div>
+        </div>
+        <div class="cardBody">
+          <label for="file">Video file</label>
+          <input id="file" type="file" accept="video/*" />
 
-  document.getElementById("openApiBtn").onclick = () => window.open(`${API_BASE}/api/health`, "_blank");
-  document.getElementById("checkBtn").onclick = () => checkApi();
-  document.getElementById("refreshBtn").onclick = () => location.reload();
+          <label for="title">Title</label>
+          <input id="title" placeholder="e.g., NQ Scalps — Jan 4" />
 
-  document.getElementById("loadBtn").onclick = () => loadVideos();
-  document.getElementById("uploadBtn").onclick = () => upload();
-  document.getElementById("clearBtn").onclick = () => {
-    ["file","title","tag","q1","q2","notes"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el.type === "file") el.value = "";
-      else el.value = "";
-    });
-    document.getElementById("owner").value = "";
-    uploadMsg.textContent = "";
-  };
+          <div class="row">
+            <div>
+              <label for="owner">Owner</label>
+              <select id="owner">
+                <option value="">(none)</option>
+                <option value="Aiden">Aiden</option>
+                <option value="Landon">Landon</option>
+              </select>
+            </div>
+            <div>
+              <label for="tag">Sort tag</label>
+              <input id="tag" placeholder="Trade Review / Setups / etc" />
+            </div>
+          </div>
 
-  function setApiStatus(ok, detail="") {
-    dot.classList.toggle("ok", !!ok);
-    apiText.textContent = ok ? "API: online" : `API: offline${detail ? " ("+detail+")" : ""}`;
-  }
+          <label for="q1">Description Q1</label>
+          <input id="q1" placeholder="What was the setup?" />
 
-  async function safeJson(response) {
-    // Never assume JSON — read text first so we can show real errors.
-    const text = await response.text();
-    try {
-      return { ok: true, data: JSON.parse(text), raw: text };
-    } catch {
-      return { ok: false, data: null, raw: text };
-    }
-  }
+          <label for="q2">Description Q2</label>
+          <input id="q2" placeholder="What did you learn?" />
 
-  async function checkApi() {
-    setApiStatus(false, "checking…");
-    try {
-      const res = await fetch(`${API_BASE}/api/health`, { method: "GET" });
-      const parsed = await safeJson(res);
-      if (!res.ok) {
-        setApiStatus(false, `HTTP ${res.status}`);
-        return;
-      }
-      if (parsed.ok && parsed.data && parsed.data.ok === true) {
-        setApiStatus(true);
-      } else {
-        setApiStatus(false, "bad JSON");
-      }
-    } catch (e) {
-      setApiStatus(false, "network/CORS");
-    }
-  }
+          <label for="notes">Notes (optional)</label>
+          <textarea id="notes" placeholder="Write notes attached to this video..."></textarea>
 
-  async function loadVideos() {
-    listMsg.textContent = "";
-    list.textContent = "";
-    await checkApi();
+          <div class="actions">
+            <button id="uploadBtn" type="button">Upload</button>
+            <button id="clearBtn" type="button">Clear</button>
+          </div>
 
-    try {
-      const res = await fetch(`${API_BASE}/api/videos`, { method: "GET" });
-      const parsed = await safeJson(res);
+          <div class="hint">
+            Tip: keep clips under 500MB for fastest uploads.
+            If you ever see “TypeError: Load failed”, that means the request didn’t complete (usually wrong endpoint or a thrown error response).
+          </div>
 
-      if (!res.ok) {
-        listMsg.textContent = `Load failed: HTTP ${res.status}\n${parsed.raw}`;
-        return;
-      }
-      if (!parsed.ok) {
-        listMsg.textContent = `Load failed: Non-JSON response\n${parsed.raw}`;
-        return;
-      }
+          <div id="uploadError" class="error" style="display:none;"></div>
+        </div>
+      </div>
 
-      const videos = parsed.data.videos || [];
-      if (!videos.length) {
-        list.textContent = "0 items";
-        return;
-      }
+      <!-- Videos -->
+      <div class="card">
+        <div class="cardHeader">
+          <div class="videosTop">
+            <h2 style="margin:0;">Videos</h2>
+            <input id="search" placeholder="Search videos by title, owner, tag..." />
+            <span id="count" class="pill">0 items</span>
+          </div>
+          <button id="loadBtn" type="button">Load</button>
+        </div>
 
-      for (const v of videos) {
-        const el = document.createElement("div");
-        el.style.padding = "10px";
-        el.style.border = "1px solid rgba(255,255,255,.10)";
-        el.style.borderRadius = "12px";
-        el.style.marginBottom = "10px";
-        el.textContent = `${v.title || "(untitled)"} — ${v.owner || "?"} — ${new Date(v.createdAt || Date.now()).toLocaleString()}`;
-        list.appendChild(el);
-      }
-    } catch (e) {
-      listMsg.textContent = `Load failed (network/CORS): ${e?.message || e}`;
-    }
-  }
+        <div id="videos"></div>
+      </div>
 
-  async function upload() {
-    uploadMsg.textContent = "";
-    await checkApi();
+    </div>
+  </div>
 
-    const file = document.getElementById("file").files[0];
-    if (!file) {
-      uploadMsg.textContent = "Pick a video file first.";
-      return;
+  <script>
+    const API = "https://api.tseapp.com";
+
+    const els = {
+      badge: document.getElementById("apiBadge"),
+      apiText: document.getElementById("apiText"),
+      openApiBtn: document.getElementById("openApiBtn"),
+      checkApiBtn: document.getElementById("checkApiBtn"),
+      refreshBtn: document.getElementById("refreshBtn"),
+      loadBtn: document.getElementById("loadBtn"),
+      uploadBtn: document.getElementById("uploadBtn"),
+      clearBtn: document.getElementById("clearBtn"),
+      videos: document.getElementById("videos"),
+      count: document.getElementById("count"),
+      search: document.getElementById("search"),
+      uploadError: document.getElementById("uploadError"),
+
+      file: document.getElementById("file"),
+      title: document.getElementById("title"),
+      owner: document.getElementById("owner"),
+      tag: document.getElementById("tag"),
+      q1: document.getElementById("q1"),
+      q2: document.getElementById("q2"),
+      notes: document.getElementById("notes"),
+    };
+
+    function setApi(ok) {
+      els.badge.classList.toggle("online", ok);
+      els.badge.classList.toggle("offline", !ok);
+      els.apiText.textContent = ok ? "API: online" : "API: offline";
     }
 
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("title", document.getElementById("title").value || "");
-    fd.append("owner", document.getElementById("owner").value || "");
-    fd.append("tag", document.getElementById("tag").value || "");
-    fd.append("q1", document.getElementById("q1").value || "");
-    fd.append("q2", document.getElementById("q2").value || "");
-    fd.append("notes", document.getElementById("notes").value || "");
-
-    try {
-      const res = await fetch(`${API_BASE}/api/videos`, { method: "POST", body: fd });
-      const parsed = await safeJson(res);
-
-      if (!res.ok) {
-        uploadMsg.textContent = `Upload failed: HTTP ${res.status}\n${parsed.raw}`;
-        return;
+    async function checkApi() {
+      try {
+        const r = await fetch(`${API}/api/health`, { method: "GET" });
+        await r.json();
+        setApi(true);
+        return true;
+      } catch {
+        setApi(false);
+        return false;
       }
-      if (!parsed.ok) {
-        uploadMsg.textContent = `Upload failed: Non-JSON response\n${parsed.raw}`;
-        return;
-      }
-
-      uploadMsg.className = "ok";
-      uploadMsg.textContent = "Upload complete ✅";
-      await loadVideos();
-    } catch (e) {
-      uploadMsg.className = "err";
-      uploadMsg.textContent = `Upload failed (network/CORS): ${e?.message || e}`;
     }
-  }
 
-  // boot
-  (async () => {
-    await checkApi();
-  })();
-</script>
+    function showUploadError(msg) {
+      els.uploadError.style.display = "block";
+      els.uploadError.textContent = msg;
+    }
 
+    function clearUploadError() {
+      els.uploadError.style.display = "none";
+      els.uploadError.textContent = "";
+    }
+
+    function clearForm() {
+      els.file.value = "";
+      els.title.value = "";
+      els.owner.value = "";
+      els.tag.value = "";
+      els.q1.value = "";
+      els.q2.value = "";
+      els.notes.value = "";
+      clearUploadError();
+    }
+
+    function normalize(s) {
+      return String(s || "").toLowerCase();
+    }
+
+    function renderVideos(videos) {
+      const q = normalize(els.search.value);
+      const filtered = videos.filter(v => {
+        if (!q) return true;
+        return (
+          normalize(v.title).includes(q) ||
+          normalize(v.owner).includes(q) ||
+          normalize(v.tag).includes(q)
+        );
+      });
+
+      els.count.textContent = `${filtered.length} item${filtered.length === 1 ? "" : "s"}`;
+      els.videos.innerHTML = "";
+
+      if (filtered.length === 0) {
+        els.videos.innerHTML = `<div class="video-card" style="opacity:.8;">
+          <strong>No videos</strong>
+          <div class="meta"><span>Upload one, then click Load</span></div>
+        </div>`;
+        return;
+      }
+
+      for (const v of filtered) {
+        const card = document.createElement("div");
+        card.className = "video-card";
+        card.innerHTML = `
+          <strong>${escapeHtml(v.title || "Untitled")}</strong>
+          <div class="meta">
+            ${v.owner ? `<span>${escapeHtml(v.owner)}</span>` : ""}
+            ${v.tag ? `<span>${escapeHtml(v.tag)}</span>` : ""}
+          </div>
+        `;
+        els.videos.appendChild(card);
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    let lastVideos = [];
+
+    async function loadVideos() {
+      try {
+        const res = await fetch(`${API}/api/videos`, { method: "GET" });
+        const data = await res.json();
+        lastVideos = Array.isArray(data.videos) ? data.videos : [];
+        renderVideos(lastVideos);
+      } catch (err) {
+        console.error(err);
+        setApi(false);
+        els.videos.innerHTML = `<div class="video-card"><strong>Load failed</strong><div class="meta"><span>Check API + refresh</span></div></div>`;
+      }
+    }
+
+    async function uploadVideo() {
+      clearUploadError();
+
+      const file = els.file.files[0];
+      if (!file) {
+        showUploadError("Choose a file first.");
+        return;
+      }
+
+      // Basic sanity: avoid blank metadata
+      const title = els.title.value.trim();
+      const owner = els.owner.value.trim();
+      const tag = els.tag.value.trim();
+      const q1 = els.q1.value.trim();
+      const q2 = els.q2.value.trim();
+      const notes = els.notes.value.trim();
+
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("title", title);
+      fd.append("owner", owner);
+      fd.append("tag", tag);
+      fd.append("q1", q1);
+      fd.append("q2", q2);
+      fd.append("notes", notes);
+
+      try {
+        const res = await fetch(`${API}/api/videos/upload`, {
+          method: "POST",
+          body: fd
+        });
+
+        // Read as text first so we can show useful errors even if JSON parse fails
+        const text = await res.text();
+        let data = null;
+        try { data = JSON.parse(text); } catch { /* keep raw text */ }
+
+        if (!res.ok) {
+          const msg = (data && (data.details || data.error)) ? (data.details || data.error) : text;
+          throw new Error(msg || `HTTP ${res.status}`);
+        }
+
+        setApi(true);
+
+        // Immediately refresh list
+        await loadVideos();
+        // optional: clear the form after success
+        // clearForm();
+
+      } catch (err) {
+        console.error(err);
+        showUploadError("Upload failed: " + err.message);
+      }
+    }
+
+    // Buttons
+    els.openApiBtn.addEventListener("click", () => window.open(`${API}/api/health`, "_blank"));
+    els.checkApiBtn.addEventListener("click", async () => { await checkApi(); });
+    els.refreshBtn.addEventListener("click", async () => { await checkApi(); await loadVideos(); });
+    els.loadBtn.addEventListener("click", loadVideos);
+    els.uploadBtn.addEventListener("click", uploadVideo);
+    els.clearBtn.addEventListener("click", clearForm);
+    els.search.addEventListener("input", () => renderVideos(lastVideos));
+
+    // Init
+    (async function init(){
+      await checkApi();
+      // don’t auto-load if you don’t want it:
+      // await loadVideos();
+      renderVideos([]);
+    })();
+  </script>
 </body>
 </html>
