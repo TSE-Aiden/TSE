@@ -6,65 +6,94 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <style>
+/* =================== THEME =================== */
 :root {
   --bg: #0b0e14;
-  --panel: #121826;
-  --border: #1f2a44;
+  --panel: rgba(18,22,36,.85);
+  --panel-strong: #121826;
+  --border: rgba(255,255,255,.08);
   --accent: #6d7cff;
+  --accent-soft: rgba(109,124,255,.15);
   --text: #e6e9f2;
+  --muted: #9aa4c7;
 }
 
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  background: radial-gradient(1200px 600px at 50% -200px, #1a2140, var(--bg));
+  background:
+    radial-gradient(1200px 600px at 50% -200px, #1a2140, transparent),
+    var(--bg);
   color: var(--text);
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
 }
 
+/* =================== HEADER =================== */
 header {
-  padding: 16px 24px;
-  font-weight: 700;
-  letter-spacing: .5px;
+  padding: 18px 28px;
+  font-weight: 800;
+  letter-spacing: .6px;
+  font-size: 18px;
 }
 
+/* =================== TABS =================== */
 .tabs {
   display: flex;
   gap: 10px;
-  padding: 0 24px;
+  padding: 0 28px 16px;
 }
-
 .tab {
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
-  background: #161d34;
+  background: var(--panel);
+  border: 1px solid var(--border);
   cursor: pointer;
-  opacity: .7;
+  opacity: .6;
 }
-.tab.active { background: var(--accent); opacity: 1; }
+.tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  opacity: 1;
+}
 
-main { padding: 24px; }
-
+/* =================== LAYOUT =================== */
+main { padding: 0 28px 40px; }
 .panel {
   background: linear-gradient(180deg, #141a30, #0e1324);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 16px;
   margin-bottom: 20px;
 }
-
 .hidden { display: none; }
 
+/* =================== VIDEO =================== */
+.video-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
 video {
   width: 100%;
   background: black;
-  border-radius: 12px;
+  border-radius: 14px;
+}
+.timestamp {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
 }
 
-/* NOTES */
+/* =================== NOTES =================== */
+.notes-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 .toolbar {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
   margin-bottom: 10px;
 }
 .toolbar button, .toolbar select, .toolbar input {
@@ -75,26 +104,49 @@ video {
   padding: 6px 8px;
 }
 #editor {
-  min-height: 240px;
-  padding: 12px;
+  flex: 1;
+  padding: 14px;
   background: #0a0f1f;
   border: 1px solid #2a3470;
-  border-radius: 10px;
+  border-radius: 12px;
   outline: none;
+  overflow-y: auto;
 }
 #editor img {
   max-width: 100%;
   resize: both;
-  overflow: auto;
   border: 1px dashed #555;
+  margin: 6px 0;
 }
 
-/* NEWS */
+/* =================== FOLDERS =================== */
+.folders {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.folder {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #1a2140;
+  border: 1px solid #2a3470;
+  cursor: pointer;
+}
+
+/* =================== NEWS =================== */
 iframe {
   width: 100%;
   height: 70vh;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
+}
+
+/* =================== BIBLE =================== */
+.bible-lesson {
+  line-height: 1.6;
+}
+.bible-lesson h4 {
+  margin-top: 14px;
 }
 </style>
 </head>
@@ -112,16 +164,34 @@ iframe {
 
 <main>
 
-<!-- VIDEOS -->
+<!-- ================= VIDEOS ================= -->
 <div id="videos" class="panel">
-  <h3>Video Player</h3>
-  <video id="player" controls></video>
-  <button id="loadDemo">Load demo video</button>
+  <div class="video-layout">
+    <div>
+      <video id="player" controls></video>
+      <div class="timestamp">Safe player · no duration dependency</div>
+    </div>
+
+    <div class="notes-panel">
+      <strong>Quick Notes</strong>
+      <div id="quickNotes" contenteditable="true" style="
+        flex:1;
+        margin-top:8px;
+        background:#0a0f1f;
+        border:1px solid #2a3470;
+        border-radius:12px;
+        padding:12px;">
+        Jot thoughts while watching…
+      </div>
+    </div>
+  </div>
+
+  <button id="loadDemo" style="margin-top:12px;">Load demo video</button>
 </div>
 
-<!-- NOTES -->
+<!-- ================= NOTES ================= -->
 <div id="notes" class="panel hidden">
-  <h3>Notes</h3>
+  <h3>Notes Document</h3>
 
   <div class="toolbar">
     <button data-style="bold">B</button>
@@ -135,26 +205,30 @@ iframe {
       <option value="28px">28</option>
     </select>
     <input type="file" id="imgUpload" accept="image/*" />
+    <button id="exportPDF">Export PDF</button>
   </div>
 
   <div id="editor" contenteditable="true">
-    Start writing notes…
+    This is a full document.  
+    Resize images.  
+    Color text.  
+    Journal freely.
   </div>
 </div>
 
-<!-- BIBLE -->
+<!-- ================= BIBLE ================= -->
 <div id="bible" class="panel hidden">
   <h3>Daily Bible Study</h3>
 
   <input id="verseInput" placeholder="John 3:16" />
   <button id="loadVerse">Generate Lesson</button>
 
-  <div id="bibleContent"></div>
+  <div id="bibleContent" class="bible-lesson"></div>
 </div>
 
-<!-- NEWS -->
+<!-- ================= NEWS ================= -->
 <div id="news" class="panel hidden">
-  <h3>Market News</h3>
+  <h3>Market News Terminal</h3>
 
   <select id="newsSelect">
     <option value="">Select source</option>
@@ -170,12 +244,10 @@ iframe {
 </main>
 
 <script>
-/* ---------- GLOBAL SAFETY ---------- */
-window.onerror = (msg) => {
-  console.error("JS error prevented crash:", msg);
-};
+/* ================= SAFETY ================= */
+window.onerror = e => console.warn("Error isolated:", e);
 
-/* ---------- TABS ---------- */
+/* ================= TABS ================= */
 document.querySelectorAll(".tab").forEach(tab => {
   tab.onclick = () => {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
@@ -185,18 +257,16 @@ document.querySelectorAll(".tab").forEach(tab => {
   };
 });
 
-/* ---------- VIDEO ---------- */
+/* ================= VIDEO ================= */
 const player = document.getElementById("player");
 document.getElementById("loadDemo").onclick = () => {
-  try {
-    player.pause();
-    player.removeAttribute("src");
-    player.load();
-    player.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
-  } catch {}
+  player.pause();
+  player.removeAttribute("src");
+  player.load();
+  player.src = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
 };
 
-/* ---------- NOTES (NO execCommand) ---------- */
+/* ================= NOTES ================= */
 function applyStyle(style, value) {
   const sel = window.getSelection();
   if (!sel.rangeCount) return;
@@ -210,54 +280,49 @@ function applyStyle(style, value) {
 document.querySelectorAll("[data-style]").forEach(btn => {
   btn.onclick = () => {
     const map = {
-      bold: ["fontWeight", "700"],
-      italic: ["fontStyle", "italic"],
-      underline: ["textDecoration", "underline"]
+      bold: ["fontWeight","700"],
+      italic: ["fontStyle","italic"],
+      underline: ["textDecoration","underline"]
     };
     applyStyle(...map[btn.dataset.style]);
   };
 });
-
-document.getElementById("colorPicker").oninput =
-  e => applyStyle("color", e.target.value);
-document.getElementById("fontSize").onchange =
-  e => applyStyle("fontSize", e.target.value);
+document.getElementById("colorPicker").oninput = e =>
+  applyStyle("color", e.target.value);
+document.getElementById("fontSize").onchange = e =>
+  applyStyle("fontSize", e.target.value);
 
 document.getElementById("imgUpload").onchange = e => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const f = e.target.files[0];
+  if (!f) return;
   const img = document.createElement("img");
-  img.src = URL.createObjectURL(file);
+  img.src = URL.createObjectURL(f);
   document.getElementById("editor").appendChild(img);
 };
 
-/* ---------- BIBLE API ---------- */
+/* ================= BIBLE ================= */
 document.getElementById("loadVerse").onclick = async () => {
-  const ref = document.getElementById("verseInput").value || "John 3:16";
+  const ref = document.getElementById("verseInput").value || "Psalm 23:1";
   const out = document.getElementById("bibleContent");
-  out.innerHTML = "Loading…";
-
+  out.textContent = "Loading…";
   try {
-    const res = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}`);
-    const data = await res.json();
+    const r = await fetch(`https://bible-api.com/${encodeURIComponent(ref)}`);
+    const d = await r.json();
     out.innerHTML = `
-      <h4>${data.reference}</h4>
-      <p>${data.text}</p>
-      <hr/>
-      <b>Observe:</b> What does this reveal about God?<br/>
-      <b>Interpret:</b> What does it mean?<br/>
-      <b>Apply:</b> How should this change you?<br/>
-      <b>Prayer:</b> Write a short prayer.
-    `;
+      <h4>${d.reference}</h4>
+      <p>${d.text}</p>
+      <h4>Observe</h4><p>What does this show about God?</p>
+      <h4>Interpret</h4><p>What does it mean?</p>
+      <h4>Apply</h4><p>How should this change you?</p>
+      <h4>Prayer</h4><p>Write a prayer response.</p>`;
   } catch {
-    out.textContent = "Failed to load verse.";
+    out.textContent = "Failed to load lesson.";
   }
 };
 
-/* ---------- NEWS ---------- */
-document.getElementById("newsSelect").onchange = e => {
+/* ================= NEWS ================= */
+document.getElementById("newsSelect").onchange = e =>
   document.getElementById("newsFrame").src = e.target.value;
-};
 </script>
 
 </body>
