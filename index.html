@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TSE</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TSE — Overhaul</title>
   <style>
     :root{
       --bg0:#070814;
@@ -21,1577 +21,1655 @@
       --warn:#f59e0b;
       --shadow: 0 20px 80px rgba(0,0,0,.45);
       --radius: 18px;
-      --radius2: 24px;
+      --radius2: 12px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
-    *{ box-sizing:border-box; }
-    html,body{ height:100%; }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background:
-        radial-gradient(1200px 800px at 65% 25%, rgba(139,92,246,.25), transparent 55%),
-        radial-gradient(900px 600px at 25% 75%, rgba(59,130,246,.18), transparent 55%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
+      font-family: var(--sans);
       color: var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% 10%, rgba(139,92,246,.25), transparent 55%),
+        radial-gradient(900px 550px at 90% 30%, rgba(34,197,94,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow:hidden;
     }
-    .wrap{ max-width: 1300px; margin: 0 auto; padding: 28px 18px 80px; }
 
-    /* top bar */
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px; margin-bottom:18px;
+    /* Layout */
+    .shell{
+      height:100%;
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      gap:16px;
+      padding:16px;
     }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-      padding: 10px 14px;
+
+    .sidebar{
       border:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border-radius: 999px;
-      backdrop-filter: blur(10px);
+      background: rgba(0,0,0,.22);
+      border-radius: var(--radius);
       box-shadow: var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
     }
-    .dot{ width:10px; height:10px; border-radius:999px; background: rgba(255,255,255,.18); }
-    .brand h1{ font-size:14px; margin:0; letter-spacing:.4px; }
-    .sub{ font-size:12px; color:var(--muted2); margin-top:1px; }
 
-    .rightbar{ display:flex; align-items:center; gap:10px; }
-    .status{
-      display:flex; align-items:center; gap:10px;
-      padding: 10px 14px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      border-radius: 999px;
-      backdrop-filter: blur(10px);
+    .brand{
+      padding:16px 16px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
     }
-    .status .pill{
-      display:flex; align-items:center; gap:8px;
-      padding:6px 10px; border-radius:999px;
+    .brand .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .logo{
+      width:36px;height:36px;border-radius:12px;
+      background: radial-gradient(circle at 30% 30%, rgba(139,92,246,.9), rgba(34,197,94,.7));
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.14);
+      flex:none;
+    }
+    .brand h1{
+      margin:0;
+      font-size:15px;
+      letter-spacing:.4px;
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .pill{
+      font-size:11px;
+      color: rgba(255,255,255,.8);
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.05);
+      padding:6px 10px;
+      border-radius: 999px;
+    }
+
+    .nav{
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      overflow:auto;
+      min-height:0;
+    }
+
+    .navbtn{
+      width:100%;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      border-radius: 14px;
+      padding:10px 12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      cursor:pointer;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      text-align:left;
+    }
+    .navbtn:hover{
+      transform: translateY(-1px);
+      border-color: var(--stroke2);
+      background: rgba(255,255,255,.06);
+    }
+    .navbtn.active{
+      border-color: rgba(139,92,246,.55);
+      background: rgba(139,92,246,.12);
+    }
+    .navbtn .meta{
+      display:flex; flex-direction:column; gap:3px; min-width:0;
+    }
+    .navbtn .title{
+      font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .navbtn .sub{
+      font-size:11px; color: var(--muted);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .kbd{
+      font-family: var(--mono);
+      font-size:11px;
+      color: rgba(255,255,255,.65);
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.25);
+      padding:5px 8px;
+      border-radius: 10px;
+      flex:none;
+    }
+
+    .sidebarFooter{
+      padding:12px;
+      border-top:1px solid var(--stroke);
+      background: rgba(255,255,255,.02);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .statusDot{
+      width:10px;height:10px;border-radius:99px;
+      background: rgba(34,197,94,.9);
+      box-shadow: 0 0 18px rgba(34,197,94,.35);
+      border:1px solid rgba(255,255,255,.2);
+    }
+    .muted{ color: var(--muted); }
+    .link{
+      color: rgba(139,92,246,.95);
+      text-decoration:none;
+    }
+    .link:hover{ text-decoration:underline; }
+
+    .main{
       border:1px solid var(--stroke);
       background: rgba(0,0,0,.18);
-      font-size: 12px;
-      color: var(--muted);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-height:0;
     }
-    .led{ width:10px; height:10px; border-radius:999px; background: var(--danger); box-shadow: 0 0 18px rgba(239,68,68,.6); }
-    .led.ok{ background: var(--accent2); box-shadow: 0 0 18px rgba(34,197,94,.55); }
+
+    .topbar{
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
+    }
+    .topbar .left{
+      display:flex; align-items:center; gap:10px; min-width:0;
+    }
+    .topbar h2{
+      margin:0;
+      font-size:15px;
+      font-weight:800;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .topbar .hint{
+      font-size:12px;
+      color: var(--muted);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .actions{
+      display:flex; gap:10px; align-items:center; flex:none;
+    }
+
+    .input{
+      width: min(420px, 55vw);
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      padding:10px 12px;
+      border-radius: 14px;
+      outline:none;
+    }
+    .input:focus{
+      border-color: rgba(139,92,246,.55);
+      box-shadow: 0 0 0 3px rgba(139,92,246,.15);
+    }
 
     .btn{
       border:1px solid var(--stroke);
       background: rgba(255,255,255,.05);
       color: var(--text);
-      padding: 10px 12px;
-      border-radius: 12px;
+      padding:10px 12px;
+      border-radius: 14px;
       cursor:pointer;
-      transition: transform .15s ease, background .15s ease, border-color .15s ease;
-      user-select:none;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      font-weight:700;
+      font-size:12px;
     }
-    .btn:hover{ transform: translateY(-1px); border-color: var(--stroke2); background: rgba(255,255,255,.07); }
-    .btn.primary{ background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.35); }
-    .btn.primary:hover{ background: rgba(139,92,246,.22); }
-    .btn.danger{ background: rgba(239,68,68,.13); border-color: rgba(239,68,68,.30); }
-    .btn.ghost{ background: transparent; }
-    .btn.small{ padding: 8px 10px; border-radius: 10px; font-size: 12px; }
-
-    /* tabs */
-    .tabs{
-      display:flex; gap:8px; margin: 16px 0 18px;
-      padding: 6px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.03);
-      border-radius: 16px;
-      backdrop-filter: blur(10px);
-      width: fit-content;
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: var(--stroke2);
+      background: rgba(255,255,255,.08);
     }
-    .tab{
-      padding: 10px 14px;
-      border-radius: 12px;
-      cursor:pointer;
-      font-size: 13px;
-      color: var(--muted);
-      border:1px solid transparent;
-      transition: all .15s ease;
-      user-select:none;
+    .btn.primary{
+      border-color: rgba(139,92,246,.55);
+      background: rgba(139,92,246,.18);
     }
-    .tab:hover{ color: var(--text); background: rgba(255,255,255,.05); }
-    .tab.active{
-      color: var(--text);
-      background: rgba(139,92,246,.16);
-      border-color: rgba(139,92,246,.32);
-      box-shadow: 0 10px 35px rgba(139,92,246,.18);
+    .btn.good{
+      border-color: rgba(34,197,94,.5);
+      background: rgba(34,197,94,.14);
+    }
+    .btn.danger{
+      border-color: rgba(239,68,68,.55);
+      background: rgba(239,68,68,.14);
     }
 
-    /* layout */
+    .content{
+      padding:14px;
+      overflow:auto;
+      min-height:0;
+    }
+
+    /* Cards / sections */
     .grid{
       display:grid;
-      grid-template-columns: 380px 1fr;
-      gap: 16px;
-      align-items:start;
+      gap:12px;
     }
-    @media (max-width: 1000px){
-      .grid{ grid-template-columns: 1fr; }
+    .grid.cols{
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
-    .panel{
+    @media (max-width: 1200px){
+      .grid.cols{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .shell{ grid-template-columns: 260px 1fr; }
+    }
+    @media (max-width: 860px){
+      body{ overflow:auto; }
+      .shell{ grid-template-columns: 1fr; height:auto; }
+      .sidebar{ height:auto; }
+      .main{ height: min(74vh, 720px); }
+      .grid.cols{ grid-template-columns: 1fr; }
+      .input{ width: 100%; }
+    }
+
+    .card{
       border:1px solid var(--stroke);
       background: rgba(255,255,255,.04);
       border-radius: var(--radius2);
-      padding: 16px;
-      backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-    }
-    .panel h2{
-      margin:0 0 6px;
-      font-size: 14px;
-      letter-spacing:.3px;
-    }
-    .panel .hint{ margin:0 0 14px; font-size: 12px; color: var(--muted2); }
-
-    .field{ margin: 10px 0; }
-    label{ display:block; font-size: 12px; color: var(--muted2); margin-bottom: 6px; }
-    input, select, textarea{
-      width:100%;
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.18);
-      color: var(--text);
-      border-radius: 14px;
-      padding: 10px 12px;
-      outline:none;
-      transition: border-color .15s ease, background .15s ease;
-    }
-    input:focus, select:focus, textarea:focus{
-      border-color: rgba(139,92,246,.45);
-      background: rgba(0,0,0,.24);
-    }
-    textarea{ min-height: 110px; resize: vertical; }
-    .row{ display:flex; gap:10px; }
-    .row > *{ flex:1; }
-
-    /* videos */
-    .videoTop{
-      display:flex; gap:10px; align-items:center; justify-content:space-between;
-      margin-bottom: 10px;
-    }
-    .searchRow{
-      display:flex; gap:10px; align-items:center; margin-bottom:10px;
-    }
-    .chips{
-      display:flex; gap:8px; flex-wrap:wrap; margin: 8px 0 10px;
-    }
-    .chip{
-      display:inline-flex; align-items:center; gap:8px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      border-radius: 999px;
-      padding: 7px 10px;
-      font-size: 12px;
-      color: var(--muted);
-      cursor:pointer;
-      user-select:none;
-      transition: all .15s ease;
-    }
-    .chip:hover{ border-color: var(--stroke2); transform: translateY(-1px); }
-    .chip.active{
-      color: var(--text);
-      border-color: rgba(139,92,246,.35);
-      background: rgba(139,92,246,.14);
-    }
-    .chip .count{
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.25);
-      color: var(--muted2);
-    }
-
-    .cards{
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 12px;
-      padding: 8px 0 0;
-    }
-    .card{
-      border:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border-radius: 18px;
       overflow:hidden;
-      cursor:pointer;
-      transform: translateY(0);
-      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
       position:relative;
     }
-    .card:hover{
-      transform: translateY(-4px);
-      border-color: rgba(139,92,246,.35);
-      box-shadow: 0 22px 70px rgba(0,0,0,.55);
-    }
-    .thumb{
-      aspect-ratio: 16/9;
-      background: rgba(0,0,0,.35);
-      position:relative;
+    .cardHeader{
+      padding:12px 12px 10px;
+      border-bottom:1px solid var(--stroke);
       display:flex;
-      align-items:center;
-      justify-content:center;
-      overflow:hidden;
-    }
-    .play{
-      width:48px; height:48px; border-radius:999px;
-      background: rgba(0,0,0,.45);
-      border: 1px solid rgba(255,255,255,.18);
-      display:flex; align-items:center; justify-content:center;
-      backdrop-filter: blur(8px);
-      opacity:.95;
-      transition: transform .18s ease;
-    }
-    .card:hover .play{ transform: scale(1.06); }
-    .play:before{
-      content:"";
-      display:block;
-      width:0;height:0;
-      border-left: 14px solid rgba(255,255,255,.88);
-      border-top: 9px solid transparent;
-      border-bottom: 9px solid transparent;
-      margin-left: 4px;
-    }
-    .meta{
-      padding: 12px 12px 13px;
-    }
-    .title{
-      font-size: 13px;
-      font-weight: 650;
-      margin: 0 0 8px;
-      letter-spacing:.2px;
-      overflow:hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .tags{
-      display:flex; flex-wrap:wrap; gap:6px;
-      color: var(--muted2);
-      font-size: 11px;
-    }
-    .badge{
-      display:inline-flex; align-items:center; gap:6px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.18);
-    }
-    .badge.folder{ border-color: rgba(139,92,246,.25); background: rgba(139,92,246,.10); color: rgba(255,255,255,.82); }
-    .smallLine{
-      margin-top: 9px;
-      display:flex; justify-content:space-between;
-      font-size: 11px; color: var(--muted2);
-    }
-
-    .empty{
-      padding: 18px;
-      border:1px dashed rgba(255,255,255,.14);
-      border-radius: 18px;
-      background: rgba(0,0,0,.15);
-      color: var(--muted2);
-      text-align:center;
-      margin-top: 10px;
-    }
-
-    /* modal */
-    .overlay{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.55);
-      display:none;
-      align-items:center; justify-content:center;
-      padding: 18px;
-      z-index: 50;
-    }
-    .overlay.show{ display:flex; }
-    .modal{
-      width: min(1100px, 96vw);
-      border-radius: 22px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(10,10,20,.82);
-      backdrop-filter: blur(14px);
-      box-shadow: 0 35px 120px rgba(0,0,0,.7);
-      overflow:hidden;
-      transform: translateY(8px) scale(.98);
-      opacity:0;
-      transition: transform .18s ease, opacity .18s ease;
-    }
-    .overlay.show .modal{
-      transform: translateY(0) scale(1);
-      opacity:1;
-    }
-    .modalTop{
-      display:flex; align-items:center; justify-content:space-between;
-      padding: 12px 14px;
-      border-bottom:1px solid rgba(255,255,255,.10);
+      align-items:flex-start;
+      justify-content:space-between;
       gap:10px;
     }
-    .modalTitle{ font-size: 13px; font-weight: 650; }
-    .modalActions{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-    .playerWrap{ padding: 10px 14px 14px; }
-    video{
-      width:100%;
-      max-height: 62vh;
-      background: black;
-      border-radius: 16px;
-      border:1px solid rgba(255,255,255,.10);
+    .cardHeader .title{
+      font-weight:900;
+      font-size:13px;
+      margin:0;
+      letter-spacing:.2px;
+      line-height:1.2;
+      min-width:0;
     }
-    .notesPanel{
-      border-top:1px solid rgba(255,255,255,.10);
-      padding: 12px 14px 14px;
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
+    .cardHeader .subtitle{
+      margin-top:4px;
+      font-size:11px;
+      color: var(--muted);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .notesPanel .box{
-      border:1px solid var(--stroke);
-      border-radius: 16px;
-      padding: 10px 10px;
-      background: rgba(255,255,255,.03);
-      min-height: 90px;
-    }
-    .notesPanel h3{ margin:0 0 6px; font-size: 12px; color: var(--muted2); }
-    .notesPanel p{ margin:0; font-size: 12px; color: rgba(255,255,255,.86); white-space: pre-wrap; }
+    .cardBody{ padding:12px; }
 
-    /* toast */
-    .toast{
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 80;
-      background: rgba(0,0,0,.62);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius: 16px;
-      padding: 12px 14px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-      min-width: 220px;
-      display:none;
-    }
-    .toast.show{ display:block; animation: pop .20s ease; }
-    @keyframes pop{
-      from{ transform: translateY(8px); opacity:0; }
-      to{ transform: translateY(0); opacity:1; }
-    }
-    .toast .t{ font-size: 12px; color: var(--muted); }
-    .toast .m{ font-size: 13px; margin-top: 4px; }
-
-    /* notes docs editor */
-    .docsGrid{
-      display:grid;
-      grid-template-columns: 320px 1fr;
-      gap: 14px;
-      align-items:start;
-    }
-    @media (max-width: 1000px){
-      .docsGrid{ grid-template-columns: 1fr; }
-    }
-    .docListItem{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      border-radius: 14px;
-      padding: 10px 12px;
+    /* Video “YouTube-like” cards */
+    .videoCard{
       cursor:pointer;
-      transition: transform .15s ease, border-color .15s ease;
-      margin-bottom: 8px;
+      transition: transform .14s ease, border-color .14s ease, background .14s ease;
     }
-    .docListItem:hover{ transform: translateY(-1px); border-color: var(--stroke2); }
-    .docListItem.active{
-      border-color: rgba(139,92,246,.35);
-      background: rgba(139,92,246,.12);
+    .videoCard:hover{
+      transform: translateY(-2px);
+      border-color: var(--stroke2);
+      background: rgba(255,255,255,.06);
     }
-    .docListItem .ttl{ font-weight: 650; font-size: 13px; margin:0 0 4px; }
-    .docListItem .dt{ font-size: 11px; color: var(--muted2); margin:0; }
 
+    .thumb{
+      width:100%;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(135deg, rgba(139,92,246,.22), rgba(34,197,94,.14));
+      border-bottom:1px solid var(--stroke);
+      position:relative;
+      overflow:hidden;
+    }
+    .thumb video{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      opacity:0;
+      transform: scale(1.02);
+      transition: opacity .18s ease;
+    }
+    .videoCard:hover .thumb video{
+      opacity:1;
+    }
+    .thumb .badge{
+      position:absolute;
+      left:10px;
+      bottom:10px;
+      font-family: var(--mono);
+      font-size:11px;
+      padding:6px 8px;
+      border-radius: 12px;
+      border:1px solid var(--stroke);
+      background: rgba(0,0,0,.35);
+      color: rgba(255,255,255,.85);
+      backdrop-filter: blur(6px);
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .rowBetween{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .chip{
+      font-size:11px;
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.82);
+    }
+    .chip.good{ border-color: rgba(34,197,94,.5); background: rgba(34,197,94,.12); }
+    .chip.bad{ border-color: rgba(239,68,68,.5); background: rgba(239,68,68,.12); }
+
+    .small{
+      font-size:12px;
+      color: var(--muted);
+      line-height:1.5;
+    }
+
+    /* Notes */
     .toolbar{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
       align-items:center;
-      padding: 10px;
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.16);
-      border-radius: 16px;
-      margin-bottom: 10px;
+      margin-bottom:10px;
     }
     .tool{
       border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
+      background: rgba(0,0,0,.25);
       color: var(--text);
+      padding:8px 10px;
       border-radius: 12px;
-      padding: 8px 10px;
-      font-size: 12px;
       cursor:pointer;
-      user-select:none;
+      font-size:12px;
+      font-weight:800;
     }
-    .tool:hover{ border-color: var(--stroke2); }
-    .tool input[type="color"]{ width: 32px; height: 18px; padding:0; border:0; background: transparent; }
-    .tool select{ width:auto; padding: 7px 10px; border-radius: 12px; }
+    .tool:hover{ border-color: var(--stroke2); background: rgba(255,255,255,.06); }
+    .tool.active{
+      border-color: rgba(139,92,246,.55);
+      background: rgba(139,92,246,.14);
+    }
+    .tool input[type="color"]{ width:26px;height:18px; border:none; background:none; padding:0; cursor:pointer; }
 
     .editor{
       border:1px solid var(--stroke);
-      background: rgba(255,255,255,.03);
-      border-radius: 18px;
-      padding: 14px;
-      min-height: 420px;
-      outline:none;
-    }
-    .editor:focus{ border-color: rgba(139,92,246,.35); }
-
-    /* resizable image wrapper */
-    .imgWrap{
-      display:inline-block;
-      position:relative;
-      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
       border-radius: 14px;
-      overflow:hidden;
-      margin: 8px 0;
-      max-width: 100%;
+      padding:12px;
+      min-height: 240px;
+      outline:none;
+      line-height:1.6;
     }
-    .imgWrap img{
+    .editor img{
+      max-width:100%;
+      border-radius: 12px;
+      border:1px solid var(--stroke);
       display:block;
-      width: 420px;
-      max-width: 100%;
-      height:auto;
-    }
-    .handle{
-      position:absolute;
-      width: 14px;
-      height: 14px;
-      right: 8px;
-      bottom: 8px;
-      border-radius: 6px;
-      border:1px solid rgba(255,255,255,.20);
-      background: rgba(0,0,0,.55);
-      cursor: nwse-resize;
-      backdrop-filter: blur(6px);
+      margin:10px 0;
     }
 
-    /* news modal iframe */
-    .iframeBox{
-      width: 100%;
-      height: 72vh;
-      border:1px solid rgba(255,255,255,.10);
-      border-radius: 16px;
-      background: rgba(0,0,0,.35);
+    /* Modal */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index: 50;
     }
-    .muted{ color: var(--muted2); font-size: 12px; }
-    .err{ color: rgba(239,68,68,.92); font-size: 12px; margin-top: 10px; white-space: pre-wrap; }
+    .overlay.show{ display:flex; }
+    .modal{
+      width: min(980px, 96vw);
+      max-height: min(84vh, 860px);
+      overflow:hidden;
+      border:1px solid var(--stroke2);
+      background: rgba(10,10,18,.88);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      display:flex;
+      flex-direction:column;
+    }
+    .modalTop{
+      padding:12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid var(--stroke);
+      background: rgba(255,255,255,.03);
+    }
+    .modalTop .title{
+      font-weight:900;
+      font-size:13px;
+      letter-spacing:.2px;
+      margin:0;
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .modalBody{
+      padding:0;
+      overflow:auto;
+      min-height:0;
+      flex:1;
+    }
+    .modalBody iframe{
+      width:100%;
+      height: min(70vh, 720px);
+      border:0;
+      background: #0b0d22;
+    }
+    .modalBody video{
+      width:100%;
+      max-height: min(70vh, 720px);
+      background:#000;
+    }
+
+    .twoCol{
+      display:grid;
+      gap:12px;
+      grid-template-columns: 360px 1fr;
+    }
+    @media (max-width: 980px){
+      .twoCol{ grid-template-columns: 1fr; }
+    }
+
+    .list{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .item{
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      border-radius: 14px;
+      padding:10px 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .item .name{
+      font-weight:900; font-size:12px; margin:0;
+    }
+    .item .desc{
+      font-size:11px; color: var(--muted); margin-top:3px;
+    }
+    .dangerText{ color: rgba(239,68,68,.95); }
+    .goodText{ color: rgba(34,197,94,.95); }
+
+    /* Tiny toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.55);
+      border:1px solid var(--stroke);
+      backdrop-filter: blur(10px);
+      color: rgba(255,255,255,.9);
+      padding:10px 12px;
+      border-radius: 999px;
+      font-size:12px;
+      display:none;
+      z-index:60;
+    }
+    .toast.show{ display:block; }
+
+    .hidden{ display:none !important; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="topbar">
+  <div class="shell">
+    <aside class="sidebar">
       <div class="brand">
-        <div class="dot" id="brandDot"></div>
-        <div>
-          <h1>TSE</h1>
-          <div class="sub">Videos + Notes + News + Daily Bible Study (R2 + D1)</div>
+        <div class="left">
+          <div class="logo"></div>
+          <div style="min-width:0">
+            <h1>TSE</h1>
+            <div class="pill" id="modePill">Local Mode</div>
+          </div>
+        </div>
+        <div class="kbd">⌘K</div>
+      </div>
+
+      <nav class="nav" id="nav">
+        <button class="navbtn active" data-tab="videos">
+          <div class="meta">
+            <div class="title">Videos</div>
+            <div class="sub">YouTube-style library</div>
+          </div>
+          <span class="kbd">1</span>
+        </button>
+
+        <button class="navbtn" data-tab="upload">
+          <div class="meta">
+            <div class="title">Upload</div>
+            <div class="sub">Add MP4 clips</div>
+          </div>
+          <span class="kbd">2</span>
+        </button>
+
+        <button class="navbtn" data-tab="notes">
+          <div class="meta">
+            <div class="title">Notes</div>
+            <div class="sub">Docs + images</div>
+          </div>
+          <span class="kbd">3</span>
+        </button>
+
+        <button class="navbtn" data-tab="news">
+          <div class="meta">
+            <div class="title">News</div>
+            <div class="sub">Reliable sources in-view</div>
+          </div>
+          <span class="kbd">4</span>
+        </button>
+
+        <button class="navbtn" data-tab="account">
+          <div class="meta">
+            <div class="title">Account</div>
+            <div class="sub">R2/D1 API settings</div>
+          </div>
+          <span class="kbd">5</span>
+        </button>
+      </nav>
+
+      <div class="sidebarFooter">
+        <div class="row" style="gap:8px;">
+          <div class="statusDot" id="statusDot"></div>
+          <div class="muted" style="font-size:12px;" id="statusText">Ready</div>
+        </div>
+        <a class="link" href="#" id="exportBtn">Export</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="left" style="min-width:0;">
+          <h2 id="viewTitle">Videos</h2>
+          <div class="hint" id="viewHint">Hover a card to preview. Click to open.</div>
+        </div>
+
+        <div class="actions">
+          <input class="input" id="search" placeholder="Search videos / notes…" />
+          <button class="btn" id="newBtn">New</button>
+          <button class="btn primary" id="primaryBtn">Action</button>
         </div>
       </div>
 
-      <div class="rightbar">
-        <div class="status">
-          <div class="pill">
-            <span class="led" id="led"></span>
-            <span id="apiText">API: checking...</span>
+      <div class="content" id="content">
+        <!-- Videos -->
+        <section id="tab-videos">
+          <div class="rowBetween" style="margin-bottom:12px;">
+            <div class="row">
+              <span class="chip" id="countVideos">0 videos</span>
+              <span class="chip" id="countNotes">0 notes</span>
+            </div>
+            <div class="row">
+              <button class="btn" id="sortNewest">Newest</button>
+              <button class="btn" id="sortOldest">Oldest</button>
+              <button class="btn" id="sortTitle">Title</button>
+            </div>
           </div>
-        </div>
-        <button class="btn" id="openApiBtn">Open API</button>
-        <button class="btn" id="checkApiBtn">Check API</button>
-        <button class="btn" id="refreshBtn">Refresh</button>
+          <div class="grid cols" id="videoGrid"></div>
+          <div class="small" id="emptyVideos" style="margin-top:14px; display:none;">
+            No videos yet. Go to <b>Upload</b> to add a clip.
+          </div>
+        </section>
+
+        <!-- Upload -->
+        <section id="tab-upload" class="hidden">
+          <div class="grid" style="grid-template-columns: 1.1fr .9fr; align-items:start;">
+            <div class="card">
+              <div class="cardHeader">
+                <div style="min-width:0">
+                  <div class="title">Upload a clip</div>
+                  <div class="subtitle">Local mode saves the file in your browser (not ideal). API mode uses R2.</div>
+                </div>
+              </div>
+              <div class="cardBody">
+                <div class="row" style="margin-bottom:10px;">
+                  <input class="input" id="uploadTitle" placeholder="Title (e.g., NQ scalp 9:42am)" style="flex:1; width:auto;" />
+                </div>
+                <div class="row" style="margin-bottom:12px;">
+                  <input type="file" id="fileInput" accept="video/*" />
+                </div>
+                <div class="row" style="margin-bottom:12px;">
+                  <button class="btn primary" id="uploadBtn">Upload</button>
+                  <button class="btn" id="demoBtn">Add Demo Video</button>
+                </div>
+                <div class="small" id="uploadHelp"></div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="cardHeader">
+                <div style="min-width:0">
+                  <div class="title">Tips</div>
+                  <div class="subtitle">Best practice for R2 + D1</div>
+                </div>
+              </div>
+              <div class="cardBody">
+                <ul class="small" style="margin:0; padding-left:18px;">
+                  <li>Use <b>presigned upload URLs</b> for R2 (avoid proxying large files).</li>
+                  <li>Store only <b>metadata</b> in D1 (title, key, createdAt, tags).</li>
+                  <li>For playback, use a <b>signed GET URL</b> or a CDN in front of R2.</li>
+                  <li>Set strict CORS on the Worker (your Pages domain only).</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Notes -->
+        <section id="tab-notes" class="hidden">
+          <div class="twoCol">
+            <div class="card">
+              <div class="cardHeader">
+                <div style="min-width:0">
+                  <div class="title">Documents</div>
+                  <div class="subtitle">Click to edit</div>
+                </div>
+                <button class="btn" id="newNoteBtn">New Doc</button>
+              </div>
+              <div class="cardBody">
+                <div class="list" id="notesList"></div>
+                <div class="small" id="emptyNotes" style="margin-top:10px; display:none;">
+                  No notes yet. Create one with <b>New Doc</b>.
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="cardHeader">
+                <div style="min-width:0">
+                  <div class="title" id="noteTitleLabel">Editor</div>
+                  <div class="subtitle" id="noteMeta">Select a doc to start</div>
+                </div>
+                <div class="row">
+                  <button class="btn danger" id="deleteNoteBtn" disabled>Delete</button>
+                  <button class="btn good" id="saveNoteBtn" disabled>Save</button>
+                </div>
+              </div>
+
+              <div class="cardBody">
+                <div class="toolbar" id="toolbar">
+                  <button class="tool" data-cmd="bold"><b>B</b></button>
+                  <button class="tool" data-cmd="italic"><i>I</i></button>
+                  <button class="tool" data-cmd="underline"><u>U</u></button>
+                  <button class="tool" data-cmd="insertUnorderedList">• List</button>
+                  <button class="tool" data-cmd="insertOrderedList">1. List</button>
+                  <button class="tool" data-cmd="formatBlock" data-arg="H2">H2</button>
+                  <button class="tool" data-cmd="formatBlock" data-arg="P">P</button>
+                  <label class="tool" title="Text color">
+                    <input type="color" id="colorPicker" />
+                  </label>
+                  <button class="tool" id="imgBtn">Insert Image</button>
+                  <input type="file" id="imgInput" accept="image/*" class="hidden" />
+                </div>
+
+                <div contenteditable="true" class="editor" id="editor" spellcheck="true"></div>
+                <div class="small" style="margin-top:10px;">
+                  In local mode, images embed as Data URLs. In API mode, you’ll want to store images in R2 and embed by URL.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- News -->
+        <section id="tab-news" class="hidden">
+          <div class="twoCol">
+            <div class="card">
+              <div class="cardHeader">
+                <div style="min-width:0">
+                  <div class="title">Sources</div>
+                  <div class="subtitle">Pick one to open inside TSE</div>
+                </div>
+              </div>
+              <div class="cardBody">
+                <div class="list" id="newsList"></div>
+                <div class="small" style="margin-top:10px;">
+                  Some sites block embedding in iframes. If a source won’t load, open it normally or use an RSS endpoint through your Worker.
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="cardHeader">
+                <div style="min-width:0">
+                  <div class="title">Quick actions</div>
+                  <div class="subtitle">RSS-friendly mode recommended</div>
+                </div>
+              </div>
+              <div class="cardBody">
+                <div class="row" style="margin-bottom:10px;">
+                  <button class="btn primary" id="openNewsModalBtn">Open Selected</button>
+                  <button class="btn" id="openInNewTabBtn">Open New Tab</button>
+                </div>
+                <div class="small" id="newsInfo">Select a source on the left.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Account -->
+        <section id="tab-account" class="hidden">
+          <div class="grid" style="grid-template-columns: 1fr 1fr; align-items:start;">
+            <div class="card">
+              <div class="cardHeader">
+                <div style="min-width:0">
+                  <div class="title">API Mode</div>
+                  <div class="subtitle">Connect GitHub Pages → Cloudflare Worker (R2/D1)</div>
+                </div>
+              </div>
+              <div class="cardBody">
+                <div class="small">If you leave API base empty, TSE runs in LocalStorage mode.</div>
+                <div class="row" style="margin-top:12px;">
+                  <input class="input" id="apiBase" placeholder="API Base (e.g., https://tse-api.yourdomain.com)" style="flex:1; width:auto;" />
+                </div>
+                <div class="row" style="margin-top:10px;">
+                  <input class="input" id="apiToken" placeholder="Optional Bearer token (dev)" style="flex:1; width:auto;" />
+                </div>
+                <div class="row" style="margin-top:10px;">
+                  <button class="btn primary" id="saveApiBtn">Save</button>
+                  <button class="btn danger" id="clearApiBtn">Clear</button>
+                </div>
+
+                <div class="small" style="margin-top:10px;">
+                  Recommended: implement real auth (email/pass + session cookie) rather than static tokens.
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="cardHeader">
+                <div style="min-width:0">
+                  <div class="title">Data</div>
+                  <div class="subtitle">Export / Import / Reset</div>
+                </div>
+              </div>
+              <div class="cardBody">
+                <div class="row" style="margin-bottom:10px;">
+                  <button class="btn" id="exportDataBtn">Export JSON</button>
+                  <button class="btn" id="importDataBtn">Import JSON</button>
+                  <input type="file" id="importFile" accept="application/json" class="hidden" />
+                </div>
+                <div class="row">
+                  <button class="btn danger" id="resetBtn">Reset Local Data</button>
+                </div>
+                <div class="small" style="margin-top:10px;">
+                  In API mode, export/import can call your Worker endpoints instead of LocalStorage.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px;">
+            <div class="cardHeader">
+              <div style="min-width:0">
+                <div class="title">R2 / D1 checklist</div>
+                <div class="subtitle">What your Worker should provide</div>
+              </div>
+            </div>
+            <div class="cardBody">
+              <ul class="small" style="margin:0; padding-left:18px;">
+                <li><span class="goodText">POST</span> <code>/v1/videos/init-upload</code> → returns <code>{ uploadUrl, key }</code></li>
+                <li><span class="goodText">POST</span> <code>/v1/videos/complete</code> → stores metadata in D1</li>
+                <li><span class="goodText">GET</span> <code>/v1/videos</code> → list videos metadata</li>
+                <li><span class="goodText">GET</span> <code>/v1/videos/:id/play</code> → returns <code>{ url }</code> (signed)</li>
+                <li><span class="goodText">GET</span> <code>/v1/notes</code>, <span class="goodText">POST</span> <code>/v1/notes</code>, <span class="goodText">PUT</span> <code>/v1/notes/:id</code>, <span class="goodText">DELETE</span> <code>/v1/notes/:id</code></li>
+              </ul>
+            </div>
+          </div>
+        </section>
       </div>
-    </div>
-
-    <div class="tabs">
-      <div class="tab active" data-tab="videos">Videos</div>
-      <div class="tab" data-tab="notes">Notes</div>
-      <div class="tab" data-tab="news">News</div>
-      <div class="tab" data-tab="bible">Daily Bible Study</div>
-    </div>
-
-    <!-- VIDEOS -->
-    <section id="tab-videos">
-      <div class="grid">
-        <div class="panel">
-          <h2>Upload video</h2>
-          <p class="hint">Shared — appears for everyone using this site</p>
-
-          <div class="field">
-            <label>Video file (max ~500MB recommended)</label>
-            <input type="file" id="file" accept="video/*" />
-          </div>
-
-          <div class="field">
-            <label>Title</label>
-            <input id="title" placeholder="e.g., NQ Scalps — Jan 5" />
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label>Owner</label>
-              <input id="owner" placeholder="Aiden" />
-            </div>
-            <div class="field">
-              <label>Sort tag</label>
-              <input id="tag" placeholder="Trading / Review / Setup" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label>Description Q1</label>
-              <input id="q1" placeholder="What was the setup?" />
-            </div>
-            <div class="field">
-              <label>Description Q2</label>
-              <input id="q2" placeholder="What did you learn?" />
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Notes (optional)</label>
-            <textarea id="videoNotes" placeholder="Write notes attached to this video..."></textarea>
-          </div>
-
-          <div class="field">
-            <label>Folder</label>
-            <select id="folderSelect"></select>
-          </div>
-
-          <div class="row">
-            <button class="btn primary" id="uploadBtn">Upload</button>
-            <button class="btn" id="clearBtn">Clear</button>
-          </div>
-
-          <div class="muted" style="margin-top:10px;">
-            Tip: Drag any video card onto a folder chip. Press <b>/</b> to focus search. Press <b>Esc</b> to close the player.
-          </div>
-          <div class="err" id="uploadErr"></div>
-        </div>
-
-        <div class="panel">
-          <div class="videoTop">
-            <div>
-              <h2>Videos</h2>
-              <p class="hint">YouTube-style cards • hover to preview • drag into folders</p>
-            </div>
-            <button class="btn" id="loadBtn">Load</button>
-          </div>
-
-          <div class="searchRow">
-            <input id="search" placeholder="Search videos by title, owner, tag, notes..." />
-            <select id="sortSelect" style="max-width:200px;">
-              <option value="newest">Newest</option>
-              <option value="oldest">Oldest</option>
-            </select>
-            <label class="muted" style="display:flex; gap:8px; align-items:center;">
-              <input type="checkbox" id="autoLoad" checked />
-              Auto-load
-            </label>
-          </div>
-
-          <div class="chips" id="folderChips"></div>
-
-          <div id="videosInfo" class="muted"></div>
-          <div class="err" id="videosErr"></div>
-
-          <div class="cards" id="cards"></div>
-          <div class="empty" id="empty" style="display:none;">No videos. Upload one, then click Load.</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- NOTES DOCS -->
-    <section id="tab-notes" style="display:none;">
-      <div class="panel">
-        <h2>Notes (Docs)</h2>
-        <p class="hint">Create rich “docs” with formatting + images. Autosaves. Stored in D1.</p>
-
-        <div class="docsGrid">
-          <div>
-            <div class="row" style="margin-bottom:10px;">
-              <button class="btn primary" id="newDocBtn">+ New doc</button>
-              <button class="btn" id="refreshDocsBtn">Refresh</button>
-            </div>
-            <div id="docList"></div>
-          </div>
-
-          <div>
-            <div class="row" style="margin-bottom:10px;">
-              <input id="docTitle" placeholder="Doc title..." />
-              <button class="btn primary" id="saveDocBtn">Save</button>
-              <button class="btn danger" id="deleteDocBtn">Delete</button>
-            </div>
-
-            <div class="toolbar">
-              <button class="tool" data-cmd="bold"><b>B</b></button>
-              <button class="tool" data-cmd="italic"><i>I</i></button>
-              <button class="tool" data-cmd="underline"><u>U</u></button>
-
-              <span class="tool">
-                Size
-                <select id="fontSizeSel">
-                  <option value="12px">12</option>
-                  <option value="14px" selected>14</option>
-                  <option value="16px">16</option>
-                  <option value="18px">18</option>
-                  <option value="22px">22</option>
-                  <option value="28px">28</option>
-                </select>
-              </span>
-
-              <span class="tool">
-                Text
-                <input type="color" id="textColor" value="#ffffff" />
-              </span>
-
-              <span class="tool">
-                Highlight
-                <input type="color" id="hiliteColor" value="#8b5cf6" />
-              </span>
-
-              <button class="tool" data-cmd="justifyLeft">Left</button>
-              <button class="tool" data-cmd="justifyCenter">Center</button>
-              <button class="tool" data-cmd="justifyRight">Right</button>
-
-              <span class="tool">
-                <input type="file" id="imgInsert" accept="image/*" style="max-width:180px;" />
-              </span>
-            </div>
-
-            <div id="editor" class="editor" contenteditable="true"></div>
-            <div class="muted" style="margin-top:10px;">
-              Image scaling: click an image, drag the bottom-right handle.
-            </div>
-            <div class="err" id="docsErr"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- NEWS -->
-    <section id="tab-news" style="display:none;">
-      <div class="panel">
-        <h2>News</h2>
-        <p class="hint">Choose a source. It opens in an in-app modal. If the site blocks embeds, you’ll get an “Open in new tab” fallback.</p>
-
-        <div class="row" style="margin-bottom:10px;">
-          <select id="newsSource"></select>
-          <button class="btn primary" id="openNewsBtn">Open</button>
-        </div>
-
-        <div class="muted">
-          Reliable sources included by default: central banks / regulators / major finance portals (plus Forex Factory).
-        </div>
-      </div>
-    </section>
-
-    <!-- BIBLE -->
-    <section id="tab-bible" style="display:none;">
-      <div class="panel">
-        <h2>Daily Bible Study</h2>
-        <p class="hint">A real lesson: Read → Observe → Interpret → Apply → Prayer. Generates from passage text + saves your journal per day.</p>
-
-        <div class="row">
-          <div class="field">
-            <label>Date</label>
-            <input id="bibleDate" />
-          </div>
-          <div class="field" style="flex:2;">
-            <label>Verse reference</label>
-            <input id="bibleRef" placeholder="John 3:16" />
-          </div>
-        </div>
-
-        <div class="row" style="margin-top:8px;">
-          <button class="btn" id="verseOfDayBtn">Verse of the day</button>
-          <button class="btn primary" id="genLessonBtn">Generate lesson</button>
-          <button class="btn" id="loadJournalBtn">Load journal</button>
-          <button class="btn primary" id="saveJournalBtn">Save journal</button>
-        </div>
-
-        <div class="field" style="margin-top:12px;">
-          <label>Lesson</label>
-          <textarea id="lessonBox" style="min-height:220px;" placeholder='Hit "Generate lesson" to load today’s study.'></textarea>
-        </div>
-
-        <div class="field">
-          <label>Journal (saved per day)</label>
-          <textarea id="journalBox" style="min-height:220px;" placeholder="Write your response: what you learned, conviction, action step, prayer..."></textarea>
-        </div>
-
-        <div class="err" id="bibleErr"></div>
-      </div>
-    </section>
+    </main>
   </div>
 
-  <!-- video modal -->
+  <!-- Modal -->
   <div class="overlay" id="overlay">
     <div class="modal">
       <div class="modalTop">
-        <div>
-          <div class="modalTitle" id="modalTitle">Video</div>
-          <div class="muted" id="modalSub"></div>
+        <div class="row" style="min-width:0;">
+          <div class="title" id="modalTitle">Viewer</div>
+          <span class="chip" id="modalChip">Preview</span>
         </div>
-        <div class="modalActions">
-          <button class="btn small" id="copyStreamBtn">Copy stream link</button>
-          <a class="btn small" id="openStreamBtn" target="_blank" rel="noopener">Open stream</a>
-          <button class="btn small danger" id="deleteVideoBtn">Delete</button>
-          <button class="btn small" id="closeModalBtn">Close</button>
+        <div class="row">
+          <button class="btn" id="modalOpenNewTab">Open new tab</button>
+          <button class="btn danger" id="modalClose">Close</button>
         </div>
       </div>
-      <div class="playerWrap">
-        <video id="player" controls playsinline preload="metadata"></video>
-      </div>
-      <div class="notesPanel" id="videoMetaBoxes">
-        <div class="box">
-          <h3>Q1</h3>
-          <p id="boxQ1"></p>
-        </div>
-        <div class="box">
-          <h3>Q2</h3>
-          <p id="boxQ2"></p>
-        </div>
-        <div class="box">
-          <h3>Notes</h3>
-          <p id="boxNotes"></p>
-        </div>
-      </div>
+      <div class="modalBody" id="modalBody"></div>
     </div>
   </div>
 
-  <!-- news modal -->
-  <div class="overlay" id="newsOverlay">
-    <div class="modal">
-      <div class="modalTop">
-        <div>
-          <div class="modalTitle" id="newsTitle">News</div>
-          <div class="muted" id="newsSub"></div>
-        </div>
-        <div class="modalActions">
-          <a class="btn small" id="newsOpenTab" target="_blank" rel="noopener">Open in new tab</a>
-          <button class="btn small" id="closeNewsBtn">Close</button>
-        </div>
-      </div>
-      <div class="playerWrap">
-        <iframe id="newsFrame" class="iframeBox" referrerpolicy="no-referrer"></iframe>
-        <div class="err" id="newsErr"></div>
-      </div>
-    </div>
-  </div>
+  <div class="toast" id="toast"></div>
 
-  <!-- toast -->
-  <div class="toast" id="toast">
-    <div class="t" id="toastTop"></div>
-    <div class="m" id="toastMsg"></div>
-  </div>
+  <script>
+    /***********************
+     * CONFIG
+     ***********************/
+    const LS_KEY = "tse_overhaul_v1";
+    const LS_API = "tse_api_cfg_v1";
 
-<script>
-  // ------------ Config ------------
-  const API_BASE = location.origin.replace(/^http:/, "https:"); // same site
-  const API = (p) => `${API_BASE}${p}`;
+    const DEFAULT_NEWS = [
+      { name: "Forex Factory", url: "https://www.forexfactory.com/", desc: "Economic calendar + forums (iframe may be blocked)." },
+      { name: "Investing.com Calendar", url: "https://www.investing.com/economic-calendar/", desc: "Economic calendar (iframe may be blocked)." },
+      { name: "CME FedWatch", url: "https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html", desc: "Rate probability tool." },
+      { name: "Reuters Markets", url: "https://www.reuters.com/markets/", desc: "Top market headlines." },
+      { name: "WSJ Markets", url: "https://www.wsj.com/news/markets", desc: "Markets section (paywall possible)." }
+    ];
 
-  // ------------ Helpers ------------
-  const $ = (id) => document.getElementById(id);
-  function fmtDate(ts){
-    try{
-      const d = new Date(Number(ts));
-      return d.toLocaleString();
-    }catch{ return ""; }
-  }
-  function toast(top, msg){
-    $("toastTop").textContent = top || "";
-    $("toastMsg").textContent = msg || "";
-    $("toast").classList.add("show");
-    clearTimeout(window.__t);
-    window.__t = setTimeout(()=> $("toast").classList.remove("show"), 2200);
-  }
-  async function safeFetchJson(url, opts){
-    const res = await fetch(url, opts);
-    const text = await res.text();
-    let j = null;
-    try{ j = JSON.parse(text); }catch{ j = { error: "Non-JSON response", details: text }; }
-    if (!res.ok) throw new Error(j?.error ? `${j.error}${j.details ? " — " + j.details : ""}` : `HTTP ${res.status}`);
-    return j;
-  }
+    /***********************
+     * STATE
+     ***********************/
+    let state = loadState();
+    let apiCfg = loadApiCfg();
 
-  // ------------ API status ------------
-  async function checkApi(){
-    try{
-      const j = await safeFetchJson(API("/api/health"));
-      $("apiText").textContent = "API: online";
-      $("led").classList.add("ok");
-      $("brandDot").style.background = "rgba(34,197,94,.55)";
-      return j;
-    }catch(e){
-      $("apiText").textContent = "API: offline";
-      $("led").classList.remove("ok");
-      $("brandDot").style.background = "rgba(239,68,68,.35)";
-      return null;
-    }
-  }
+    let currentTab = "videos";
+    let videoSort = "newest";
+    let selectedNoteId = null;
+    let selectedNews = DEFAULT_NEWS[0];
 
-  $("openApiBtn").onclick = () => window.open(API("/api/health"), "_blank");
-  $("checkApiBtn").onclick = async () => { await checkApi(); toast("Status", $("apiText").textContent); };
-  $("refreshBtn").onclick = () => location.reload();
-
-  // ------------ Tabs ------------
-  document.querySelectorAll(".tab").forEach(t => {
-    t.addEventListener("click", () => {
-      document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
-      t.classList.add("active");
-      const tab = t.dataset.tab;
-
-      ["videos","notes","news","bible"].forEach(k => {
-        document.getElementById(`tab-${k}`).style.display = (k === tab) ? "" : "none";
-      });
-
-      // nice little “tab switch” toast
-      toast("Tab", tab.toUpperCase());
-
-      // auto refresh lists
-      if (tab === "notes") loadDocs();
-      if (tab === "videos" && $("autoLoad").checked) loadVideos();
-    });
-  });
-
-  // ------------ Videos state ------------
-  let VIDEOS = [];
-  let FOLDERS = ["Unsorted"];
-  let activeFolder = "";
-  let activeVideo = null;
-
-  function computeFoldersFromVideos(videos){
-    const set = new Set(["Unsorted"]);
-    for (const v of videos){
-      const f = (v.folder || "Unsorted").trim() || "Unsorted";
-      set.add(f);
-    }
-    return Array.from(set);
-  }
-
-  async function loadFolders(){
-    // Load from API + also merge from videos later
-    try{
-      const j = await safeFetchJson(API("/api/folders"));
-      const apiFolders = (j.folders || []).map(f => f.name).filter(Boolean);
-      FOLDERS = Array.from(new Set(["Unsorted", ...apiFolders]));
-    }catch{
-      FOLDERS = ["Unsorted"];
-    }
-    renderFolderSelect();
-    renderFolderChips();
-  }
-
-  function renderFolderSelect(){
-    const sel = $("folderSelect");
-    sel.innerHTML = "";
-    for (const f of FOLDERS){
-      const opt = document.createElement("option");
-      opt.value = f;
-      opt.textContent = f;
-      sel.appendChild(opt);
-    }
-  }
-
-  function renderFolderChips(){
-    const wrap = $("folderChips");
-    wrap.innerHTML = "";
-
-    const all = document.createElement("div");
-    all.className = "chip" + (activeFolder === "" ? " active" : "");
-    all.innerHTML = `All <span class="count">${VIDEOS.length}</span>`;
-    all.onclick = () => { activeFolder = ""; renderFolderChips(); renderVideos(); };
-    wrap.appendChild(all);
-
-    // folder chips
-    const counts = {};
-    for (const v of VIDEOS){
-      const f = (v.folder || "Unsorted").trim() || "Unsorted";
-      counts[f] = (counts[f] || 0) + 1;
-    }
-
-    for (const f of FOLDERS){
-      if (f === "Unsorted" || counts[f]) {
-        const chip = document.createElement("div");
-        chip.className = "chip" + (activeFolder === f ? " active" : "");
-        chip.innerHTML = `${f} <span class="count">${counts[f] || 0}</span>`;
-        chip.dataset.folder = f;
-        chip.onclick = () => { activeFolder = (activeFolder === f ? "" : f); renderFolderChips(); renderVideos(); };
-
-        // allow drop
-        chip.ondragover = (e) => { e.preventDefault(); chip.style.borderColor = "rgba(139,92,246,.55)"; };
-        chip.ondragleave = () => { chip.style.borderColor = ""; };
-        chip.ondrop = async (e) => {
-          e.preventDefault();
-          chip.style.borderColor = "";
-          const vid = e.dataTransfer.getData("text/video-id");
-          if (!vid) return;
-          await moveVideoToFolder(vid, f);
-        };
-
-        wrap.appendChild(chip);
-      }
-    }
-
-    // + folder quick create
-    const add = document.createElement("div");
-    add.className = "chip";
-    add.textContent = "+ Folder";
-    add.onclick = async () => {
-      const name = prompt("Folder name?");
-      if (!name) return;
+    /***********************
+     * HELPERS
+     ***********************/
+    function uid(){ return crypto.randomUUID(); }
+    function nowISO(){ return new Date().toISOString(); }
+    function fmtDate(iso){
       try{
-        await safeFetchJson(API("/api/folders"), {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ name })
+        const d = new Date(iso);
+        return d.toLocaleString(undefined, { month:"short", day:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
+      }catch{ return iso; }
+    }
+
+    function toast(msg){
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(()=> el.classList.remove("show"), 1700);
+    }
+
+    function setStatus(text, ok=true){
+      document.getElementById("statusText").textContent = text;
+      const dot = document.getElementById("statusDot");
+      dot.style.background = ok ? "rgba(34,197,94,.9)" : "rgba(239,68,68,.9)";
+      dot.style.boxShadow = ok ? "0 0 18px rgba(34,197,94,.35)" : "0 0 18px rgba(239,68,68,.35)";
+    }
+
+    function saveState(){
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+      updateCounts();
+    }
+    function loadState(){
+      const raw = localStorage.getItem(LS_KEY);
+      if(!raw){
+        return { videos: [], notes: [], news: DEFAULT_NEWS };
+      }
+      try{
+        const parsed = JSON.parse(raw);
+        parsed.videos ||= [];
+        parsed.notes ||= [];
+        parsed.news ||= DEFAULT_NEWS;
+        return parsed;
+      }catch{
+        return { videos: [], notes: [], news: DEFAULT_NEWS };
+      }
+    }
+
+    function saveApiCfg(){
+      localStorage.setItem(LS_API, JSON.stringify(apiCfg));
+      updateModePill();
+    }
+    function loadApiCfg(){
+      const raw = localStorage.getItem(LS_API);
+      if(!raw) return { base:"", token:"" };
+      try{
+        const p = JSON.parse(raw);
+        return { base: p.base || "", token: p.token || "" };
+      }catch{
+        return { base:"", token:"" };
+      }
+    }
+
+    function isApiMode(){
+      return !!(apiCfg.base && apiCfg.base.trim());
+    }
+
+    async function apiFetch(path, opts={}){
+      const base = apiCfg.base.replace(/\/+$/,"");
+      const url = base + path;
+      const headers = Object.assign({ "Content-Type":"application/json" }, opts.headers || {});
+      if(apiCfg.token) headers["Authorization"] = "Bearer " + apiCfg.token;
+      const res = await fetch(url, { ...opts, headers });
+      if(!res.ok){
+        const t = await res.text().catch(()=> "");
+        throw new Error(`API ${res.status}: ${t || res.statusText}`);
+      }
+      const ct = res.headers.get("content-type") || "";
+      if(ct.includes("application/json")) return res.json();
+      return res.text();
+    }
+
+    function sanitizeTitle(s){
+      return (s || "").trim().slice(0, 120) || "Untitled";
+    }
+
+    function filterTextMatches(obj, q){
+      if(!q) return true;
+      q = q.toLowerCase();
+      const hay = JSON.stringify(obj).toLowerCase();
+      return hay.includes(q);
+    }
+
+    /***********************
+     * UI TAB MANAGEMENT
+     ***********************/
+    const nav = document.getElementById("nav");
+    nav.addEventListener("click", (e)=>{
+      const btn = e.target.closest(".navbtn");
+      if(!btn) return;
+      switchTab(btn.dataset.tab);
+    });
+
+    function switchTab(tab){
+      currentTab = tab;
+
+      document.querySelectorAll(".navbtn").forEach(b=>{
+        b.classList.toggle("active", b.dataset.tab === tab);
+      });
+
+      document.querySelectorAll("[id^='tab-']").forEach(s=>{
+        s.classList.add("hidden");
+      });
+      document.getElementById("tab-" + tab).classList.remove("hidden");
+
+      const title = document.getElementById("viewTitle");
+      const hint = document.getElementById("viewHint");
+      const newBtn = document.getElementById("newBtn");
+      const primaryBtn = document.getElementById("primaryBtn");
+
+      if(tab === "videos"){
+        title.textContent = "Videos";
+        hint.textContent = "Hover a card to preview. Click to open.";
+        newBtn.textContent = "New";
+        primaryBtn.textContent = "Upload";
+        primaryBtn.onclick = ()=> switchTab("upload");
+      }else if(tab === "upload"){
+        title.textContent = "Upload";
+        hint.textContent = "Add MP4 clips (Local or R2).";
+        newBtn.textContent = "Demo";
+        primaryBtn.textContent = "Upload";
+        newBtn.onclick = addDemoVideo;
+        primaryBtn.onclick = handleUpload;
+      }else if(tab === "notes"){
+        title.textContent = "Notes";
+        hint.textContent = "Docs + images. Save often.";
+        newBtn.textContent = "New Doc";
+        primaryBtn.textContent = "Save";
+        newBtn.onclick = newNote;
+        primaryBtn.onclick = saveNote;
+      }else if(tab === "news"){
+        title.textContent = "News";
+        hint.textContent = "Pick a source. Some sites block embedding.";
+        newBtn.textContent = "Open";
+        primaryBtn.textContent = "New Tab";
+        newBtn.onclick = ()=> openNewsModal(selectedNews);
+        primaryBtn.onclick = ()=> window.open(selectedNews.url, "_blank", "noopener,noreferrer");
+      }else if(tab === "account"){
+        title.textContent = "Account";
+        hint.textContent = "Connect your Worker API for R2/D1.";
+        newBtn.textContent = "Export";
+        primaryBtn.textContent = "Reset";
+        newBtn.onclick = exportData;
+        primaryBtn.onclick = resetLocal;
+      }
+
+      render();
+    }
+
+    /***********************
+     * VIDEOS
+     ***********************/
+    function updateCounts(){
+      document.getElementById("countVideos").textContent = `${state.videos.length} videos`;
+      document.getElementById("countNotes").textContent = `${state.notes.length} notes`;
+    }
+
+    function sortVideos(videos){
+      const arr = [...videos];
+      if(videoSort === "newest") arr.sort((a,b)=> (b.createdAt||"").localeCompare(a.createdAt||""));
+      if(videoSort === "oldest") arr.sort((a,b)=> (a.createdAt||"").localeCompare(b.createdAt||""));
+      if(videoSort === "title") arr.sort((a,b)=> (a.title||"").localeCompare(b.title||""));
+      return arr;
+    }
+
+    function renderVideos(){
+      const q = document.getElementById("search").value.trim().toLowerCase();
+      const grid = document.getElementById("videoGrid");
+      grid.innerHTML = "";
+
+      const filtered = sortVideos(state.videos).filter(v => filterTextMatches(v, q));
+      document.getElementById("emptyVideos").style.display = filtered.length ? "none" : "block";
+
+      for(const v of filtered){
+        const el = document.createElement("div");
+        el.className = "card videoCard";
+        el.innerHTML = `
+          <div class="thumb">
+            <video muted playsinline preload="metadata"></video>
+            <div class="badge">${fmtDate(v.createdAt || "")}</div>
+          </div>
+          <div class="cardBody">
+            <div class="rowBetween">
+              <div style="min-width:0">
+                <div style="font-weight:900; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                  ${escapeHtml(v.title || "Untitled")}
+                </div>
+                <div class="small" style="margin-top:4px;">${escapeHtml(v.note || "Click to open")}</div>
+              </div>
+              <div class="row" style="flex:none;">
+                <span class="chip">${escapeHtml(v.source || (isApiMode() ? "R2" : "Local"))}</span>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // attach preview src (only if local dataUrl or a direct url exists)
+        const vid = el.querySelector("video");
+        const previewSrc = v.previewUrl || v.url || v.dataUrl || "";
+        if(previewSrc){
+          vid.src = previewSrc;
+        }
+
+        el.addEventListener("mouseenter", ()=>{
+          if(vid && vid.src){
+            vid.currentTime = 0;
+            vid.play().catch(()=>{});
+          }
         });
-        toast("Folder", `Created: ${name}`);
-        await loadFolders();
-        // keep selected
-      }catch(e){
-        toast("Error", String(e.message || e));
+        el.addEventListener("mouseleave", ()=>{
+          if(vid){
+            vid.pause();
+          }
+        });
+
+        el.addEventListener("click", async ()=>{
+          try{
+            // In API mode, request a signed playback URL.
+            if(isApiMode() && v.id){
+              setStatus("Loading playback…");
+              const r = await apiFetch(`/v1/videos/${encodeURIComponent(v.id)}/play`, { method:"GET" });
+              const url = r.url || r;
+              openVideoModal(v.title, url, v);
+              setStatus("Ready");
+            }else{
+              openVideoModal(v.title, v.url || v.dataUrl || v.previewUrl, v);
+            }
+          }catch(err){
+            setStatus("Playback failed", false);
+            toast(err.message || "Playback failed");
+          }
+        });
+
+        grid.appendChild(el);
       }
-    };
-    wrap.appendChild(add);
-  }
-
-  async function loadVideos(){
-    $("videosErr").textContent = "";
-    $("cards").innerHTML = "";
-    $("empty").style.display = "none";
-    $("videosInfo").textContent = "Loading...";
-    try{
-      const j = await safeFetchJson(API("/api/videos"));
-      VIDEOS = j.videos || [];
-
-      // merge folders
-      const merged = new Set([...FOLDERS, ...computeFoldersFromVideos(VIDEOS)]);
-      FOLDERS = Array.from(merged);
-      renderFolderSelect();
-      renderFolderChips();
-      renderVideos();
-
-      $("videosInfo").textContent = `${VIDEOS.length} item(s)`;
-      toast("Videos", "Loaded");
-    }catch(e){
-      $("videosInfo").textContent = "";
-      $("videosErr").textContent = String(e.message || e);
-      $("empty").style.display = "block";
-    }
-  }
-
-  function filteredVideos(){
-    const q = ($("search").value || "").trim().toLowerCase();
-    let arr = VIDEOS.slice();
-
-    if (activeFolder){
-      arr = arr.filter(v => ((v.folder || "Unsorted").toLowerCase() === activeFolder.toLowerCase()));
-    }
-    if (q){
-      arr = arr.filter(v => {
-        const s = `${v.title||""} ${v.owner||""} ${v.tag||""} ${v.notes||""}`.toLowerCase();
-        return s.includes(q);
-      });
     }
 
-    const sort = $("sortSelect").value;
-    arr.sort((a,b) => {
-      const A = Number(a.createdAt||0), B = Number(b.createdAt||0);
-      return sort === "oldest" ? (A-B) : (B-A);
-    });
-
-    return arr;
-  }
-
-  function renderVideos(){
-    const arr = filteredVideos();
-    const cards = $("cards");
-    cards.innerHTML = "";
-
-    $("videosInfo").textContent = `${arr.length} item(s)`;
-
-    if (!arr.length){
-      $("empty").style.display = "block";
-      return;
-    }
-    $("empty").style.display = "none";
-
-    for (const v of arr){
-      const card = document.createElement("div");
-      card.className = "card";
-      card.draggable = true;
-
-      card.ondragstart = (e) => {
-        e.dataTransfer.setData("text/video-id", v.id);
-        e.dataTransfer.effectAllowed = "move";
-      };
-
-      card.onclick = () => openVideo(v);
-
-      const thumb = document.createElement("div");
-      thumb.className = "thumb";
-      const play = document.createElement("div");
-      play.className = "play";
-      thumb.appendChild(play);
-
-      const meta = document.createElement("div");
-      meta.className = "meta";
-      meta.innerHTML = `
-        <div class="title">${escapeHtml(v.title || "Untitled")}</div>
-        <div class="tags">
-          ${v.owner ? `<span class="badge">${escapeHtml(v.owner)}</span>` : `<span class="badge">No owner</span>`}
-          ${v.tag ? `<span class="badge">${escapeHtml(v.tag)}</span>` : `<span class="badge">No tag</span>`}
-          <span class="badge folder">📁 ${escapeHtml(v.folder || "Unsorted")}</span>
-        </div>
-        <div class="smallLine">
-          <span>${escapeHtml(fmtDate(v.createdAt || 0))}</span>
-          <span>${escapeHtml((v.id || "").replace(/^v_/, ""))}</span>
-        </div>
-      `;
-
-      card.appendChild(thumb);
-      card.appendChild(meta);
-      cards.appendChild(card);
-
-      // Hover preview (lightweight): set video poster later if you add thumbnails.
-      // For now, we keep hover “feel” via animation only (fast + stable).
-    }
-  }
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, c => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[c]));
-  }
-
-  async function moveVideoToFolder(videoId, folderName){
-    try{
-      await safeFetchJson(API(`/api/videos/${encodeURIComponent(videoId)}`), {
-        method:"PATCH",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ folder: folderName })
-      });
-      const v = VIDEOS.find(x => x.id === videoId);
-      if (v) v.folder = folderName;
-      toast("Moved", `→ ${folderName}`);
-      renderFolderChips();
-      renderVideos();
-    }catch(e){
-      toast("Error", String(e.message || e));
-    }
-  }
-
-  // Upload
-  $("uploadBtn").onclick = async () => {
-    $("uploadErr").textContent = "";
-    const file = $("file").files?.[0];
-    if (!file) { $("uploadErr").textContent = "Pick a file first."; return; }
-
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("title", $("title").value || "");
-    fd.append("owner", $("owner").value || "");
-    fd.append("tag", $("tag").value || "");
-    fd.append("q1", $("q1").value || "");
-    fd.append("q2", $("q2").value || "");
-    fd.append("notes", $("videoNotes").value || "");
-    fd.append("folder", $("folderSelect").value || "Unsorted");
-
-    $("uploadBtn").disabled = true;
-    $("uploadBtn").textContent = "Uploading...";
-
-    try{
-      await safeFetchJson(API("/api/videos/upload"), { method:"POST", body: fd });
-      toast("Upload", "Complete");
-      clearUploadForm();
-      if ($("autoLoad").checked) await loadVideos();
-    }catch(e){
-      $("uploadErr").textContent = String(e.message || e);
-      toast("Upload failed", "Check error");
-    }finally{
-      $("uploadBtn").disabled = false;
-      $("uploadBtn").textContent = "Upload";
-    }
-  };
-
-  function clearUploadForm(){
-    $("file").value = "";
-    $("title").value = "";
-    $("owner").value = "";
-    $("tag").value = "";
-    $("q1").value = "";
-    $("q2").value = "";
-    $("videoNotes").value = "";
-    $("folderSelect").value = "Unsorted";
-  }
-  $("clearBtn").onclick = clearUploadForm;
-  $("loadBtn").onclick = loadVideos;
-
-  // search shortcuts
-  $("search").addEventListener("input", () => renderVideos());
-  $("sortSelect").addEventListener("change", () => renderVideos());
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "/") {
-      e.preventDefault();
-      $("search").focus();
-    }
-    if (e.key === "Escape") {
-      closeVideo();
-      closeNews();
-    }
-  });
-
-  // ------------ Video modal / player ------------
-  const overlay = $("overlay");
-  const player = $("player");
-
-  function openVideo(v){
-    activeVideo = v;
-    $("modalTitle").textContent = v.title || "Video";
-    $("modalSub").textContent = `${v.owner || "No owner"} • ${v.tag || "No tag"} • ${fmtDate(v.createdAt || 0)} • ${v.folder || "Unsorted"}`;
-
-    $("boxQ1").textContent = v.q1 || "—";
-    $("boxQ2").textContent = v.q2 || "—";
-    $("boxNotes").textContent = v.notes || "—";
-
-    const streamUrl = API(`/api/videos/${encodeURIComponent(v.id)}/stream`);
-    $("openStreamBtn").href = streamUrl;
-
-    // Force a fresh stream request
-    player.pause();
-    player.removeAttribute("src");
-    player.load();
-    player.src = streamUrl;
-    player.preload = "metadata";
-
-    overlay.classList.add("show");
-  }
-  function closeVideo(){
-    overlay.classList.remove("show");
-    player.pause();
-    player.removeAttribute("src");
-    player.load();
-    activeVideo = null;
-  }
-  $("closeModalBtn").onclick = closeVideo;
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay) closeVideo();
-  });
-
-  $("copyStreamBtn").onclick = async () => {
-    if (!activeVideo) return;
-    const url = API(`/api/videos/${encodeURIComponent(activeVideo.id)}/stream`);
-    try{
-      await navigator.clipboard.writeText(url);
-      toast("Copied", "Stream link");
-    }catch{
-      toast("Copy failed", "Browser blocked clipboard");
-    }
-  };
-
-  $("deleteVideoBtn").onclick = async () => {
-    if (!activeVideo) return;
-    if (!confirm(`Delete "${activeVideo.title || "video"}"?`)) return;
-    try{
-      await safeFetchJson(API(`/api/videos/${encodeURIComponent(activeVideo.id)}`), { method:"DELETE" });
-      toast("Deleted", activeVideo.title || activeVideo.id);
-      closeVideo();
-      await loadVideos();
-    }catch(e){
-      toast("Delete failed", String(e.message || e));
-    }
-  };
-
-  // ------------ Notes Docs (Rich Editor) ------------
-  let DOCS = [];
-  let activeDocId = null;
-  let autosaveTimer = null;
-
-  async function loadDocs(){
-    $("docsErr").textContent = "";
-    try{
-      const j = await safeFetchJson(API("/api/docs"));
-      DOCS = j.docs || [];
-      renderDocList();
-      if (!activeDocId && DOCS.length) {
-        await openDoc(DOCS[0].id);
-      }
-    }catch(e){
-      $("docsErr").textContent = String(e.message || e);
-    }
-  }
-
-  function renderDocList(){
-    const list = $("docList");
-    list.innerHTML = "";
-    for (const d of DOCS){
-      const div = document.createElement("div");
-      div.className = "docListItem" + (d.id === activeDocId ? " active" : "");
-      div.onclick = () => openDoc(d.id);
-      div.innerHTML = `
-        <p class="ttl">${escapeHtml(d.title || "Untitled")}</p>
-        <p class="dt">${escapeHtml(fmtDate(d.updatedAt || d.createdAt || 0))}</p>
-      `;
-      list.appendChild(div);
-    }
-  }
-
-  async function openDoc(id){
-    activeDocId = id;
-    renderDocList();
-    $("docsErr").textContent = "";
-    try{
-      const j = await safeFetchJson(API(`/api/docs/${encodeURIComponent(id)}`));
-      const doc = j.doc;
-      $("docTitle").value = doc.title || "Untitled";
-      $("editor").innerHTML = doc.content_html || "";
-      toast("Doc", "Loaded");
-    }catch(e){
-      $("docsErr").textContent = String(e.message || e);
-    }
-  }
-
-  async function createDoc(){
-    const title = prompt("Doc title?") || "Untitled";
-    try{
-      const j = await safeFetchJson(API("/api/docs"), {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ title, content_html: "" })
-      });
-      toast("Doc", "Created");
-      await loadDocs();
-      await openDoc(j.id);
-    }catch(e){
-      toast("Error", String(e.message || e));
-    }
-  }
-
-  async function saveDoc(showToast = true){
-    if (!activeDocId) return;
-    const title = $("docTitle").value || "Untitled";
-    const content_html = $("editor").innerHTML || "";
-    try{
-      await safeFetchJson(API(`/api/docs/${encodeURIComponent(activeDocId)}`), {
-        method:"PUT",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ title, content_html })
-      });
-      if (showToast) toast("Saved", "Doc updated");
-      await loadDocs();
-    }catch(e){
-      $("docsErr").textContent = String(e.message || e);
-    }
-  }
-
-  async function deleteDoc(){
-    if (!activeDocId) return;
-    if (!confirm("Delete this doc?")) return;
-    try{
-      await safeFetchJson(API(`/api/docs/${encodeURIComponent(activeDocId)}`), { method:"DELETE" });
-      toast("Deleted", "Doc removed");
-      activeDocId = null;
-      $("editor").innerHTML = "";
-      $("docTitle").value = "";
-      await loadDocs();
-    }catch(e){
-      toast("Error", String(e.message || e));
-    }
-  }
-
-  $("newDocBtn").onclick = createDoc;
-  $("refreshDocsBtn").onclick = loadDocs;
-  $("saveDocBtn").onclick = () => saveDoc(true);
-  $("deleteDocBtn").onclick = deleteDoc;
-
-  // toolbar commands
-  document.querySelectorAll(".tool[data-cmd]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const cmd = btn.dataset.cmd;
-      document.execCommand(cmd, false, null);
-      $("editor").focus();
-    });
-  });
-
-  // font size + colors
-  $("fontSizeSel").addEventListener("change", () => {
-    const size = $("fontSizeSel").value;
-    document.execCommand("fontSize", false, "7"); // then restyle
-    // Replace <font size="7"> with spans
-    const editor = $("editor");
-    editor.querySelectorAll('font[size="7"]').forEach(el => {
-      const span = document.createElement("span");
-      span.style.fontSize = size;
-      span.innerHTML = el.innerHTML;
-      el.replaceWith(span);
-    });
-    $("editor").focus();
-  });
-
-  $("textColor").addEventListener("input", () => {
-    document.execCommand("foreColor", false, $("textColor").value);
-    $("editor").focus();
-  });
-
-  $("hiliteColor").addEventListener("input", () => {
-    document.execCommand("hiliteColor", false, $("hiliteColor").value);
-    $("editor").focus();
-  });
-
-  // image insert + resizable handles
-  $("imgInsert").addEventListener("change", async () => {
-    const f = $("imgInsert").files?.[0];
-    if (!f) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const wrap = document.createElement("span");
-      wrap.className = "imgWrap";
-      wrap.contentEditable = "false";
-      wrap.innerHTML = `<img src="${reader.result}" alt="image"/><span class="handle"></span>`;
-      insertNodeAtCursor(wrap);
-      setupImageResize(wrap);
-      $("imgInsert").value = "";
-      $("editor").focus();
-    };
-    reader.readAsDataURL(f);
-  });
-
-  function insertNodeAtCursor(node){
-    const sel = window.getSelection();
-    if (!sel || !sel.rangeCount) {
-      $("editor").appendChild(node);
-      return;
-    }
-    const range = sel.getRangeAt(0);
-    range.deleteContents();
-    range.insertNode(node);
-    // move cursor after node
-    range.setStartAfter(node);
-    range.setEndAfter(node);
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }
-
-  function setupAllImageResizers(){
-    $("editor").querySelectorAll(".imgWrap").forEach(setupImageResize);
-  }
-
-  function setupImageResize(wrap){
-    if (!wrap || wrap.__wired) return;
-    wrap.__wired = true;
-
-    const handle = wrap.querySelector(".handle");
-    const img = wrap.querySelector("img");
-    if (!handle || !img) return;
-
-    let startX=0, startW=0;
-
-    handle.addEventListener("mousedown", (e) => {
-      e.preventDefault();
-      startX = e.clientX;
-      startW = img.getBoundingClientRect().width;
-      const onMove = (ev) => {
-        const dx = ev.clientX - startX;
-        const next = Math.max(120, Math.min(900, startW + dx));
-        img.style.width = next + "px";
-      };
-      const onUp = () => {
-        window.removeEventListener("mousemove", onMove);
-        window.removeEventListener("mouseup", onUp);
-      };
-      window.addEventListener("mousemove", onMove);
-      window.addEventListener("mouseup", onUp);
-    });
-  }
-
-  // autosave
-  $("editor").addEventListener("input", () => {
-    setupAllImageResizers();
-    clearTimeout(autosaveTimer);
-    autosaveTimer = setTimeout(() => saveDoc(false), 900);
-  });
-  $("docTitle").addEventListener("input", () => {
-    clearTimeout(autosaveTimer);
-    autosaveTimer = setTimeout(() => saveDoc(false), 900);
-  });
-
-  // ------------ News ------------
-  const NEWS_SOURCES = [
-    { name: "Forex Factory (Calendar + News)", url: "https://www.forexfactory.com/" },
-    { name: "Federal Reserve (Press Releases)", url: "https://www.federalreserve.gov/newsevents/pressreleases.htm" },
-    { name: "ECB (Press Releases)", url: "https://www.ecb.europa.eu/press/pr/date/html/index.en.html" },
-    { name: "Bank of England (News)", url: "https://www.bankofengland.co.uk/news" },
-    { name: "U.S. Bureau of Labor Statistics (News)", url: "https://www.bls.gov/news.release/" },
-    { name: "SEC (Press Releases)", url: "https://www.sec.gov/news/pressreleases" },
-    { name: "CFTC (Press Releases)", url: "https://www.cftc.gov/PressRoom/PressReleases/index.htm" },
-    { name: "IMF (News)", url: "https://www.imf.org/en/News" }
-  ];
-
-  function initNews(){
-    const sel = $("newsSource");
-    sel.innerHTML = "";
-    for (const s of NEWS_SOURCES){
-      const opt = document.createElement("option");
-      opt.value = s.url;
-      opt.textContent = s.name;
-      sel.appendChild(opt);
-    }
-  }
-
-  const newsOverlay = $("newsOverlay");
-  function openNews(url, name){
-    $("newsErr").textContent = "";
-    $("newsTitle").textContent = name || "News";
-    $("newsSub").textContent = url;
-    $("newsOpenTab").href = url;
-
-    // Attempt iframe embed
-    const frame = $("newsFrame");
-    frame.src = url;
-
-    // Some sites block iframes; detect by timeout + blur heuristic
-    const timer = setTimeout(() => {
-      $("newsErr").textContent =
-        "If this site blocks embeds, use “Open in new tab”. (Many sites set X-Frame-Options / CSP.)";
-    }, 1800);
-
-    frame.onload = () => clearTimeout(timer);
-    newsOverlay.classList.add("show");
-  }
-  function closeNews(){
-    newsOverlay.classList.remove("show");
-    $("newsFrame").src = "about:blank";
-    $("newsErr").textContent = "";
-  }
-  $("closeNewsBtn").onclick = closeNews;
-  newsOverlay.addEventListener("click", (e) => {
-    if (e.target === newsOverlay) closeNews();
-  });
-
-  $("openNewsBtn").onclick = () => {
-    const url = $("newsSource").value;
-    const name = $("newsSource").selectedOptions?.[0]?.textContent || "News";
-    openNews(url, name);
-  };
-
-  // ------------ Bible ------------
-  function initBible(){
-    const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth()+1).padStart(2,"0");
-    const dd = String(d.getDate()).padStart(2,"0");
-    $("bibleDate").value = `${yyyy}-${mm}-${dd}`;
-    $("bibleRef").value = "John 3:16";
-  }
-
-  function lessonToText(lesson){
-    if (!lesson) return "";
-    const s = lesson.steps || {};
-    const out = [];
-    out.push(lesson.title || "Daily Bible Study");
-    out.push("");
-    out.push("READ");
-    out.push(s.read?.instruction || "");
-    out.push("");
-    out.push(s.read?.passage || "");
-    out.push("");
-    out.push("OBSERVE");
-    out.push(s.observe?.instruction || "");
-    (s.observe?.prompts || []).forEach(p => out.push(`- ${p}`));
-    out.push("");
-    out.push("INTERPRET");
-    out.push(s.interpret?.instruction || "");
-    (s.interpret?.prompts || []).forEach(p => out.push(`- ${p}`));
-    out.push("");
-    out.push("APPLY");
-    out.push(s.apply?.instruction || "");
-    (s.apply?.prompts || []).forEach(p => out.push(`- ${p}`));
-    out.push("");
-    out.push("PRAYER");
-    out.push(s.prayer?.instruction || "");
-    (s.prayer?.prompts || []).forEach(p => out.push(`- ${p}`));
-    return out.join("\n");
-  }
-
-  $("genLessonBtn").onclick = async () => {
-    $("bibleErr").textContent = "";
-    const date = $("bibleDate").value.trim();
-    const ref = $("bibleRef").value.trim();
-    if (!ref) { $("bibleErr").textContent = "Enter a reference (e.g., John 3:16)"; return; }
-
-    try{
-      const j = await safeFetchJson(API(`/api/bible/lesson?date=${encodeURIComponent(date)}&ref=${encodeURIComponent(ref)}`));
-      $("lessonBox").value = lessonToText(j.lesson);
-      toast("Bible", "Lesson loaded");
-    }catch(e){
-      $("bibleErr").textContent = String(e.message || e);
-    }
-  };
-
-  $("verseOfDayBtn").onclick = () => {
-    // simple “verse of day” rotation (no external dependency)
-    const pool = ["Psalm 23:1","Proverbs 3:5-6","Romans 8:28","Philippians 4:6-7","James 1:5","Isaiah 41:10"];
-    const pick = pool[Math.floor(Math.random() * pool.length)];
-    $("bibleRef").value = pick;
-    toast("Verse", pick);
-  };
-
-  $("loadJournalBtn").onclick = async () => {
-    $("bibleErr").textContent = "";
-    const date = $("bibleDate").value.trim();
-    try{
-      const j = await safeFetchJson(API(`/api/bible/journal?date=${encodeURIComponent(date)}`));
-      if (!j.exists){
-        toast("Journal", "No entry yet");
+    function openVideoModal(title, url, meta){
+      if(!url){
+        toast("No video URL available.");
         return;
       }
-      const entry = j.entry;
-      $("bibleRef").value = entry.ref || $("bibleRef").value;
-      $("lessonBox").value = lessonToText(entry.lesson);
-      $("journalBox").value = entry.journal_text || "";
-      toast("Journal", "Loaded");
-    }catch(e){
-      $("bibleErr").textContent = String(e.message || e);
+      openModal(title, "Video", (body)=>{
+        const v = document.createElement("video");
+        v.controls = true;
+        v.autoplay = true;
+        v.src = url;
+        body.appendChild(v);
+
+        const info = document.createElement("div");
+        info.style.padding = "12px 14px";
+        info.innerHTML = `
+          <div class="small">
+            <b>Created:</b> ${escapeHtml(fmtDate(meta.createdAt||""))}
+            &nbsp;•&nbsp;<b>Source:</b> ${escapeHtml(meta.source || (isApiMode() ? "R2" : "Local"))}
+          </div>
+        `;
+        body.appendChild(info);
+      }, url);
     }
-  };
 
-  $("saveJournalBtn").onclick = async () => {
-    $("bibleErr").textContent = "";
-    const date = $("bibleDate").value.trim();
-    const ref = $("bibleRef").value.trim();
-    const journal_text = $("journalBox").value || "";
-    const lesson_json = $("lessonBox").value || "";
+    /***********************
+     * UPLOAD
+     ***********************/
+    document.getElementById("uploadBtn").onclick = handleUpload;
+    document.getElementById("demoBtn").onclick = addDemoVideo;
 
-    // We save the lesson text into lesson_json if actual object isn't present
-    // (Backend accepts lesson_json string too)
-    try{
-      await safeFetchJson(API(`/api/bible/journal`), {
-        method:"PUT",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({
-          date,
-          ref,
-          passage: "",
-          lesson_json: lesson_json,
-          journal_text
-        })
+    function addDemoVideo(){
+      // Lightweight demo using a public MP4 sample (works as a preview)
+      const demoUrl = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
+      state.videos.unshift({
+        id: uid(),
+        title: "Demo Clip (hover preview works)",
+        createdAt: nowISO(),
+        source: "Demo",
+        url: demoUrl,
+        previewUrl: demoUrl,
+        note: "Replace with your own uploads."
       });
-      toast("Journal", "Saved");
-    }catch(e){
-      $("bibleErr").textContent = String(e.message || e);
+      saveState();
+      renderVideos();
+      toast("Demo video added");
+      switchTab("videos");
     }
-  };
 
-  // ------------ Init ------------
-  (async function init(){
-    initNews();
-    initBible();
-    await checkApi();
-    await loadFolders();
-    if ($("autoLoad").checked) await loadVideos();
-    await loadDocs();
-  })();
-</script>
+    async function handleUpload(){
+      const title = sanitizeTitle(document.getElementById("uploadTitle").value);
+      const file = document.getElementById("fileInput").files[0];
+      const help = document.getElementById("uploadHelp");
+      help.textContent = "";
+
+      if(!file){
+        toast("Choose a video file first.");
+        return;
+      }
+
+      try{
+        setStatus("Uploading…");
+        if(isApiMode()){
+          // API mode: init upload -> PUT to R2 URL -> complete
+          // This assumes your Worker implements the endpoints described in Account tab.
+          const init = await apiFetch("/v1/videos/init-upload", {
+            method:"POST",
+            body: JSON.stringify({ filename: file.name, contentType: file.type || "video/mp4", title })
+          });
+
+          const uploadUrl = init.uploadUrl;
+          const key = init.key;
+          const videoId = init.id || uid(); // allow Worker to return id, else local id
+
+          // Put directly to R2 signed URL
+          const putRes = await fetch(uploadUrl, {
+            method:"PUT",
+            headers: { "Content-Type": file.type || "application/octet-stream" },
+            body: file
+          });
+          if(!putRes.ok){
+            throw new Error("R2 upload failed: " + putRes.status);
+          }
+
+          // Complete: store metadata in D1
+          const completed = await apiFetch("/v1/videos/complete", {
+            method:"POST",
+            body: JSON.stringify({ id: videoId, title, key, contentType: file.type || "video/mp4" })
+          });
+
+          // Add to local list (metadata only). Playback URL comes from /play later.
+          state.videos.unshift({
+            id: completed.id || videoId,
+            title,
+            createdAt: completed.createdAt || nowISO(),
+            source: "R2",
+            key: completed.key || key,
+            note: "Stored in R2 (signed playback)."
+          });
+
+          saveState();
+          setStatus("Uploaded");
+          toast("Uploaded via R2/D1");
+        }else{
+          // Local mode: store as dataUrl (can be huge; for real use, switch to API mode)
+          const dataUrl = await readFileAsDataURL(file);
+          state.videos.unshift({
+            id: uid(),
+            title,
+            createdAt: nowISO(),
+            source: "Local",
+            dataUrl,
+            previewUrl: dataUrl,
+            note: "LocalStorage (not recommended for big files)."
+          });
+          saveState();
+          setStatus("Saved locally");
+          toast("Saved locally");
+        }
+
+        document.getElementById("uploadTitle").value = "";
+        document.getElementById("fileInput").value = "";
+        renderVideos();
+        switchTab("videos");
+      }catch(err){
+        setStatus("Upload failed", false);
+        help.textContent = err.message || "Upload failed";
+        toast(err.message || "Upload failed");
+      }
+    }
+
+    function readFileAsDataURL(file){
+      return new Promise((resolve, reject)=>{
+        const fr = new FileReader();
+        fr.onload = ()=> resolve(fr.result);
+        fr.onerror = ()=> reject(new Error("File read failed"));
+        fr.readAsDataURL(file);
+      });
+    }
+
+    /***********************
+     * NOTES
+     ***********************/
+    document.getElementById("newNoteBtn").onclick = newNote;
+    document.getElementById("saveNoteBtn").onclick = saveNote;
+    document.getElementById("deleteNoteBtn").onclick = deleteNote;
+
+    const editor = document.getElementById("editor");
+    const notesList = document.getElementById("notesList");
+
+    function renderNotes(){
+      const q = document.getElementById("search").value.trim().toLowerCase();
+      notesList.innerHTML = "";
+      const filtered = [...state.notes]
+        .sort((a,b)=> (b.updatedAt||"").localeCompare(a.updatedAt||""))
+        .filter(n => filterTextMatches(n, q));
+
+      document.getElementById("emptyNotes").style.display = filtered.length ? "none" : "block";
+
+      for(const n of filtered){
+        const el = document.createElement("div");
+        el.className = "item";
+        el.innerHTML = `
+          <div style="min-width:0">
+            <div class="name">${escapeHtml(n.title || "Untitled")}</div>
+            <div class="desc">Updated ${escapeHtml(fmtDate(n.updatedAt || n.createdAt || ""))}</div>
+          </div>
+          <button class="btn" style="padding:8px 10px;">Edit</button>
+        `;
+        el.addEventListener("click", ()=> selectNote(n.id));
+        notesList.appendChild(el);
+      }
+    }
+
+    function selectNote(id){
+      const n = state.notes.find(x => x.id === id);
+      if(!n) return;
+      selectedNoteId = id;
+
+      document.getElementById("noteTitleLabel").textContent = n.title || "Untitled";
+      document.getElementById("noteMeta").textContent = `Updated ${fmtDate(n.updatedAt || n.createdAt || "")}`;
+
+      editor.innerHTML = n.html || "";
+      document.getElementById("saveNoteBtn").disabled = false;
+      document.getElementById("deleteNoteBtn").disabled = false;
+      toast("Editing note");
+    }
+
+    function newNote(){
+      const title = prompt("Doc title?") || "";
+      const note = {
+        id: uid(),
+        title: sanitizeTitle(title),
+        html: "",
+        createdAt: nowISO(),
+        updatedAt: nowISO()
+      };
+      state.notes.unshift(note);
+      saveState();
+      renderNotes();
+      selectNote(note.id);
+    }
+
+    async function saveNote(){
+      if(!selectedNoteId){
+        toast("Select a note first.");
+        return;
+      }
+      const n = state.notes.find(x => x.id === selectedNoteId);
+      if(!n) return;
+
+      n.html = editor.innerHTML;
+      n.updatedAt = nowISO();
+
+      try{
+        if(isApiMode()){
+          // Optional: persist notes in D1
+          await apiFetch(`/v1/notes/${encodeURIComponent(n.id)}`, {
+            method:"PUT",
+            body: JSON.stringify({ title: n.title, html: n.html, updatedAt: n.updatedAt })
+          });
+        }
+        saveState();
+        renderNotes();
+        toast("Saved");
+      }catch(err){
+        toast("Saved locally; API failed");
+      }
+    }
+
+    async function deleteNote(){
+      if(!selectedNoteId) return;
+      const n = state.notes.find(x => x.id === selectedNoteId);
+      if(!n) return;
+
+      if(!confirm(`Delete "${n.title}"?`)) return;
+
+      try{
+        if(isApiMode()){
+          await apiFetch(`/v1/notes/${encodeURIComponent(n.id)}`, { method:"DELETE" });
+        }
+      }catch{}
+
+      state.notes = state.notes.filter(x => x.id !== n.id);
+      selectedNoteId = null;
+      editor.innerHTML = "";
+      document.getElementById("noteTitleLabel").textContent = "Editor";
+      document.getElementById("noteMeta").textContent = "Select a doc to start";
+      document.getElementById("saveNoteBtn").disabled = true;
+      document.getElementById("deleteNoteBtn").disabled = true;
+
+      saveState();
+      renderNotes();
+      toast("Deleted");
+    }
+
+    // Toolbar actions
+    document.getElementById("toolbar").addEventListener("click", (e)=>{
+      const btn = e.target.closest(".tool");
+      if(!btn) return;
+      const cmd = btn.dataset.cmd;
+      if(!cmd) return;
+
+      if(cmd === "formatBlock"){
+        const arg = btn.dataset.arg === "H2" ? "h2" : "p";
+        document.execCommand(cmd, false, arg);
+      }else{
+        document.execCommand(cmd, false, null);
+      }
+      editor.focus();
+    });
+
+    document.getElementById("colorPicker").addEventListener("input", (e)=>{
+      const color = e.target.value;
+      document.execCommand("foreColor", false, color);
+      editor.focus();
+    });
+
+    document.getElementById("imgBtn").addEventListener("click", ()=>{
+      document.getElementById("imgInput").click();
+    });
+    document.getElementById("imgInput").addEventListener("change", async (e)=>{
+      const f = e.target.files[0];
+      if(!f) return;
+
+      // local: embed as data URL. api mode: still embed data URL unless you implement R2 image upload.
+      const dataUrl = await readFileAsDataURL(f);
+      insertHtmlAtCursor(`<img src="${dataUrl}" alt="image" />`);
+      editor.focus();
+      e.target.value = "";
+    });
+
+    function insertHtmlAtCursor(html) {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) {
+        editor.insertAdjacentHTML("beforeend", html);
+        return;
+      }
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      const temp = document.createElement("div");
+      temp.innerHTML = html;
+      const frag = document.createDocumentFragment();
+      let node;
+      while ((node = temp.firstChild)) frag.appendChild(node);
+      range.insertNode(frag);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+
+    /***********************
+     * NEWS
+     ***********************/
+    const newsList = document.getElementById("newsList");
+    document.getElementById("openNewsModalBtn").onclick = ()=> openNewsModal(selectedNews);
+    document.getElementById("openInNewTabBtn").onclick = ()=> window.open(selectedNews.url, "_blank", "noopener,noreferrer");
+
+    function renderNews(){
+      newsList.innerHTML = "";
+      const sources = state.news && state.news.length ? state.news : DEFAULT_NEWS;
+      for(const s of sources){
+        const el = document.createElement("div");
+        el.className = "item";
+        el.innerHTML = `
+          <div style="min-width:0">
+            <div class="name">${escapeHtml(s.name)}</div>
+            <div class="desc">${escapeHtml(s.desc || s.url)}</div>
+          </div>
+          <span class="chip">Select</span>
+        `;
+        el.addEventListener("click", ()=>{
+          selectedNews = s;
+          document.getElementById("newsInfo").textContent = `Selected: ${s.name}`;
+          toast("Selected " + s.name);
+        });
+        newsList.appendChild(el);
+      }
+      if(!selectedNews) selectedNews = sources[0];
+      document.getElementById("newsInfo").textContent = `Selected: ${selectedNews.name}`;
+    }
+
+    function openNewsModal(s){
+      openModal(s.name, "News", (body)=>{
+        const iframe = document.createElement("iframe");
+        iframe.src = s.url;
+        body.appendChild(iframe);
+      }, s.url);
+    }
+
+    /***********************
+     * ACCOUNT / DATA
+     ***********************/
+    document.getElementById("saveApiBtn").onclick = ()=>{
+      apiCfg.base = (document.getElementById("apiBase").value || "").trim();
+      apiCfg.token = (document.getElementById("apiToken").value || "").trim();
+      saveApiCfg();
+      toast("Saved API config");
+      setStatus(isApiMode() ? "API Mode enabled" : "Local Mode");
+    };
+    document.getElementById("clearApiBtn").onclick = ()=>{
+      apiCfg = { base:"", token:"" };
+      document.getElementById("apiBase").value = "";
+      document.getElementById("apiToken").value = "";
+      saveApiCfg();
+      toast("API cleared");
+      setStatus("Local Mode");
+    };
+
+    document.getElementById("exportDataBtn").onclick = exportData;
+    document.getElementById("importDataBtn").onclick = ()=> document.getElementById("importFile").click();
+    document.getElementById("importFile").addEventListener("change", importData);
+    document.getElementById("resetBtn").onclick = resetLocal;
+    document.getElementById("exportBtn").onclick = (e)=>{ e.preventDefault(); exportData(); };
+
+    function exportData(){
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type:"application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "tse-export.json";
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast("Exported JSON");
+    }
+
+    async function importData(e){
+      const f = e.target.files[0];
+      if(!f) return;
+      try{
+        const txt = await f.text();
+        const obj = JSON.parse(txt);
+        if(!obj || typeof obj !== "object") throw new Error("Invalid file");
+        state.videos = Array.isArray(obj.videos) ? obj.videos : [];
+        state.notes = Array.isArray(obj.notes) ? obj.notes : [];
+        state.news = Array.isArray(obj.news) ? obj.news : DEFAULT_NEWS;
+        saveState();
+        render();
+        toast("Imported");
+      }catch(err){
+        toast("Import failed");
+      }finally{
+        e.target.value = "";
+      }
+    }
+
+    function resetLocal(){
+      if(!confirm("Reset local TSE data?")) return;
+      localStorage.removeItem(LS_KEY);
+      state = { videos: [], notes: [], news: DEFAULT_NEWS };
+      saveState();
+      selectedNoteId = null;
+      editor.innerHTML = "";
+      render();
+      toast("Reset");
+    }
+
+    function updateModePill(){
+      const pill = document.getElementById("modePill");
+      if(isApiMode()){
+        pill.textContent = "API Mode";
+      }else{
+        pill.textContent = "Local Mode";
+      }
+      document.getElementById("apiBase").value = apiCfg.base || "";
+      document.getElementById("apiToken").value = apiCfg.token || "";
+    }
+
+    /***********************
+     * MODAL
+     ***********************/
+    const overlay = document.getElementById("overlay");
+    const modalBody = document.getElementById("modalBody");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalChip = document.getElementById("modalChip");
+    const modalOpenNewTab = document.getElementById("modalOpenNewTab");
+    document.getElementById("modalClose").onclick = closeModal;
+    overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeModal(); });
+
+    function openModal(title, chip, builder, openUrl){
+      modalTitle.textContent = title;
+      modalChip.textContent = chip;
+      modalBody.innerHTML = "";
+      builder(modalBody);
+      overlay.classList.add("show");
+      modalOpenNewTab.onclick = ()=> openUrl ? window.open(openUrl, "_blank", "noopener,noreferrer") : null;
+    }
+    function closeModal(){
+      overlay.classList.remove("show");
+      modalBody.innerHTML = "";
+    }
+
+    /***********************
+     * SEARCH + SORT
+     ***********************/
+    document.getElementById("search").addEventListener("input", ()=> render());
+
+    document.getElementById("sortNewest").onclick = ()=>{ videoSort="newest"; renderVideos(); };
+    document.getElementById("sortOldest").onclick = ()=>{ videoSort="oldest"; renderVideos(); };
+    document.getElementById("sortTitle").onclick = ()=>{ videoSort="title"; renderVideos(); };
+
+    /***********************
+     * COMMAND PALETTE (simple)
+     ***********************/
+    document.addEventListener("keydown", (e)=>{
+      const isCmdK = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k";
+      if(isCmdK){
+        e.preventDefault();
+        const cmd = prompt("Command: videos / upload / notes / news / account");
+        if(!cmd) return;
+        const c = cmd.trim().toLowerCase();
+        if(["videos","upload","notes","news","account"].includes(c)){
+          switchTab(c);
+        }else{
+          toast("Unknown command");
+        }
+      }
+      // Quick nav 1..5
+      if(!e.metaKey && !e.ctrlKey && !e.altKey){
+        if(e.key === "1") switchTab("videos");
+        if(e.key === "2") switchTab("upload");
+        if(e.key === "3") switchTab("notes");
+        if(e.key === "4") switchTab("news");
+        if(e.key === "5") switchTab("account");
+      }
+    });
+
+    /***********************
+     * UTIL
+     ***********************/
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    /***********************
+     * INITIAL RENDER
+     ***********************/
+    function render(){
+      updateCounts();
+      updateModePill();
+
+      if(currentTab === "videos") renderVideos();
+      if(currentTab === "upload") {/* no-op */}
+      if(currentTab === "notes") renderNotes();
+      if(currentTab === "news") renderNews();
+      if(currentTab === "account") {/* no-op */}
+
+      // Enable/disable note buttons if selected
+      const hasSel = !!selectedNoteId;
+      document.getElementById("saveNoteBtn").disabled = !hasSel;
+      document.getElementById("deleteNoteBtn").disabled = !hasSel;
+    }
+
+    // Init
+    switchTab("videos");
+    setStatus(isApiMode() ? "API Mode" : "Local Mode");
+  </script>
 </body>
 </html>
