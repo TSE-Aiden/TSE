@@ -1,1675 +1,842 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TSE — Overhaul</title>
-  <style>
-    :root{
-      --bg0:#070814;
-      --bg1:#0b0d22;
-      --card: rgba(255,255,255,.06);
-      --card2: rgba(255,255,255,.09);
-      --stroke: rgba(255,255,255,.10);
-      --stroke2: rgba(255,255,255,.18);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.65);
-      --muted2: rgba(255,255,255,.45);
-      --accent:#8b5cf6;
-      --accent2:#22c55e;
-      --danger:#ef4444;
-      --warn:#f59e0b;
-      --shadow: 0 20px 80px rgba(0,0,0,.45);
-      --radius: 18px;
-      --radius2: 12px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Race for First Aid</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #E8132A;
+    --red-dark: #9C0A1B;
+    --white: #F5F0EB;
+    --black: #0A0A0A;
+    --track-tan: #C8A96E;
+    --track-tan-light: #DFC28A;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Barlow', Georgia, sans-serif; overflow-x: hidden; }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: var(--sans);
-      color: var(--text);
-      background:
-        radial-gradient(1200px 700px at 20% 10%, rgba(139,92,246,.25), transparent 55%),
-        radial-gradient(900px 550px at 90% 30%, rgba(34,197,94,.18), transparent 55%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      overflow:hidden;
-    }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.4;
+  }
 
-    /* Layout */
-    .shell{
-      height:100%;
-      display:grid;
-      grid-template-columns: 280px 1fr;
-      gap:16px;
-      padding:16px;
-    }
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.5rem 3rem;
+    transition: background 0.3s, backdrop-filter 0.3s;
+  }
+  nav.scrolled { background: rgba(10,10,10,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(232,19,42,0.15); }
+  .nav-logo { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.6rem; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--red); }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
+  .nav-links a { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.9rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,235,0.65); text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--white); }
+  .nav-cta { color: var(--white) !important; background: var(--red); padding: 0.6rem 1.5rem; transition: background 0.2s !important; }
+  .nav-cta:hover { background: var(--red-dark) !important; }
+  .nav-donate { color: var(--black) !important; background: var(--track-tan) !important; }
+  .nav-donate:hover { background: var(--track-tan-light) !important; }
+  @media (max-width: 768px) { .nav-links { display: none; } nav { padding: 1rem 1.5rem; } }
 
-    .sidebar{
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.22);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-    }
+  /* HERO */
+  .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
+  .track-lanes { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 200%; height: 60%; perspective: 600px; perspective-origin: 50% 0%; }
+  .lanes-inner { width: 100%; height: 100%; background: linear-gradient(to bottom, transparent 0%, #1a0f05 30%, #2a1808 100%); transform: rotateX(55deg); transform-origin: top center; position: relative; overflow: hidden; }
+  .lane-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--track-tan); opacity: 0.25; }
+  @keyframes dashRun { 0% { background-position: 0 0; } 100% { background-position: 0 200px; } }
+  .lane-dash { position: absolute; top: 0; bottom: 0; width: 3px; background: repeating-linear-gradient(to bottom, var(--track-tan-light) 0px, var(--track-tan-light) 30px, transparent 30px, transparent 60px); opacity: 0.15; animation: dashRun 1.4s linear infinite; }
+  .hero-spotlight { position: absolute; top: -10%; left: 50%; transform: translateX(-50%); width: 80%; height: 80%; background: radial-gradient(ellipse at 50% 0%, rgba(232,19,42,0.18) 0%, transparent 70%); pointer-events: none; }
+  .cross-bg { position: absolute; right: -4%; top: 8%; width: 320px; height: 320px; opacity: 0.05; animation: pulseGlow 4s ease-in-out infinite; }
+  .cross-bg-left { position: absolute; left: -5%; bottom: 15%; width: 200px; height: 200px; opacity: 0.04; animation: pulseGlow 6s ease-in-out infinite reverse; }
+  @keyframes pulseGlow { 0%, 100% { opacity: 0.04; transform: scale(1); } 50% { opacity: 0.09; transform: scale(1.05); } }
 
-    .brand{
-      padding:16px 16px 10px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      border-bottom:1px solid var(--stroke);
-      background: rgba(255,255,255,.03);
-    }
-    .brand .left{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
-    .logo{
-      width:36px;height:36px;border-radius:12px;
-      background: radial-gradient(circle at 30% 30%, rgba(139,92,246,.9), rgba(34,197,94,.7));
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
-      border:1px solid rgba(255,255,255,.14);
-      flex:none;
-    }
-    .brand h1{
-      margin:0;
-      font-size:15px;
-      letter-spacing:.4px;
-      font-weight:700;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .pill{
-      font-size:11px;
-      color: rgba(255,255,255,.8);
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.05);
-      padding:6px 10px;
-      border-radius: 999px;
-    }
+  @keyframes heroFadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-content { position: relative; z-index: 10; text-align: center; max-width: 900px; padding: 2rem; animation: heroFadeIn 1s ease forwards; }
+  .event-tag { display: inline-block; font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--red); border: 1px solid var(--red); padding: 0.35rem 1.2rem; margin-bottom: 2rem; animation: heroFadeIn 1s 0.2s ease both; }
+  .hero-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(5rem, 14vw, 12rem); line-height: 0.88; color: var(--white); animation: heroFadeIn 1s 0.3s ease both; }
+  .hero-title .for-text { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 300; letter-spacing: 0.4em; text-transform: uppercase; display: block; color: var(--track-tan); margin: 0.3rem 0; }
+  .hero-title .first-aid { color: var(--red); position: relative; display: inline-block; }
+  .hero-title .first-aid::after { content: ''; position: absolute; bottom: 0.05em; left: 0; right: 0; height: 4px; background: var(--red); transform: scaleX(0); transform-origin: left; animation: underlineReveal 0.8s 1s ease forwards; }
+  @keyframes underlineReveal { to { transform: scaleX(1); } }
+  .hero-subtitle { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-weight: 300; font-size: clamp(1rem, 2.5vw, 1.5rem); letter-spacing: 0.12em; color: rgba(245,240,235,0.6); margin-top: 1.5rem; animation: heroFadeIn 1s 0.5s ease both; }
+  .distance-badge { display: inline-flex; align-items: center; gap: 0.6rem; font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(1.8rem, 5vw, 3.5rem); color: var(--black); background: var(--red); padding: 0.3em 0.8em; margin-top: 2rem; animation: heroFadeIn 1s 0.6s ease both; clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%, 20px 50%); }
+  .cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2.5rem; animation: heroFadeIn 1s 0.8s ease both; }
 
-    .nav{
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      overflow:auto;
-      min-height:0;
-    }
+  .btn-primary { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: var(--white); background: var(--red); padding: 1rem 2.5rem; border: none; cursor: pointer; position: relative; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%); display: inline-block; }
+  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(232,19,42,0.4); background: var(--red-dark); }
+  .btn-secondary { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-weight: 600; font-size: 1.1rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: var(--track-tan); background: transparent; padding: 1rem 2.5rem; border: 1px solid var(--track-tan); transition: background 0.2s, color 0.2s, transform 0.2s; display: inline-block; }
+  .btn-secondary:hover { background: var(--track-tan); color: var(--black); transform: translateY(-3px); }
 
-    .navbtn{
-      width:100%;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.03);
-      color: var(--text);
-      border-radius: 14px;
-      padding:10px 12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      cursor:pointer;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      text-align:left;
-    }
-    .navbtn:hover{
-      transform: translateY(-1px);
-      border-color: var(--stroke2);
-      background: rgba(255,255,255,.06);
-    }
-    .navbtn.active{
-      border-color: rgba(139,92,246,.55);
-      background: rgba(139,92,246,.12);
-    }
-    .navbtn .meta{
-      display:flex; flex-direction:column; gap:3px; min-width:0;
-    }
-    .navbtn .title{
-      font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .navbtn .sub{
-      font-size:11px; color: var(--muted);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .kbd{
-      font-family: var(--mono);
-      font-size:11px;
-      color: rgba(255,255,255,.65);
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.25);
-      padding:5px 8px;
-      border-radius: 10px;
-      flex:none;
-    }
+  .scroll-hint { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 0.25em; color: rgba(255,255,255,0.3); animation: heroFadeIn 1.5s 1.2s ease both; }
+  .scroll-line { width: 1px; height: 50px; background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent); animation: scrollBounce 2s ease-in-out infinite; }
+  @keyframes scrollBounce { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
 
-    .sidebarFooter{
-      padding:12px;
-      border-top:1px solid var(--stroke);
-      background: rgba(255,255,255,.02);
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-    }
+  /* STATS BAR */
+  .stats-bar { background: var(--red); padding: 1.2rem 2rem; display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap; }
+  .stat-item { text-align: center; font-family: 'Bebas Neue', Impact, sans-serif; }
+  .stat-num { font-size: 2.5rem; color: var(--white); display: block; line-height: 1; }
+  .stat-label { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.75rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.7); }
+  @media (max-width: 768px) { .stats-bar { gap: 2rem; } }
 
-    .statusDot{
-      width:10px;height:10px;border-radius:99px;
-      background: rgba(34,197,94,.9);
-      box-shadow: 0 0 18px rgba(34,197,94,.35);
-      border:1px solid rgba(255,255,255,.2);
-    }
-    .muted{ color: var(--muted); }
-    .link{
-      color: rgba(139,92,246,.95);
-      text-decoration:none;
-    }
-    .link:hover{ text-decoration:underline; }
+  /* SECTIONS */
+  .section-wrap { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
+  .section-label { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.8rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--red); margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--red); opacity: 0.3; max-width: 80px; }
+  .section-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(3rem, 7vw, 6rem); line-height: 1; color: var(--white); }
+  .about-text { font-size: 1.1rem; line-height: 1.8; color: rgba(245,240,235,0.75); font-weight: 300; }
+  .about-text strong { color: var(--white); font-weight: 600; }
+  .divider { width: 100%; height: 1px; background: linear-gradient(to right, transparent, rgba(232,19,42,0.3), transparent); }
 
-    .main{
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.18);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-height:0;
-    }
+  /* ABOUT GRID */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } .track-visual { display: none; } }
+  .track-visual { position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; }
+  @keyframes rotateDashes { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .track-ring { width: 280px; height: 280px; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--red); border-right-color: var(--red); position: absolute; animation: rotateDashes 3s linear infinite; }
+  .track-ring-2 { width: 240px; height: 240px; border-radius: 50%; border: 1px dashed rgba(200,169,110,0.3); position: absolute; animation: rotateDashes 8s linear infinite reverse; }
+  .track-ring-3 { width: 200px; height: 200px; border-radius: 50%; border: 1px solid rgba(200,169,110,0.1); position: absolute; }
+  .track-center { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 2.5rem; color: var(--white); text-align: center; position: relative; z-index: 2; line-height: 1.1; }
+  .track-center .km { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.9rem; letter-spacing: 0.2em; color: var(--track-tan); display: block; }
 
-    .topbar{
-      padding:12px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      border-bottom:1px solid var(--stroke);
-      background: rgba(255,255,255,.03);
-    }
-    .topbar .left{
-      display:flex; align-items:center; gap:10px; min-width:0;
-    }
-    .topbar h2{
-      margin:0;
-      font-size:15px;
-      font-weight:800;
-      letter-spacing:.2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .topbar .hint{
-      font-size:12px;
-      color: var(--muted);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
+  /* EVENT DETAILS CARD */
+  .event-details-card { margin-top: 2rem; border: 1px solid rgba(232,19,42,0.25); background: rgba(232,19,42,0.05); padding: 1.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .detail-label { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.75rem; letter-spacing: 0.25em; color: var(--red); text-transform: uppercase; margin-bottom: 0.3rem; }
+  .detail-value { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.6rem; color: var(--white); line-height: 1.1; }
+  .detail-sub { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.9rem; color: rgba(245,240,235,0.5); letter-spacing: 0.05em; }
 
-    .actions{
-      display:flex; gap:10px; align-items:center; flex:none;
-    }
+  /* HOW IT WORKS */
+  .how-section { background: rgba(232,19,42,0.04); border-top: 1px solid rgba(232,19,42,0.15); border-bottom: 1px solid rgba(232,19,42,0.15); padding: 6rem 2rem; }
+  .how-inner { max-width: 1100px; margin: 0 auto; }
+  .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3rem; }
+  @media (max-width: 768px) { .steps-grid { grid-template-columns: 1fr; } }
+  .step-card { position: relative; padding: 2.5rem 2rem; border: 1px solid rgba(245,240,235,0.08); background: rgba(255,255,255,0.02); transition: border-color 0.3s, transform 0.3s; }
+  .step-card:hover { border-color: rgba(232,19,42,0.4); transform: translateY(-6px); }
+  .step-num { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 5rem; line-height: 1; color: rgba(232,19,42,0.12); position: absolute; top: 1rem; right: 1.5rem; }
+  .step-icon { font-size: 2.5rem; margin-bottom: 1.5rem; display: block; }
+  .step-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.8rem; color: var(--white); margin-bottom: 0.75rem; }
+  .step-desc { font-size: 0.95rem; line-height: 1.7; color: rgba(245,240,235,0.6); font-weight: 300; }
 
-    .input{
-      width: min(420px, 55vw);
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.25);
-      color: var(--text);
-      padding:10px 12px;
-      border-radius: 14px;
-      outline:none;
-    }
-    .input:focus{
-      border-color: rgba(139,92,246,.55);
-      box-shadow: 0 0 0 3px rgba(139,92,246,.15);
-    }
+  /* CAUSE */
+  .cause-section { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+  @media (max-width: 768px) { .cause-section { grid-template-columns: 1fr; gap: 2rem; } }
+  .cause-quote { position: relative; padding: 3rem; border-left: 4px solid var(--red); background: linear-gradient(135deg, rgba(232,19,42,0.06), transparent); }
+  .cause-quote-text { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 300; line-height: 1.3; color: var(--white); font-style: italic; }
+  .cause-quote-text strong { color: var(--red); font-weight: 700; font-style: normal; }
+  .cause-cross { display: flex; align-items: center; justify-content: center; }
+  @keyframes crossPulse { 0%, 100% { filter: drop-shadow(0 0 10px rgba(232,19,42,0.4)); } 50% { filter: drop-shadow(0 0 30px rgba(232,19,42,0.8)); } }
+  .cross-svg { animation: crossPulse 3s ease-in-out infinite; }
+  .tag-pill { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.85rem; letter-spacing: 0.15em; padding: 0.4rem 1rem; border: 1px solid rgba(200,169,110,0.3); color: var(--track-tan); display: inline-block; }
 
-    .btn{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.05);
-      color: var(--text);
-      padding:10px 12px;
-      border-radius: 14px;
-      cursor:pointer;
-      transition: transform .12s ease, background .12s ease, border-color .12s ease;
-      font-weight:700;
-      font-size:12px;
-    }
-    .btn:hover{
-      transform: translateY(-1px);
-      border-color: var(--stroke2);
-      background: rgba(255,255,255,.08);
-    }
-    .btn.primary{
-      border-color: rgba(139,92,246,.55);
-      background: rgba(139,92,246,.18);
-    }
-    .btn.good{
-      border-color: rgba(34,197,94,.5);
-      background: rgba(34,197,94,.14);
-    }
-    .btn.danger{
-      border-color: rgba(239,68,68,.55);
-      background: rgba(239,68,68,.14);
-    }
+  /* PRIZES */
+  .prize-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 3rem; }
+  @media (max-width: 768px) { .prize-grid { grid-template-columns: 1fr; } }
+  .prize-card { border: 1px solid rgba(245,240,235,0.08); background: rgba(255,255,255,0.02); padding: 2.5rem 2rem; position: relative; overflow: hidden; transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s; }
+  .prize-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(to right, var(--red), var(--track-tan)); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
+  .prize-card:hover { border-color: rgba(232,19,42,0.3); transform: translateY(-6px); box-shadow: 0 20px 50px rgba(232,19,42,0.1); }
+  .prize-card:hover::before { transform: scaleX(1); }
+  .prize-medal { font-size: 3rem; margin-bottom: 1rem; display: block; }
+  .prize-card-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.8rem; color: var(--white); margin-bottom: 0.75rem; }
+  .prize-card-desc { font-size: 0.95rem; line-height: 1.7; color: rgba(245,240,235,0.6); font-weight: 300; margin-bottom: 1.5rem; }
+  .prize-tag { display: inline-block; font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--track-tan); border: 1px solid rgba(200,169,110,0.3); padding: 0.25rem 0.75rem; }
+  .sponsor-banner { margin-top: 3rem; border: 1px solid rgba(200,169,110,0.2); background: rgba(200,169,110,0.04); padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
 
-    .content{
-      padding:14px;
-      overflow:auto;
-      min-height:0;
-    }
+  /* DONATE */
+  .donate-section { background: linear-gradient(135deg, rgba(232,19,42,0.06) 0%, rgba(0,0,0,0) 60%); padding: 8rem 2rem; position: relative; overflow: hidden; }
+  .donate-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(6rem,18vw,16rem); color: rgba(200,169,110,0.04); white-space: nowrap; pointer-events: none; user-select: none; }
+  .donate-inner { max-width: 700px; margin: 0 auto; position: relative; z-index: 2; }
+  .donate-widget { background: rgba(255,255,255,0.03); border: 1px solid rgba(245,240,235,0.1); padding: 2.5rem; }
+  .donate-amounts { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; }
+  .amount-btn { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.6rem; color: rgba(245,240,235,0.6); background: transparent; border: 1px solid rgba(245,240,235,0.15); padding: 0.5rem 1.4rem; cursor: pointer; transition: all 0.2s; min-width: 70px; }
+  .amount-btn:hover { border-color: var(--red); color: var(--white); }
+  .amount-btn.active { background: var(--red); border-color: var(--red); color: var(--white); }
+  .custom-amount-row { display: flex; align-items: center; border: 1px solid rgba(245,240,235,0.15); margin-bottom: 1.5rem; overflow: hidden; transition: border-color 0.2s; }
+  .custom-amount-row:focus-within { border-color: var(--track-tan); }
+  .custom-dollar { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.8rem; color: var(--track-tan); padding: 0.6rem 1rem; background: rgba(200,169,110,0.08); border-right: 1px solid rgba(245,240,235,0.1); line-height: 1; }
+  .custom-input { flex: 1; background: transparent; border: none; outline: none; color: var(--white); font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.8rem; padding: 0.6rem 1rem; width: 100%; }
+  .custom-input::placeholder { color: rgba(245,240,235,0.25); }
+  .impact-bar { display: flex; align-items: flex-start; gap: 1rem; background: rgba(232,19,42,0.07); border-left: 3px solid var(--red); padding: 1rem 1.2rem; }
+  .impact-icon { font-size: 1.5rem; flex-shrink: 0; }
+  .impact-text { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 1rem; line-height: 1.5; color: rgba(245,240,235,0.75); letter-spacing: 0.03em; }
+  .impact-num { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.4rem; color: var(--red); }
+  .kit-stat { border: 1px solid rgba(245,240,235,0.06); padding: 1.5rem 1rem; transition: border-color 0.3s; text-align: center; }
+  .kit-stat:hover { border-color: rgba(232,19,42,0.3); }
 
-    /* Cards / sections */
-    .grid{
-      display:grid;
-      gap:12px;
-    }
-    .grid.cols{
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-    @media (max-width: 1200px){
-      .grid.cols{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .shell{ grid-template-columns: 260px 1fr; }
-    }
-    @media (max-width: 860px){
-      body{ overflow:auto; }
-      .shell{ grid-template-columns: 1fr; height:auto; }
-      .sidebar{ height:auto; }
-      .main{ height: min(74vh, 720px); }
-      .grid.cols{ grid-template-columns: 1fr; }
-      .input{ width: 100%; }
-    }
+  /* SIGNUP */
+  .signup-section { text-align: center; padding: 8rem 2rem; position: relative; overflow: hidden; }
+  .signup-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(8rem,20vw,18rem); color: rgba(232,19,42,0.04); white-space: nowrap; pointer-events: none; user-select: none; }
+  .signup-inner { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+  .signup-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(3.5rem,9vw,8rem); line-height: 0.9; color: var(--white); margin-bottom: 1.5rem; }
+  .signup-subtitle { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-weight: 300; font-size: 1.2rem; color: rgba(245,240,235,0.6); margin-bottom: 3rem; line-height: 1.6; letter-spacing: 0.04em; }
+  .signup-card { border: 1px solid rgba(245,240,235,0.12); padding: 2.5rem 2rem; text-align: left; background: rgba(255,255,255,0.02); transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s; max-width: 360px; margin: 0 auto; }
+  .signup-card:hover { border-color: var(--red); transform: translateY(-8px); box-shadow: 0 20px 60px rgba(232,19,42,0.15); }
+  .signup-card-icon { font-size: 2.5rem; margin-bottom: 1.2rem; display: block; }
+  .signup-card-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 2rem; color: var(--white); margin-bottom: 0.5rem; }
+  .signup-card-desc { font-size: 0.9rem; color: rgba(245,240,235,0.55); line-height: 1.6; font-weight: 300; margin-bottom: 1.5rem; }
 
-    .card{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      border-radius: var(--radius2);
-      overflow:hidden;
-      position:relative;
-    }
-    .cardHeader{
-      padding:12px 12px 10px;
-      border-bottom:1px solid var(--stroke);
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .cardHeader .title{
-      font-weight:900;
-      font-size:13px;
-      margin:0;
-      letter-spacing:.2px;
-      line-height:1.2;
-      min-width:0;
-    }
-    .cardHeader .subtitle{
-      margin-top:4px;
-      font-size:11px;
-      color: var(--muted);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .cardBody{ padding:12px; }
+  /* FOOTER */
+  footer { border-top: 1px solid rgba(245,240,235,0.08); padding: 3rem 2rem; text-align: center; font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.85rem; letter-spacing: 0.15em; color: rgba(245,240,235,0.3); }
+  .footer-logo { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 2rem; color: var(--red); display: block; margin-bottom: 1rem; }
 
-    /* Video “YouTube-like” cards */
-    .videoCard{
-      cursor:pointer;
-      transition: transform .14s ease, border-color .14s ease, background .14s ease;
-    }
-    .videoCard:hover{
-      transform: translateY(-2px);
-      border-color: var(--stroke2);
-      background: rgba(255,255,255,.06);
-    }
 
-    .thumb{
-      width:100%;
-      aspect-ratio: 16 / 9;
-      background: linear-gradient(135deg, rgba(139,92,246,.22), rgba(34,197,94,.14));
-      border-bottom:1px solid var(--stroke);
-      position:relative;
-      overflow:hidden;
-    }
-    .thumb video{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      opacity:0;
-      transform: scale(1.02);
-      transition: opacity .18s ease;
-    }
-    .videoCard:hover .thumb video{
-      opacity:1;
-    }
-    .thumb .badge{
-      position:absolute;
-      left:10px;
-      bottom:10px;
-      font-family: var(--mono);
-      font-size:11px;
-      padding:6px 8px;
-      border-radius: 12px;
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.35);
-      color: rgba(255,255,255,.85);
-      backdrop-filter: blur(6px);
-    }
+  /* DONOR WALL */
+  .donor-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border: 1px solid rgba(245,240,235,0.07);
+    background: rgba(255,255,255,0.02);
+    animation: donorSlideIn 0.5s ease forwards;
+    opacity: 0;
+  }
+  @keyframes donorSlideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .donor-card:hover { border-color: rgba(232,19,42,0.25); background: rgba(232,19,42,0.03); }
+  .donor-avatar {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--red);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', Impact, sans-serif;
+    font-size: 1.2rem; color: white; flex-shrink: 0;
+  }
+  .donor-name {
+    font-family: 'Barlow Condensed', Arial Narrow, sans-serif;
+    font-size: 1.1rem; font-weight: 600; color: var(--white);
+    letter-spacing: 0.04em; flex: 1;
+  }
+  .donor-time {
+    font-family: 'Barlow Condensed', Arial Narrow, sans-serif;
+    font-size: 0.78rem; letter-spacing: 0.1em;
+    color: rgba(245,240,235,0.3); flex: 1;
+  }
+  .donor-amount {
+    font-family: 'Bebas Neue', Impact, sans-serif;
+    font-size: 1.5rem; color: var(--track-tan);
+    white-space: nowrap;
+  }
+  .donor-badge {
+    font-family: 'Barlow Condensed', Arial Narrow, sans-serif;
+    font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 0.2rem 0.6rem; border: 1px solid;
+    white-space: nowrap;
+  }
+  .badge-hero   { color: #FFD700; border-color: rgba(255,215,0,0.3); }
+  .badge-champ  { color: var(--track-tan); border-color: rgba(200,169,110,0.3); }
+  .badge-friend { color: rgba(245,240,235,0.5); border-color: rgba(245,240,235,0.15); }
 
-    .row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-    .rowBetween{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .chip{
-      font-size:11px;
-      padding:6px 10px;
-      border-radius: 999px;
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.05);
-      color: rgba(255,255,255,.82);
-    }
-    .chip.good{ border-color: rgba(34,197,94,.5); background: rgba(34,197,94,.12); }
-    .chip.bad{ border-color: rgba(239,68,68,.5); background: rgba(239,68,68,.12); }
+  /* Admin list item */
+  .admin-donor-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(245,240,235,0.08);
+    font-family: 'Barlow Condensed', Arial Narrow, sans-serif;
+    font-size: 0.95rem; color: rgba(245,240,235,0.7); gap: 0.5rem;
+  }
+  .admin-donor-row button {
+    background: none; border: none; color: var(--red);
+    cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 0.25rem;
+  }
+  .admin-donor-row button:hover { color: #ff4455; }
 
-    .small{
-      font-size:12px;
-      color: var(--muted);
-      line-height:1.5;
-    }
-
-    /* Notes */
-    .toolbar{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin-bottom:10px;
-    }
-    .tool{
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.25);
-      color: var(--text);
-      padding:8px 10px;
-      border-radius: 12px;
-      cursor:pointer;
-      font-size:12px;
-      font-weight:800;
-    }
-    .tool:hover{ border-color: var(--stroke2); background: rgba(255,255,255,.06); }
-    .tool.active{
-      border-color: rgba(139,92,246,.55);
-      background: rgba(139,92,246,.14);
-    }
-    .tool input[type="color"]{ width:26px;height:18px; border:none; background:none; padding:0; cursor:pointer; }
-
-    .editor{
-      border:1px solid var(--stroke);
-      background: rgba(0,0,0,.22);
-      border-radius: 14px;
-      padding:12px;
-      min-height: 240px;
-      outline:none;
-      line-height:1.6;
-    }
-    .editor img{
-      max-width:100%;
-      border-radius: 12px;
-      border:1px solid var(--stroke);
-      display:block;
-      margin:10px 0;
-    }
-
-    /* Modal */
-    .overlay{
-      position:fixed;
-      inset:0;
-      background: rgba(0,0,0,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      z-index: 50;
-    }
-    .overlay.show{ display:flex; }
-    .modal{
-      width: min(980px, 96vw);
-      max-height: min(84vh, 860px);
-      overflow:hidden;
-      border:1px solid var(--stroke2);
-      background: rgba(10,10,18,.88);
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      display:flex;
-      flex-direction:column;
-    }
-    .modalTop{
-      padding:12px 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      border-bottom:1px solid var(--stroke);
-      background: rgba(255,255,255,.03);
-    }
-    .modalTop .title{
-      font-weight:900;
-      font-size:13px;
-      letter-spacing:.2px;
-      margin:0;
-      min-width:0;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .modalBody{
-      padding:0;
-      overflow:auto;
-      min-height:0;
-      flex:1;
-    }
-    .modalBody iframe{
-      width:100%;
-      height: min(70vh, 720px);
-      border:0;
-      background: #0b0d22;
-    }
-    .modalBody video{
-      width:100%;
-      max-height: min(70vh, 720px);
-      background:#000;
-    }
-
-    .twoCol{
-      display:grid;
-      gap:12px;
-      grid-template-columns: 360px 1fr;
-    }
-    @media (max-width: 980px){
-      .twoCol{ grid-template-columns: 1fr; }
-    }
-
-    .list{
-      display:flex; flex-direction:column; gap:10px;
-    }
-    .item{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.04);
-      border-radius: 14px;
-      padding:10px 12px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-    }
-    .item .name{
-      font-weight:900; font-size:12px; margin:0;
-    }
-    .item .desc{
-      font-size:11px; color: var(--muted); margin-top:3px;
-    }
-    .dangerText{ color: rgba(239,68,68,.95); }
-    .goodText{ color: rgba(34,197,94,.95); }
-
-    /* Tiny toast */
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:18px;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,.55);
-      border:1px solid var(--stroke);
-      backdrop-filter: blur(10px);
-      color: rgba(255,255,255,.9);
-      padding:10px 12px;
-      border-radius: 999px;
-      font-size:12px;
-      display:none;
-      z-index:60;
-    }
-    .toast.show{ display:block; }
-
-    .hidden{ display:none !important; }
-  </style>
+  /* FADE UP ANIMATION */
+  .fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+</style>
 </head>
 <body>
-  <div class="shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="left">
-          <div class="logo"></div>
-          <div style="min-width:0">
-            <h1>TSE</h1>
-            <div class="pill" id="modePill">Local Mode</div>
-          </div>
-        </div>
-        <div class="kbd">⌘K</div>
-      </div>
 
-      <nav class="nav" id="nav">
-        <button class="navbtn active" data-tab="videos">
-          <div class="meta">
-            <div class="title">Videos</div>
-            <div class="sub">YouTube-style library</div>
-          </div>
-          <span class="kbd">1</span>
-        </button>
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">R<span>4</span>FA</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#how">The Race</a></li>
+    <li><a href="#prizes">Prizes</a></li>
+    <li><a href="#cause">The Cause</a></li>
+    <li><a href="#donate" class="nav-cta nav-donate">Donate</a></li>
+    <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSc0iqoB5u7b5lRM3DONtxp4vQfEm4R1dRCUySzZjy3eHWPp6A/viewform" target="_blank" class="nav-cta">Sign Up</a></li>
+  </ul>
+</nav>
 
-        <button class="navbtn" data-tab="upload">
-          <div class="meta">
-            <div class="title">Upload</div>
-            <div class="sub">Add MP4 clips</div>
-          </div>
-          <span class="kbd">2</span>
-        </button>
-
-        <button class="navbtn" data-tab="notes">
-          <div class="meta">
-            <div class="title">Notes</div>
-            <div class="sub">Docs + images</div>
-          </div>
-          <span class="kbd">3</span>
-        </button>
-
-        <button class="navbtn" data-tab="news">
-          <div class="meta">
-            <div class="title">News</div>
-            <div class="sub">Reliable sources in-view</div>
-          </div>
-          <span class="kbd">4</span>
-        </button>
-
-        <button class="navbtn" data-tab="account">
-          <div class="meta">
-            <div class="title">Account</div>
-            <div class="sub">R2/D1 API settings</div>
-          </div>
-          <span class="kbd">5</span>
-        </button>
-      </nav>
-
-      <div class="sidebarFooter">
-        <div class="row" style="gap:8px;">
-          <div class="statusDot" id="statusDot"></div>
-          <div class="muted" style="font-size:12px;" id="statusText">Ready</div>
-        </div>
-        <a class="link" href="#" id="exportBtn">Export</a>
-      </div>
-    </aside>
-
-    <main class="main">
-      <div class="topbar">
-        <div class="left" style="min-width:0;">
-          <h2 id="viewTitle">Videos</h2>
-          <div class="hint" id="viewHint">Hover a card to preview. Click to open.</div>
-        </div>
-
-        <div class="actions">
-          <input class="input" id="search" placeholder="Search videos / notes…" />
-          <button class="btn" id="newBtn">New</button>
-          <button class="btn primary" id="primaryBtn">Action</button>
-        </div>
-      </div>
-
-      <div class="content" id="content">
-        <!-- Videos -->
-        <section id="tab-videos">
-          <div class="rowBetween" style="margin-bottom:12px;">
-            <div class="row">
-              <span class="chip" id="countVideos">0 videos</span>
-              <span class="chip" id="countNotes">0 notes</span>
-            </div>
-            <div class="row">
-              <button class="btn" id="sortNewest">Newest</button>
-              <button class="btn" id="sortOldest">Oldest</button>
-              <button class="btn" id="sortTitle">Title</button>
-            </div>
-          </div>
-          <div class="grid cols" id="videoGrid"></div>
-          <div class="small" id="emptyVideos" style="margin-top:14px; display:none;">
-            No videos yet. Go to <b>Upload</b> to add a clip.
-          </div>
-        </section>
-
-        <!-- Upload -->
-        <section id="tab-upload" class="hidden">
-          <div class="grid" style="grid-template-columns: 1.1fr .9fr; align-items:start;">
-            <div class="card">
-              <div class="cardHeader">
-                <div style="min-width:0">
-                  <div class="title">Upload a clip</div>
-                  <div class="subtitle">Local mode saves the file in your browser (not ideal). API mode uses R2.</div>
-                </div>
-              </div>
-              <div class="cardBody">
-                <div class="row" style="margin-bottom:10px;">
-                  <input class="input" id="uploadTitle" placeholder="Title (e.g., NQ scalp 9:42am)" style="flex:1; width:auto;" />
-                </div>
-                <div class="row" style="margin-bottom:12px;">
-                  <input type="file" id="fileInput" accept="video/*" />
-                </div>
-                <div class="row" style="margin-bottom:12px;">
-                  <button class="btn primary" id="uploadBtn">Upload</button>
-                  <button class="btn" id="demoBtn">Add Demo Video</button>
-                </div>
-                <div class="small" id="uploadHelp"></div>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="cardHeader">
-                <div style="min-width:0">
-                  <div class="title">Tips</div>
-                  <div class="subtitle">Best practice for R2 + D1</div>
-                </div>
-              </div>
-              <div class="cardBody">
-                <ul class="small" style="margin:0; padding-left:18px;">
-                  <li>Use <b>presigned upload URLs</b> for R2 (avoid proxying large files).</li>
-                  <li>Store only <b>metadata</b> in D1 (title, key, createdAt, tags).</li>
-                  <li>For playback, use a <b>signed GET URL</b> or a CDN in front of R2.</li>
-                  <li>Set strict CORS on the Worker (your Pages domain only).</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Notes -->
-        <section id="tab-notes" class="hidden">
-          <div class="twoCol">
-            <div class="card">
-              <div class="cardHeader">
-                <div style="min-width:0">
-                  <div class="title">Documents</div>
-                  <div class="subtitle">Click to edit</div>
-                </div>
-                <button class="btn" id="newNoteBtn">New Doc</button>
-              </div>
-              <div class="cardBody">
-                <div class="list" id="notesList"></div>
-                <div class="small" id="emptyNotes" style="margin-top:10px; display:none;">
-                  No notes yet. Create one with <b>New Doc</b>.
-                </div>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="cardHeader">
-                <div style="min-width:0">
-                  <div class="title" id="noteTitleLabel">Editor</div>
-                  <div class="subtitle" id="noteMeta">Select a doc to start</div>
-                </div>
-                <div class="row">
-                  <button class="btn danger" id="deleteNoteBtn" disabled>Delete</button>
-                  <button class="btn good" id="saveNoteBtn" disabled>Save</button>
-                </div>
-              </div>
-
-              <div class="cardBody">
-                <div class="toolbar" id="toolbar">
-                  <button class="tool" data-cmd="bold"><b>B</b></button>
-                  <button class="tool" data-cmd="italic"><i>I</i></button>
-                  <button class="tool" data-cmd="underline"><u>U</u></button>
-                  <button class="tool" data-cmd="insertUnorderedList">• List</button>
-                  <button class="tool" data-cmd="insertOrderedList">1. List</button>
-                  <button class="tool" data-cmd="formatBlock" data-arg="H2">H2</button>
-                  <button class="tool" data-cmd="formatBlock" data-arg="P">P</button>
-                  <label class="tool" title="Text color">
-                    <input type="color" id="colorPicker" />
-                  </label>
-                  <button class="tool" id="imgBtn">Insert Image</button>
-                  <input type="file" id="imgInput" accept="image/*" class="hidden" />
-                </div>
-
-                <div contenteditable="true" class="editor" id="editor" spellcheck="true"></div>
-                <div class="small" style="margin-top:10px;">
-                  In local mode, images embed as Data URLs. In API mode, you’ll want to store images in R2 and embed by URL.
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- News -->
-        <section id="tab-news" class="hidden">
-          <div class="twoCol">
-            <div class="card">
-              <div class="cardHeader">
-                <div style="min-width:0">
-                  <div class="title">Sources</div>
-                  <div class="subtitle">Pick one to open inside TSE</div>
-                </div>
-              </div>
-              <div class="cardBody">
-                <div class="list" id="newsList"></div>
-                <div class="small" style="margin-top:10px;">
-                  Some sites block embedding in iframes. If a source won’t load, open it normally or use an RSS endpoint through your Worker.
-                </div>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="cardHeader">
-                <div style="min-width:0">
-                  <div class="title">Quick actions</div>
-                  <div class="subtitle">RSS-friendly mode recommended</div>
-                </div>
-              </div>
-              <div class="cardBody">
-                <div class="row" style="margin-bottom:10px;">
-                  <button class="btn primary" id="openNewsModalBtn">Open Selected</button>
-                  <button class="btn" id="openInNewTabBtn">Open New Tab</button>
-                </div>
-                <div class="small" id="newsInfo">Select a source on the left.</div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Account -->
-        <section id="tab-account" class="hidden">
-          <div class="grid" style="grid-template-columns: 1fr 1fr; align-items:start;">
-            <div class="card">
-              <div class="cardHeader">
-                <div style="min-width:0">
-                  <div class="title">API Mode</div>
-                  <div class="subtitle">Connect GitHub Pages → Cloudflare Worker (R2/D1)</div>
-                </div>
-              </div>
-              <div class="cardBody">
-                <div class="small">If you leave API base empty, TSE runs in LocalStorage mode.</div>
-                <div class="row" style="margin-top:12px;">
-                  <input class="input" id="apiBase" placeholder="API Base (e.g., https://tse-api.yourdomain.com)" style="flex:1; width:auto;" />
-                </div>
-                <div class="row" style="margin-top:10px;">
-                  <input class="input" id="apiToken" placeholder="Optional Bearer token (dev)" style="flex:1; width:auto;" />
-                </div>
-                <div class="row" style="margin-top:10px;">
-                  <button class="btn primary" id="saveApiBtn">Save</button>
-                  <button class="btn danger" id="clearApiBtn">Clear</button>
-                </div>
-
-                <div class="small" style="margin-top:10px;">
-                  Recommended: implement real auth (email/pass + session cookie) rather than static tokens.
-                </div>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="cardHeader">
-                <div style="min-width:0">
-                  <div class="title">Data</div>
-                  <div class="subtitle">Export / Import / Reset</div>
-                </div>
-              </div>
-              <div class="cardBody">
-                <div class="row" style="margin-bottom:10px;">
-                  <button class="btn" id="exportDataBtn">Export JSON</button>
-                  <button class="btn" id="importDataBtn">Import JSON</button>
-                  <input type="file" id="importFile" accept="application/json" class="hidden" />
-                </div>
-                <div class="row">
-                  <button class="btn danger" id="resetBtn">Reset Local Data</button>
-                </div>
-                <div class="small" style="margin-top:10px;">
-                  In API mode, export/import can call your Worker endpoints instead of LocalStorage.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="card" style="margin-top:12px;">
-            <div class="cardHeader">
-              <div style="min-width:0">
-                <div class="title">R2 / D1 checklist</div>
-                <div class="subtitle">What your Worker should provide</div>
-              </div>
-            </div>
-            <div class="cardBody">
-              <ul class="small" style="margin:0; padding-left:18px;">
-                <li><span class="goodText">POST</span> <code>/v1/videos/init-upload</code> → returns <code>{ uploadUrl, key }</code></li>
-                <li><span class="goodText">POST</span> <code>/v1/videos/complete</code> → stores metadata in D1</li>
-                <li><span class="goodText">GET</span> <code>/v1/videos</code> → list videos metadata</li>
-                <li><span class="goodText">GET</span> <code>/v1/videos/:id/play</code> → returns <code>{ url }</code> (signed)</li>
-                <li><span class="goodText">GET</span> <code>/v1/notes</code>, <span class="goodText">POST</span> <code>/v1/notes</code>, <span class="goodText">PUT</span> <code>/v1/notes/:id</code>, <span class="goodText">DELETE</span> <code>/v1/notes/:id</code></li>
-              </ul>
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
-  </div>
-
-  <!-- Modal -->
-  <div class="overlay" id="overlay">
-    <div class="modal">
-      <div class="modalTop">
-        <div class="row" style="min-width:0;">
-          <div class="title" id="modalTitle">Viewer</div>
-          <span class="chip" id="modalChip">Preview</span>
-        </div>
-        <div class="row">
-          <button class="btn" id="modalOpenNewTab">Open new tab</button>
-          <button class="btn danger" id="modalClose">Close</button>
-        </div>
-      </div>
-      <div class="modalBody" id="modalBody"></div>
+<!-- HERO -->
+<section class="hero">
+  <div style="position:absolute;inset:0;background:#0A0A0A;"></div>
+  <div class="track-lanes"><div class="lanes-inner" id="lanesInner"></div></div>
+  <div class="hero-spotlight"></div>
+  <svg class="cross-bg" viewBox="0 0 100 100" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="10" width="20" height="80" rx="4"/><rect x="10" y="40" width="80" height="20" rx="4"/></svg>
+  <svg class="cross-bg-left" viewBox="0 0 100 100" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="10" width="20" height="80" rx="4"/><rect x="10" y="40" width="80" height="20" rx="4"/></svg>
+  <div class="hero-content">
+    <div class="event-tag">April 4, 2026 &middot; Columbus North High School</div>
+    <h1 class="hero-title">
+      Race
+      <span class="for-text">For</span>
+      <span class="first-aid">First Aid</span>
+    </h1>
+    <p class="hero-subtitle">One day. One mile. One cause that matters.</p>
+    <div class="distance-badge">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      1600m &mdash; The Mile
+    </div>
+    <div class="cta-group">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSc0iqoB5u7b5lRM3DONtxp4vQfEm4R1dRCUySzZjy3eHWPp6A/viewform" target="_blank" class="btn-primary">&#127939; Sign Up to Run</a>
+      <a href="#donate" class="btn-secondary" style="border-color:var(--track-tan);color:var(--track-tan);">&#128155; Donate</a>
+      <a href="#about" class="btn-secondary">Learn More</a>
     </div>
   </div>
+  <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
+</section>
 
-  <div class="toast" id="toast"></div>
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-num">APR 4</span><span class="stat-label">2026</span></div>
+  <div class="stat-item"><span class="stat-num">10AM</span><span class="stat-label">To 2PM</span></div>
+  <div class="stat-item"><span class="stat-num">1600</span><span class="stat-label">Metres</span></div>
+  <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Donated</span></div>
+</div>
 
-  <script>
-    /***********************
-     * CONFIG
-     ***********************/
-    const LS_KEY = "tse_overhaul_v1";
-    const LS_API = "tse_api_cfg_v1";
+<!-- ABOUT -->
+<div id="about">
+  <div class="section-wrap">
+    <div class="about-grid">
+      <div>
+        <div class="section-label fade-up">About the Event</div>
+        <h2 class="section-title fade-up">Run With<br>Purpose.</h2>
+        <p class="about-text fade-up" style="margin-top:1.5rem;">
+          <strong>Race for First Aid</strong> is a one-day track meet built around the iconic 1600m &mdash; the mile.
+          Created by <strong>Aiden Hayes</strong> as his senior project at <strong>Columbus North High School</strong>,
+          this event brings middle and high school students together to compete, fundraise, and rally around a cause that saves lives.
+        </p>
+        <p class="about-text fade-up" style="margin-top:1rem;">
+          Whether you're chasing a personal best or running your first mile, this event is for you.
+          <strong>Every step, every lap, every second</strong> you run puts first aid kits into the hands
+          of local businesses, churches, hospitals, and organizations in our community.
+        </p>
+        <div class="event-details-card fade-up">
+          <div><div class="detail-label">Date</div><div class="detail-value">April 4, 2026</div></div>
+          <div><div class="detail-label">Time</div><div class="detail-value">10:00 AM &ndash; 2:00 PM</div></div>
+          <div style="grid-column:1/-1;"><div class="detail-label">Location</div><div class="detail-value">Columbus North High School</div><div class="detail-sub">Columbus, Indiana</div></div>
+        </div>
+      </div>
+      <div class="track-visual fade-up">
+        <div class="track-ring"></div>
+        <div class="track-ring-2"></div>
+        <div class="track-ring-3"></div>
+        <div class="track-center">
+          <svg width="40" height="40" viewBox="0 0 100 100" fill="#E8132A" style="display:block;margin:0 auto 0.4em;"><rect x="40" y="5" width="20" height="90" rx="6"/><rect x="5" y="40" width="90" height="20" rx="6"/></svg>
+          1600m
+          <span class="km">1 MILE &middot; 4 LAPS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    const DEFAULT_NEWS = [
-      { name: "Forex Factory", url: "https://www.forexfactory.com/", desc: "Economic calendar + forums (iframe may be blocked)." },
-      { name: "Investing.com Calendar", url: "https://www.investing.com/economic-calendar/", desc: "Economic calendar (iframe may be blocked)." },
-      { name: "CME FedWatch", url: "https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html", desc: "Rate probability tool." },
-      { name: "Reuters Markets", url: "https://www.reuters.com/markets/", desc: "Top market headlines." },
-      { name: "WSJ Markets", url: "https://www.wsj.com/news/markets", desc: "Markets section (paywall possible)." }
-    ];
+<div class="divider"></div>
 
-    /***********************
-     * STATE
-     ***********************/
-    let state = loadState();
-    let apiCfg = loadApiCfg();
+<!-- HOW IT WORKS -->
+<div class="how-section" id="how">
+  <div class="how-inner">
+    <div class="section-label fade-up">Race Day</div>
+    <h2 class="section-title fade-up">How It<br>Works</h2>
+    <div class="steps-grid">
+      <div class="step-card fade-up">
+        <span class="step-num">01</span>
+        <span class="step-icon">&#128203;</span>
+        <div class="step-title">Register</div>
+        <p class="step-desc">Sign up online before race day. Secure your spot on the starting line. Open to middle and high school runners of all paces.</p>
+      </div>
+      <div class="step-card fade-up" style="transition-delay:0.1s;">
+        <span class="step-num">02</span>
+        <span class="step-icon">&#127967;</span>
+        <div class="step-title">Show Up</div>
+        <p class="step-desc">Come to Columbus North High School on April 4th between 10AM&ndash;2PM. Check in, warm up, and get ready to race. No experience needed.</p>
+      </div>
+      <div class="step-card fade-up" style="transition-delay:0.2s;">
+        <span class="step-num">03</span>
+        <span class="step-icon">&#127939;</span>
+        <div class="step-title">Race</div>
+        <p class="step-desc">Toe the line. Go all out or pace yourself. Every runner who finishes the mile makes a difference for first aid in our community.</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-    let currentTab = "videos";
-    let videoSort = "newest";
-    let selectedNoteId = null;
-    let selectedNews = DEFAULT_NEWS[0];
+<div class="divider"></div>
 
-    /***********************
-     * HELPERS
-     ***********************/
-    function uid(){ return crypto.randomUUID(); }
-    function nowISO(){ return new Date().toISOString(); }
-    function fmtDate(iso){
-      try{
-        const d = new Date(iso);
-        return d.toLocaleString(undefined, { month:"short", day:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit" });
-      }catch{ return iso; }
-    }
+<!-- CAUSE -->
+<div id="cause">
+  <div class="section-wrap">
+    <div class="cause-section">
+      <div class="cause-quote fade-up">
+        <div class="section-label" style="margin-bottom:1.5rem;">Why We Run</div>
+        <p class="cause-quote-text">"First aid isn't just a skill &mdash; it's the difference between <strong>life and loss</strong> in the minutes before emergency services arrive."</p>
+        <p class="about-text" style="margin-top:2rem;">
+          <strong>Every dollar raised goes directly toward purchasing first aid kits</strong> to be donated
+          to local businesses, churches, hospitals, and organizations throughout our community.
+          No overhead. No admin costs. Your miles become kits in the places people need them most.
+        </p>
+        <div style="margin-top:2rem;display:flex;flex-wrap:wrap;gap:0.75rem;">
+          <span class="tag-pill">&#127978; Local Businesses</span>
+          <span class="tag-pill">&#9961; Churches</span>
+          <span class="tag-pill">&#127973; Hospitals</span>
+          <span class="tag-pill">&#127963; Community Orgs</span>
+        </div>
+        <p class="about-text" style="margin-top:1.5rem;font-size:0.9rem;">A senior project by <strong>Aiden Hayes</strong> &middot; Columbus North High School</p>
+      </div>
+      <div class="cause-cross fade-up">
+        <svg class="cross-svg" width="220" height="220" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs><linearGradient id="crossGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#E8132A"/><stop offset="100%" style="stop-color:#9C0A1B"/></linearGradient></defs>
+          <rect x="37" y="5" width="26" height="90" rx="8" fill="url(#crossGrad)"/>
+          <rect x="5" y="37" width="90" height="26" rx="8" fill="url(#crossGrad)"/>
+          <rect x="45" y="8" width="6" height="20" rx="3" fill="rgba(255,255,255,0.25)"/>
+          <rect x="8" y="45" width="20" height="6" rx="3" fill="rgba(255,255,255,0.25)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
 
-    function toast(msg){
-      const el = document.getElementById("toast");
-      el.textContent = msg;
-      el.classList.add("show");
-      setTimeout(()=> el.classList.remove("show"), 1700);
-    }
+<div class="divider"></div>
 
-    function setStatus(text, ok=true){
-      document.getElementById("statusText").textContent = text;
-      const dot = document.getElementById("statusDot");
-      dot.style.background = ok ? "rgba(34,197,94,.9)" : "rgba(239,68,68,.9)";
-      dot.style.boxShadow = ok ? "0 0 18px rgba(34,197,94,.35)" : "0 0 18px rgba(239,68,68,.35)";
-    }
+<!-- PRIZES -->
+<div id="prizes">
+  <div class="section-wrap">
+    <div class="section-label fade-up">Win Big</div>
+    <h2 class="section-title fade-up">Heat Winners<br><span style="color:var(--red);">Get Prizes.</span></h2>
+    <p class="about-text fade-up" style="margin-top:1.5rem;max-width:600px;">
+      First place in each heat takes home a <strong>gift card from one of our sponsors</strong>.
+      Run your fastest mile, top your heat, and walk away rewarded. Every heat is its own race &mdash; everyone has a shot.
+    </p>
+    <div class="prize-grid">
+      <div class="prize-card fade-up">
+        <span class="prize-medal">&#127947;</span>
+        <div class="prize-card-title">Heat Winner</div>
+        <p class="prize-card-desc">First place in your heat earns a sponsor gift card. Line up, race hard, claim it.</p>
+        <div class="prize-tag">Gift Card Prize</div>
+      </div>
+      <div class="prize-card fade-up" style="transition-delay:0.1s;">
+        <span class="prize-medal">&#127939;</span>
+        <div class="prize-card-title">All Levels</div>
+        <p class="prize-card-desc">Heats are grouped so every runner &mdash; beginner to experienced &mdash; competes fairly for the win.</p>
+        <div class="prize-tag">Competitive &amp; Fun</div>
+      </div>
+      <div class="prize-card fade-up" style="transition-delay:0.2s;">
+        <span class="prize-medal">&#127873;</span>
+        <div class="prize-card-title">Sponsors</div>
+        <p class="prize-card-desc">Prizes are provided by generous local sponsors who believe in this cause. More sponsors = bigger prizes.</p>
+        <div class="prize-tag">Sponsor-Backed</div>
+      </div>
+    </div>
+    <div class="sponsor-banner fade-up">
+      <div>
+        <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.3em;color:var(--track-tan);margin-bottom:0.5rem;">SPONSOR THE EVENT</div>
+        <div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:2rem;color:var(--white);line-height:1;">Want to sponsor a heat prize?</div>
+        <p style="font-size:0.9rem;color:rgba(245,240,235,0.55);margin-top:0.5rem;font-weight:300;">Businesses who donate gift cards get recognized on race day and right here on this page.</p>
+      </div>
+      <a href="mailto:?subject=Race for First Aid - Sponsorship" class="btn-secondary" style="flex-shrink:0;">Contact Aiden</a>
+    </div>
+  </div>
+</div>
 
-    function saveState(){
-      localStorage.setItem(LS_KEY, JSON.stringify(state));
-      updateCounts();
-    }
-    function loadState(){
-      const raw = localStorage.getItem(LS_KEY);
-      if(!raw){
-        return { videos: [], notes: [], news: DEFAULT_NEWS };
+<div class="divider"></div>
+
+<!-- DONATE -->
+<div id="donate" class="donate-section">
+  <div class="donate-bg-text">DONATE</div>
+  <div class="donate-inner">
+    <div class="section-label fade-up" style="justify-content:center;">Support the Cause</div>
+    <h2 class="section-title fade-up" style="text-align:center;">Every Dollar<br>Gets Us Closer.</h2>
+    <p class="about-text fade-up" style="text-align:center;margin:1.5rem auto 3rem;max-width:500px;">
+      Can't run? You can still make a difference. 100% of donations go directly toward purchasing
+      first aid kits for local businesses, churches, hospitals, and community organizations.
+      Every contribution adds up &mdash; the more we raise, the more kits we can put out there.
+    </p>
+
+    <div class="donate-widget fade-up">
+      <div class="donate-amounts">
+        <button class="amount-btn" data-amount="5">$5</button>
+        <button class="amount-btn active" data-amount="10">$10</button>
+        <button class="amount-btn" data-amount="25">$25</button>
+        <button class="amount-btn" data-amount="50">$50</button>
+        <button class="amount-btn" data-amount="100">$100</button>
+      </div>
+      <div class="custom-amount-row">
+        <span class="custom-dollar">$</span>
+        <input type="number" id="customAmount" class="custom-input" placeholder="Custom amount" min="1">
+      </div>
+      <div class="impact-bar">
+        <div class="impact-icon">&#129514;</div>
+        <div class="impact-text" id="impactText">
+          <span class="impact-num">$10</span> goes directly toward purchasing first aid kits to donate to local businesses, churches, and organizations.
+        </div>
+      </div>
+      <a id="donateBtn" href="https://account.venmo.com/u/aidenhayes" target="_blank" class="btn-primary" style="display:block;text-align:center;margin-top:1.5rem;font-size:1.2rem;padding:1.2rem;">
+        <span id="donateBtnText">&#128155; Donate $10 via Venmo</span>
+      </a>
+      <p style="text-align:center;margin-top:1rem;font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.15em;color:rgba(245,240,235,0.3);">
+        You'll be directed to Venmo to complete your donation. 100% goes to first aid kits.
+      </p>
+    </div>
+
+    <div style="margin-top:3rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
+      <div class="kit-stat fade-up"><div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:2.5rem;color:var(--red);">$5</div><div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.15em;color:rgba(245,240,235,0.5);">A Great Start</div></div>
+      <div class="kit-stat fade-up" style="transition-delay:0.1s;"><div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:2.5rem;color:var(--red);">$25</div><div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.15em;color:rgba(245,240,235,0.5);">Big Contribution</div></div>
+      <div class="kit-stat fade-up" style="transition-delay:0.2s;"><div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:2.5rem;color:var(--red);">$50+</div><div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.15em;color:rgba(245,240,235,0.5);">Huge Impact</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- DONOR FEED -->
+<div id="donors" style="padding:6rem 2rem;max-width:1100px;margin:0 auto;">
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2.5rem;">
+    <div>
+      <div class="section-label fade-up">Our Community</div>
+      <h2 class="section-title fade-up">Donor<br>Wall</h2>
+    </div>
+    <div class="fade-up" style="text-align:right;">
+      <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.25em;color:var(--red);margin-bottom:0.25rem;">TOTAL RAISED</div>
+      <div id="totalRaised" style="font-family:'Bebas Neue',Impact,sans-serif;font-size:4rem;line-height:1;color:var(--white);">$0</div>
+      <div id="donorCount" style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.85rem;letter-spacing:0.15em;color:rgba(245,240,235,0.4);">0 donors</div>
+    </div>
+  </div>
+  <div id="donorFeed" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
+  <div id="donorEmpty" style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;letter-spacing:0.1em;color:rgba(245,240,235,0.25);font-size:1rem;padding:3rem;border:1px dashed rgba(245,240,235,0.08);text-align:center;">
+    No donations yet &mdash; be the first to show up on the board!
+  </div>
+  <div style="margin-top:3rem;text-align:center;">
+    <button id="adminTrigger" style="background:none;border:none;color:rgba(245,240,235,0.1);font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.75rem;letter-spacing:0.2em;cursor:pointer;" onmouseover="this.style.color='rgba(245,240,235,0.3)'" onmouseout="this.style.color='rgba(245,240,235,0.1)'">&#9679; ADMIN</button>
+  </div>
+</div>
+
+<!-- ADMIN MODAL -->
+<div id="adminOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
+  <div style="background:#111;border:1px solid rgba(232,19,42,0.3);width:100%;max-width:460px;margin:1rem;position:relative;">
+    <div style="background:var(--red);padding:1.2rem 1.8rem;display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1.5rem;letter-spacing:0.05em;">Admin Panel</div>
+      <button id="adminClose" style="background:none;border:none;color:white;font-size:1.8rem;cursor:pointer;line-height:1;">&times;</button>
+    </div>
+    <div id="adminLogin" style="padding:2rem;">
+      <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.2em;color:rgba(245,240,235,0.5);margin-bottom:1.2rem;">ENTER PASSWORD</div>
+      <input id="adminPass" type="password" placeholder="Password" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(245,240,235,0.15);color:var(--white);font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:1.1rem;padding:0.8rem 1rem;letter-spacing:0.1em;outline:none;margin-bottom:0.75rem;box-sizing:border-box;">
+      <div id="adminPassError" style="color:var(--red);font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.85rem;letter-spacing:0.1em;margin-bottom:0.75rem;display:none;">Incorrect password.</div>
+      <button id="adminLoginBtn" class="btn-primary" style="width:100%;text-align:center;font-size:1rem;padding:0.9rem;">Enter</button>
+    </div>
+    <div id="adminPanel" style="padding:2rem;display:none;">
+      <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.2em;color:rgba(245,240,235,0.5);margin-bottom:1.2rem;">ADD DONATION</div>
+      <input id="adminName" type="text" placeholder="Donor name" maxlength="40" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(245,240,235,0.15);color:var(--white);font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:1.1rem;padding:0.8rem 1rem;letter-spacing:0.05em;outline:none;margin-bottom:0.75rem;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;border:1px solid rgba(245,240,235,0.15);margin-bottom:1rem;overflow:hidden;">
+        <span style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1.6rem;color:var(--track-tan);padding:0.5rem 0.9rem;background:rgba(200,169,110,0.08);border-right:1px solid rgba(245,240,235,0.1);">$</span>
+        <input id="adminAmount" type="number" placeholder="Amount" min="1" style="flex:1;background:transparent;border:none;outline:none;color:var(--white);font-family:'Bebas Neue',Impact,sans-serif;font-size:1.6rem;padding:0.5rem 0.9rem;">
+      </div>
+      <button id="adminAddBtn" class="btn-primary" style="width:100%;text-align:center;font-size:1rem;padding:0.9rem;margin-bottom:1.5rem;">Add to Donor Wall</button>
+      <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.2em;color:rgba(245,240,235,0.4);margin-bottom:0.75rem;">CURRENT DONORS (click name to remove)</div>
+      <div id="adminDonorList" style="display:flex;flex-direction:column;gap:0.5rem;max-height:200px;overflow-y:auto;"></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SIGN UP -->
+<div class="signup-section" id="signup">
+  <div class="signup-bg-text">RUN</div>
+  <div class="signup-inner">
+    <div class="section-label fade-up" style="justify-content:center;">Join the Race</div>
+    <h2 class="signup-title fade-up">Ready<br>to Run?</h2>
+    <p class="signup-subtitle fade-up">Open to middle and high school students. Show up, run the mile, and help put first aid kits into your community.</p>
+    <div class="signup-card fade-up">
+      <span class="signup-card-icon">&#127939;</span>
+      <div class="signup-card-title">Runner</div>
+      <p class="signup-card-desc">Sign up to compete in the 1600m. Every stride raises funds and awareness for first aid in our community.</p>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSc0iqoB5u7b5lRM3DONtxp4vQfEm4R1dRCUySzZjy3eHWPp6A/viewform" target="_blank" class="btn-primary" style="display:block;width:100%;text-align:center;">Sign Up to Run</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">Race for First Aid</span>
+  <p>A senior project by <strong style="color:var(--white);">Aiden Hayes</strong> &middot; Columbus North High School</p>
+  <p style="margin-top:0.5rem;">April 4, 2026 &middot; 10AM&ndash;2PM &middot; Columbus, Indiana</p>
+  <p style="margin-top:0.5rem;">1600m &middot; The Mile &middot; First Aid Kits for Our Community</p>
+  <p style="margin-top:1.5rem;display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSc0iqoB5u7b5lRM3DONtxp4vQfEm4R1dRCUySzZjy3eHWPp6A/viewform" target="_blank" style="color:var(--red);text-decoration:none;letter-spacing:0.15em;">SIGN UP TO RUN &rarr;</a>
+    <a href="#donate" style="color:var(--track-tan);text-decoration:none;letter-spacing:0.15em;">DONATE &rarr;</a>
+  </p>
+</footer>
+
+<script>
+  // Track lanes
+  const lanesInner = document.getElementById('lanesInner');
+  for (let i = 1; i <= 9; i++) {
+    const line = document.createElement('div');
+    line.className = 'lane-line';
+    line.style.left = (i * 10) + '%';
+    lanesInner.appendChild(line);
+    const dash = document.createElement('div');
+    dash.className = 'lane-dash';
+    dash.style.left = 'calc(' + (i * 10) + '% + 1px)';
+    dash.style.animationDelay = (i * 0.15) + 's';
+    lanesInner.appendChild(dash);
+  }
+
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', function() {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // Fade-up: works both on scroll AND when navigating directly to a section
+  const fadeEls = document.querySelectorAll('.fade-up');
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
       }
-      try{
-        const parsed = JSON.parse(raw);
-        parsed.videos ||= [];
-        parsed.notes ||= [];
-        parsed.news ||= DEFAULT_NEWS;
-        return parsed;
-      }catch{
-        return { videos: [], notes: [], news: DEFAULT_NEWS };
-      }
-    }
-
-    function saveApiCfg(){
-      localStorage.setItem(LS_API, JSON.stringify(apiCfg));
-      updateModePill();
-    }
-    function loadApiCfg(){
-      const raw = localStorage.getItem(LS_API);
-      if(!raw) return { base:"", token:"" };
-      try{
-        const p = JSON.parse(raw);
-        return { base: p.base || "", token: p.token || "" };
-      }catch{
-        return { base:"", token:"" };
-      }
-    }
-
-    function isApiMode(){
-      return !!(apiCfg.base && apiCfg.base.trim());
-    }
-
-    async function apiFetch(path, opts={}){
-      const base = apiCfg.base.replace(/\/+$/,"");
-      const url = base + path;
-      const headers = Object.assign({ "Content-Type":"application/json" }, opts.headers || {});
-      if(apiCfg.token) headers["Authorization"] = "Bearer " + apiCfg.token;
-      const res = await fetch(url, { ...opts, headers });
-      if(!res.ok){
-        const t = await res.text().catch(()=> "");
-        throw new Error(`API ${res.status}: ${t || res.statusText}`);
-      }
-      const ct = res.headers.get("content-type") || "";
-      if(ct.includes("application/json")) return res.json();
-      return res.text();
-    }
-
-    function sanitizeTitle(s){
-      return (s || "").trim().slice(0, 120) || "Untitled";
-    }
-
-    function filterTextMatches(obj, q){
-      if(!q) return true;
-      q = q.toLowerCase();
-      const hay = JSON.stringify(obj).toLowerCase();
-      return hay.includes(q);
-    }
-
-    /***********************
-     * UI TAB MANAGEMENT
-     ***********************/
-    const nav = document.getElementById("nav");
-    nav.addEventListener("click", (e)=>{
-      const btn = e.target.closest(".navbtn");
-      if(!btn) return;
-      switchTab(btn.dataset.tab);
     });
+  }, { threshold: 0 });
 
-    function switchTab(tab){
-      currentTab = tab;
+  // Use rAF so layout is settled before we start observing
+  requestAnimationFrame(function() {
+    fadeEls.forEach(function(el) { observer.observe(el); });
+  });
 
-      document.querySelectorAll(".navbtn").forEach(b=>{
-        b.classList.toggle("active", b.dataset.tab === tab);
+  // Donation widget
+  var impacts = {
+    5:   'goes directly toward first aid kits for our community. Every bit helps!',
+    10:  'goes directly toward purchasing first aid kits to donate to local businesses, churches, and organizations.',
+    25:  'is a meaningful contribution toward stocking first aid kits across our community — thank you!',
+    50:  'is a generous contribution that brings us much closer to putting kits in the hands of local hospitals, businesses, and churches.',
+    100: 'is an incredible donation that could make a huge difference in how many first aid kits we can get into our community.'
+  };
+
+  function getImpactText(amount) {
+    if (amount <= 5) return impacts[5];
+    if (amount <= 10) return impacts[10];
+    if (amount <= 25) return impacts[25];
+    if (amount <= 50) return impacts[50];
+    return impacts[100];
+  }
+
+  function updateWidget(amount) {
+    var impactEl = document.getElementById('impactText');
+    var btnLabel = document.getElementById('donateBtnText');
+    if (impactEl) impactEl.innerHTML = '<span class="impact-num">$' + amount + '</span> ' + getImpactText(amount);
+    if (btnLabel) btnLabel.textContent = '\uD83D\uDC9B Donate $' + amount + ' via Venmo';
+  }
+
+  document.querySelectorAll('.amount-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.amount-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('customAmount').value = '';
+      updateWidget(parseInt(btn.dataset.amount));
+    });
+  });
+
+  var customInput = document.getElementById('customAmount');
+  if (customInput) {
+    customInput.addEventListener('input', function() {
+      var val = parseInt(customInput.value);
+      if (val && val > 0) {
+        document.querySelectorAll('.amount-btn').forEach(function(b) { b.classList.remove('active'); });
+        updateWidget(val);
+      }
+    });
+  }
+
+  updateWidget(10);
+
+
+  // =============================================
+  // DONOR WALL + ADMIN PANEL
+  // Password — change this to whatever you want!
+  // =============================================
+  var ADMIN_PASSWORD = 'r4fa2026';
+
+  var STORAGE_KEY = 'r4fa_donors';
+
+  function loadDonors() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch(e) { return []; }
+  }
+
+  function saveDonors(donors) {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(donors)); } catch(e) {}
+  }
+
+  function getBadge(amount) {
+    if (amount >= 50) return '<span class="donor-badge badge-hero">&#127775; Hero</span>';
+    if (amount >= 20) return '<span class="donor-badge badge-champ">&#127942; Champion</span>';
+    return '<span class="donor-badge badge-friend">&#10084; Supporter</span>';
+  }
+
+  function timeAgo(ts) {
+    var diff = Math.floor((Date.now() - ts) / 1000);
+    if (diff < 60)  return 'Just now';
+    if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+    return Math.floor(diff/86400) + 'd ago';
+  }
+
+  function renderFeed() {
+    var donors = loadDonors();
+    var feed = document.getElementById('donorFeed');
+    var empty = document.getElementById('donorEmpty');
+    var totalEl = document.getElementById('totalRaised');
+    var countEl = document.getElementById('donorCount');
+    if (!feed) return;
+
+    feed.innerHTML = '';
+
+    if (donors.length === 0) {
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+      var total = 0;
+      // Show newest first
+      var sorted = donors.slice().reverse();
+      sorted.forEach(function(d, i) {
+        total += d.amount;
+        var initials = d.name.trim().split(' ').map(function(w){ return w[0]; }).join('').substring(0,2).toUpperCase();
+        var card = document.createElement('div');
+        card.className = 'donor-card';
+        card.style.animationDelay = (i * 0.07) + 's';
+        card.innerHTML =
+          '<div class="donor-avatar">' + initials + '</div>' +
+          '<div class="donor-name">' + escapeHtml(d.name) + '</div>' +
+          '<div class="donor-time">' + timeAgo(d.ts) + '</div>' +
+          getBadge(d.amount) +
+          '<div class="donor-amount">$' + d.amount + '</div>';
+        feed.appendChild(card);
       });
+      if (totalEl) totalEl.textContent = '$' + total.toLocaleString();
+      if (countEl) countEl.textContent = donors.length + (donors.length === 1 ? ' donor' : ' donors');
+    }
+  }
 
-      document.querySelectorAll("[id^='tab-']").forEach(s=>{
-        s.classList.add("hidden");
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderAdminList() {
+    var donors = loadDonors();
+    var list = document.getElementById('adminDonorList');
+    if (!list) return;
+    list.innerHTML = '';
+    if (donors.length === 0) {
+      list.innerHTML = '<div style="color:rgba(245,240,235,0.3);font-family:Barlow Condensed,sans-serif;font-size:0.9rem;padding:0.5rem;">No donors yet.</div>';
+      return;
+    }
+    donors.slice().reverse().forEach(function(d, i) {
+      var realIdx = donors.length - 1 - i;
+      var row = document.createElement('div');
+      row.className = 'admin-donor-row';
+      row.innerHTML =
+        '<span>' + escapeHtml(d.name) + '</span>' +
+        '<span style="color:var(--track-tan);font-family:Bebas Neue,Impact,sans-serif;font-size:1.1rem;">$' + d.amount + '</span>' +
+        '<button title="Remove" data-idx="' + realIdx + '">&times;</button>';
+      row.querySelector('button').addEventListener('click', function() {
+        var idx = parseInt(this.getAttribute('data-idx'));
+        var donors2 = loadDonors();
+        donors2.splice(idx, 1);
+        saveDonors(donors2);
+        renderFeed();
+        renderAdminList();
       });
-      document.getElementById("tab-" + tab).classList.remove("hidden");
-
-      const title = document.getElementById("viewTitle");
-      const hint = document.getElementById("viewHint");
-      const newBtn = document.getElementById("newBtn");
-      const primaryBtn = document.getElementById("primaryBtn");
-
-      if(tab === "videos"){
-        title.textContent = "Videos";
-        hint.textContent = "Hover a card to preview. Click to open.";
-        newBtn.textContent = "New";
-        primaryBtn.textContent = "Upload";
-        primaryBtn.onclick = ()=> switchTab("upload");
-      }else if(tab === "upload"){
-        title.textContent = "Upload";
-        hint.textContent = "Add MP4 clips (Local or R2).";
-        newBtn.textContent = "Demo";
-        primaryBtn.textContent = "Upload";
-        newBtn.onclick = addDemoVideo;
-        primaryBtn.onclick = handleUpload;
-      }else if(tab === "notes"){
-        title.textContent = "Notes";
-        hint.textContent = "Docs + images. Save often.";
-        newBtn.textContent = "New Doc";
-        primaryBtn.textContent = "Save";
-        newBtn.onclick = newNote;
-        primaryBtn.onclick = saveNote;
-      }else if(tab === "news"){
-        title.textContent = "News";
-        hint.textContent = "Pick a source. Some sites block embedding.";
-        newBtn.textContent = "Open";
-        primaryBtn.textContent = "New Tab";
-        newBtn.onclick = ()=> openNewsModal(selectedNews);
-        primaryBtn.onclick = ()=> window.open(selectedNews.url, "_blank", "noopener,noreferrer");
-      }else if(tab === "account"){
-        title.textContent = "Account";
-        hint.textContent = "Connect your Worker API for R2/D1.";
-        newBtn.textContent = "Export";
-        primaryBtn.textContent = "Reset";
-        newBtn.onclick = exportData;
-        primaryBtn.onclick = resetLocal;
-      }
-
-      render();
-    }
-
-    /***********************
-     * VIDEOS
-     ***********************/
-    function updateCounts(){
-      document.getElementById("countVideos").textContent = `${state.videos.length} videos`;
-      document.getElementById("countNotes").textContent = `${state.notes.length} notes`;
-    }
-
-    function sortVideos(videos){
-      const arr = [...videos];
-      if(videoSort === "newest") arr.sort((a,b)=> (b.createdAt||"").localeCompare(a.createdAt||""));
-      if(videoSort === "oldest") arr.sort((a,b)=> (a.createdAt||"").localeCompare(b.createdAt||""));
-      if(videoSort === "title") arr.sort((a,b)=> (a.title||"").localeCompare(b.title||""));
-      return arr;
-    }
-
-    function renderVideos(){
-      const q = document.getElementById("search").value.trim().toLowerCase();
-      const grid = document.getElementById("videoGrid");
-      grid.innerHTML = "";
-
-      const filtered = sortVideos(state.videos).filter(v => filterTextMatches(v, q));
-      document.getElementById("emptyVideos").style.display = filtered.length ? "none" : "block";
-
-      for(const v of filtered){
-        const el = document.createElement("div");
-        el.className = "card videoCard";
-        el.innerHTML = `
-          <div class="thumb">
-            <video muted playsinline preload="metadata"></video>
-            <div class="badge">${fmtDate(v.createdAt || "")}</div>
-          </div>
-          <div class="cardBody">
-            <div class="rowBetween">
-              <div style="min-width:0">
-                <div style="font-weight:900; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                  ${escapeHtml(v.title || "Untitled")}
-                </div>
-                <div class="small" style="margin-top:4px;">${escapeHtml(v.note || "Click to open")}</div>
-              </div>
-              <div class="row" style="flex:none;">
-                <span class="chip">${escapeHtml(v.source || (isApiMode() ? "R2" : "Local"))}</span>
-              </div>
-            </div>
-          </div>
-        `;
-
-        // attach preview src (only if local dataUrl or a direct url exists)
-        const vid = el.querySelector("video");
-        const previewSrc = v.previewUrl || v.url || v.dataUrl || "";
-        if(previewSrc){
-          vid.src = previewSrc;
-        }
-
-        el.addEventListener("mouseenter", ()=>{
-          if(vid && vid.src){
-            vid.currentTime = 0;
-            vid.play().catch(()=>{});
-          }
-        });
-        el.addEventListener("mouseleave", ()=>{
-          if(vid){
-            vid.pause();
-          }
-        });
-
-        el.addEventListener("click", async ()=>{
-          try{
-            // In API mode, request a signed playback URL.
-            if(isApiMode() && v.id){
-              setStatus("Loading playback…");
-              const r = await apiFetch(`/v1/videos/${encodeURIComponent(v.id)}/play`, { method:"GET" });
-              const url = r.url || r;
-              openVideoModal(v.title, url, v);
-              setStatus("Ready");
-            }else{
-              openVideoModal(v.title, v.url || v.dataUrl || v.previewUrl, v);
-            }
-          }catch(err){
-            setStatus("Playback failed", false);
-            toast(err.message || "Playback failed");
-          }
-        });
-
-        grid.appendChild(el);
-      }
-    }
-
-    function openVideoModal(title, url, meta){
-      if(!url){
-        toast("No video URL available.");
-        return;
-      }
-      openModal(title, "Video", (body)=>{
-        const v = document.createElement("video");
-        v.controls = true;
-        v.autoplay = true;
-        v.src = url;
-        body.appendChild(v);
-
-        const info = document.createElement("div");
-        info.style.padding = "12px 14px";
-        info.innerHTML = `
-          <div class="small">
-            <b>Created:</b> ${escapeHtml(fmtDate(meta.createdAt||""))}
-            &nbsp;•&nbsp;<b>Source:</b> ${escapeHtml(meta.source || (isApiMode() ? "R2" : "Local"))}
-          </div>
-        `;
-        body.appendChild(info);
-      }, url);
-    }
-
-    /***********************
-     * UPLOAD
-     ***********************/
-    document.getElementById("uploadBtn").onclick = handleUpload;
-    document.getElementById("demoBtn").onclick = addDemoVideo;
-
-    function addDemoVideo(){
-      // Lightweight demo using a public MP4 sample (works as a preview)
-      const demoUrl = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
-      state.videos.unshift({
-        id: uid(),
-        title: "Demo Clip (hover preview works)",
-        createdAt: nowISO(),
-        source: "Demo",
-        url: demoUrl,
-        previewUrl: demoUrl,
-        note: "Replace with your own uploads."
-      });
-      saveState();
-      renderVideos();
-      toast("Demo video added");
-      switchTab("videos");
-    }
-
-    async function handleUpload(){
-      const title = sanitizeTitle(document.getElementById("uploadTitle").value);
-      const file = document.getElementById("fileInput").files[0];
-      const help = document.getElementById("uploadHelp");
-      help.textContent = "";
-
-      if(!file){
-        toast("Choose a video file first.");
-        return;
-      }
-
-      try{
-        setStatus("Uploading…");
-        if(isApiMode()){
-          // API mode: init upload -> PUT to R2 URL -> complete
-          // This assumes your Worker implements the endpoints described in Account tab.
-          const init = await apiFetch("/v1/videos/init-upload", {
-            method:"POST",
-            body: JSON.stringify({ filename: file.name, contentType: file.type || "video/mp4", title })
-          });
-
-          const uploadUrl = init.uploadUrl;
-          const key = init.key;
-          const videoId = init.id || uid(); // allow Worker to return id, else local id
-
-          // Put directly to R2 signed URL
-          const putRes = await fetch(uploadUrl, {
-            method:"PUT",
-            headers: { "Content-Type": file.type || "application/octet-stream" },
-            body: file
-          });
-          if(!putRes.ok){
-            throw new Error("R2 upload failed: " + putRes.status);
-          }
-
-          // Complete: store metadata in D1
-          const completed = await apiFetch("/v1/videos/complete", {
-            method:"POST",
-            body: JSON.stringify({ id: videoId, title, key, contentType: file.type || "video/mp4" })
-          });
-
-          // Add to local list (metadata only). Playback URL comes from /play later.
-          state.videos.unshift({
-            id: completed.id || videoId,
-            title,
-            createdAt: completed.createdAt || nowISO(),
-            source: "R2",
-            key: completed.key || key,
-            note: "Stored in R2 (signed playback)."
-          });
-
-          saveState();
-          setStatus("Uploaded");
-          toast("Uploaded via R2/D1");
-        }else{
-          // Local mode: store as dataUrl (can be huge; for real use, switch to API mode)
-          const dataUrl = await readFileAsDataURL(file);
-          state.videos.unshift({
-            id: uid(),
-            title,
-            createdAt: nowISO(),
-            source: "Local",
-            dataUrl,
-            previewUrl: dataUrl,
-            note: "LocalStorage (not recommended for big files)."
-          });
-          saveState();
-          setStatus("Saved locally");
-          toast("Saved locally");
-        }
-
-        document.getElementById("uploadTitle").value = "";
-        document.getElementById("fileInput").value = "";
-        renderVideos();
-        switchTab("videos");
-      }catch(err){
-        setStatus("Upload failed", false);
-        help.textContent = err.message || "Upload failed";
-        toast(err.message || "Upload failed");
-      }
-    }
-
-    function readFileAsDataURL(file){
-      return new Promise((resolve, reject)=>{
-        const fr = new FileReader();
-        fr.onload = ()=> resolve(fr.result);
-        fr.onerror = ()=> reject(new Error("File read failed"));
-        fr.readAsDataURL(file);
-      });
-    }
-
-    /***********************
-     * NOTES
-     ***********************/
-    document.getElementById("newNoteBtn").onclick = newNote;
-    document.getElementById("saveNoteBtn").onclick = saveNote;
-    document.getElementById("deleteNoteBtn").onclick = deleteNote;
-
-    const editor = document.getElementById("editor");
-    const notesList = document.getElementById("notesList");
-
-    function renderNotes(){
-      const q = document.getElementById("search").value.trim().toLowerCase();
-      notesList.innerHTML = "";
-      const filtered = [...state.notes]
-        .sort((a,b)=> (b.updatedAt||"").localeCompare(a.updatedAt||""))
-        .filter(n => filterTextMatches(n, q));
-
-      document.getElementById("emptyNotes").style.display = filtered.length ? "none" : "block";
-
-      for(const n of filtered){
-        const el = document.createElement("div");
-        el.className = "item";
-        el.innerHTML = `
-          <div style="min-width:0">
-            <div class="name">${escapeHtml(n.title || "Untitled")}</div>
-            <div class="desc">Updated ${escapeHtml(fmtDate(n.updatedAt || n.createdAt || ""))}</div>
-          </div>
-          <button class="btn" style="padding:8px 10px;">Edit</button>
-        `;
-        el.addEventListener("click", ()=> selectNote(n.id));
-        notesList.appendChild(el);
-      }
-    }
-
-    function selectNote(id){
-      const n = state.notes.find(x => x.id === id);
-      if(!n) return;
-      selectedNoteId = id;
-
-      document.getElementById("noteTitleLabel").textContent = n.title || "Untitled";
-      document.getElementById("noteMeta").textContent = `Updated ${fmtDate(n.updatedAt || n.createdAt || "")}`;
-
-      editor.innerHTML = n.html || "";
-      document.getElementById("saveNoteBtn").disabled = false;
-      document.getElementById("deleteNoteBtn").disabled = false;
-      toast("Editing note");
-    }
-
-    function newNote(){
-      const title = prompt("Doc title?") || "";
-      const note = {
-        id: uid(),
-        title: sanitizeTitle(title),
-        html: "",
-        createdAt: nowISO(),
-        updatedAt: nowISO()
-      };
-      state.notes.unshift(note);
-      saveState();
-      renderNotes();
-      selectNote(note.id);
-    }
-
-    async function saveNote(){
-      if(!selectedNoteId){
-        toast("Select a note first.");
-        return;
-      }
-      const n = state.notes.find(x => x.id === selectedNoteId);
-      if(!n) return;
-
-      n.html = editor.innerHTML;
-      n.updatedAt = nowISO();
-
-      try{
-        if(isApiMode()){
-          // Optional: persist notes in D1
-          await apiFetch(`/v1/notes/${encodeURIComponent(n.id)}`, {
-            method:"PUT",
-            body: JSON.stringify({ title: n.title, html: n.html, updatedAt: n.updatedAt })
-          });
-        }
-        saveState();
-        renderNotes();
-        toast("Saved");
-      }catch(err){
-        toast("Saved locally; API failed");
-      }
-    }
-
-    async function deleteNote(){
-      if(!selectedNoteId) return;
-      const n = state.notes.find(x => x.id === selectedNoteId);
-      if(!n) return;
-
-      if(!confirm(`Delete "${n.title}"?`)) return;
-
-      try{
-        if(isApiMode()){
-          await apiFetch(`/v1/notes/${encodeURIComponent(n.id)}`, { method:"DELETE" });
-        }
-      }catch{}
-
-      state.notes = state.notes.filter(x => x.id !== n.id);
-      selectedNoteId = null;
-      editor.innerHTML = "";
-      document.getElementById("noteTitleLabel").textContent = "Editor";
-      document.getElementById("noteMeta").textContent = "Select a doc to start";
-      document.getElementById("saveNoteBtn").disabled = true;
-      document.getElementById("deleteNoteBtn").disabled = true;
-
-      saveState();
-      renderNotes();
-      toast("Deleted");
-    }
-
-    // Toolbar actions
-    document.getElementById("toolbar").addEventListener("click", (e)=>{
-      const btn = e.target.closest(".tool");
-      if(!btn) return;
-      const cmd = btn.dataset.cmd;
-      if(!cmd) return;
-
-      if(cmd === "formatBlock"){
-        const arg = btn.dataset.arg === "H2" ? "h2" : "p";
-        document.execCommand(cmd, false, arg);
-      }else{
-        document.execCommand(cmd, false, null);
-      }
-      editor.focus();
+      list.appendChild(row);
     });
+  }
 
-    document.getElementById("colorPicker").addEventListener("input", (e)=>{
-      const color = e.target.value;
-      document.execCommand("foreColor", false, color);
-      editor.focus();
-    });
+  // Admin modal open/close
+  var adminLoggedIn = false;
 
-    document.getElementById("imgBtn").addEventListener("click", ()=>{
-      document.getElementById("imgInput").click();
-    });
-    document.getElementById("imgInput").addEventListener("change", async (e)=>{
-      const f = e.target.files[0];
-      if(!f) return;
-
-      // local: embed as data URL. api mode: still embed data URL unless you implement R2 image upload.
-      const dataUrl = await readFileAsDataURL(f);
-      insertHtmlAtCursor(`<img src="${dataUrl}" alt="image" />`);
-      editor.focus();
-      e.target.value = "";
-    });
-
-    function insertHtmlAtCursor(html) {
-      const sel = window.getSelection();
-      if (!sel || sel.rangeCount === 0) {
-        editor.insertAdjacentHTML("beforeend", html);
-        return;
-      }
-      const range = sel.getRangeAt(0);
-      range.deleteContents();
-      const temp = document.createElement("div");
-      temp.innerHTML = html;
-      const frag = document.createDocumentFragment();
-      let node;
-      while ((node = temp.firstChild)) frag.appendChild(node);
-      range.insertNode(frag);
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
+  document.getElementById('adminTrigger').addEventListener('click', function() {
+    var overlay = document.getElementById('adminOverlay');
+    overlay.style.display = 'flex';
+    if (adminLoggedIn) {
+      document.getElementById('adminLogin').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      renderAdminList();
+    } else {
+      document.getElementById('adminLogin').style.display = 'block';
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('adminPass').value = '';
+      document.getElementById('adminPassError').style.display = 'none';
     }
+  });
 
-    /***********************
-     * NEWS
-     ***********************/
-    const newsList = document.getElementById("newsList");
-    document.getElementById("openNewsModalBtn").onclick = ()=> openNewsModal(selectedNews);
-    document.getElementById("openInNewTabBtn").onclick = ()=> window.open(selectedNews.url, "_blank", "noopener,noreferrer");
+  document.getElementById('adminClose').addEventListener('click', function() {
+    document.getElementById('adminOverlay').style.display = 'none';
+  });
 
-    function renderNews(){
-      newsList.innerHTML = "";
-      const sources = state.news && state.news.length ? state.news : DEFAULT_NEWS;
-      for(const s of sources){
-        const el = document.createElement("div");
-        el.className = "item";
-        el.innerHTML = `
-          <div style="min-width:0">
-            <div class="name">${escapeHtml(s.name)}</div>
-            <div class="desc">${escapeHtml(s.desc || s.url)}</div>
-          </div>
-          <span class="chip">Select</span>
-        `;
-        el.addEventListener("click", ()=>{
-          selectedNews = s;
-          document.getElementById("newsInfo").textContent = `Selected: ${s.name}`;
-          toast("Selected " + s.name);
-        });
-        newsList.appendChild(el);
-      }
-      if(!selectedNews) selectedNews = sources[0];
-      document.getElementById("newsInfo").textContent = `Selected: ${selectedNews.name}`;
+  document.getElementById('adminOverlay').addEventListener('click', function(e) {
+    if (e.target === this) this.style.display = 'none';
+  });
+
+  // Login
+  function tryLogin() {
+    var pw = document.getElementById('adminPass').value;
+    if (pw === ADMIN_PASSWORD) {
+      adminLoggedIn = true;
+      document.getElementById('adminLogin').style.display = 'none';
+      document.getElementById('adminPanel').style.display = 'block';
+      renderAdminList();
+    } else {
+      document.getElementById('adminPassError').style.display = 'block';
+      document.getElementById('adminPass').value = '';
     }
+  }
 
-    function openNewsModal(s){
-      openModal(s.name, "News", (body)=>{
-        const iframe = document.createElement("iframe");
-        iframe.src = s.url;
-        body.appendChild(iframe);
-      }, s.url);
+  document.getElementById('adminLoginBtn').addEventListener('click', tryLogin);
+  document.getElementById('adminPass').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') tryLogin();
+  });
+
+  // Add donor
+  document.getElementById('adminAddBtn').addEventListener('click', function() {
+    var name = document.getElementById('adminName').value.trim();
+    var amount = parseInt(document.getElementById('adminAmount').value);
+    if (!name || !amount || amount < 1) {
+      alert('Please enter a name and a valid amount.');
+      return;
     }
+    var donors = loadDonors();
+    donors.push({ name: name, amount: amount, ts: Date.now() });
+    saveDonors(donors);
+    document.getElementById('adminName').value = '';
+    document.getElementById('adminAmount').value = '';
+    renderFeed();
+    renderAdminList();
+  });
 
-    /***********************
-     * ACCOUNT / DATA
-     ***********************/
-    document.getElementById("saveApiBtn").onclick = ()=>{
-      apiCfg.base = (document.getElementById("apiBase").value || "").trim();
-      apiCfg.token = (document.getElementById("apiToken").value || "").trim();
-      saveApiCfg();
-      toast("Saved API config");
-      setStatus(isApiMode() ? "API Mode enabled" : "Local Mode");
-    };
-    document.getElementById("clearApiBtn").onclick = ()=>{
-      apiCfg = { base:"", token:"" };
-      document.getElementById("apiBase").value = "";
-      document.getElementById("apiToken").value = "";
-      saveApiCfg();
-      toast("API cleared");
-      setStatus("Local Mode");
-    };
+  // Also allow Enter key on amount field
+  document.getElementById('adminAmount').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') document.getElementById('adminAddBtn').click();
+  });
 
-    document.getElementById("exportDataBtn").onclick = exportData;
-    document.getElementById("importDataBtn").onclick = ()=> document.getElementById("importFile").click();
-    document.getElementById("importFile").addEventListener("change", importData);
-    document.getElementById("resetBtn").onclick = resetLocal;
-    document.getElementById("exportBtn").onclick = (e)=>{ e.preventDefault(); exportData(); };
+  // Initial render
+  renderFeed();
 
-    function exportData(){
-      const blob = new Blob([JSON.stringify(state, null, 2)], { type:"application/json" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "tse-export.json";
-      a.click();
-      URL.revokeObjectURL(a.href);
-      toast("Exported JSON");
-    }
+  // Refresh time labels every minute
+  setInterval(renderFeed, 60000);
 
-    async function importData(e){
-      const f = e.target.files[0];
-      if(!f) return;
-      try{
-        const txt = await f.text();
-        const obj = JSON.parse(txt);
-        if(!obj || typeof obj !== "object") throw new Error("Invalid file");
-        state.videos = Array.isArray(obj.videos) ? obj.videos : [];
-        state.notes = Array.isArray(obj.notes) ? obj.notes : [];
-        state.news = Array.isArray(obj.news) ? obj.news : DEFAULT_NEWS;
-        saveState();
-        render();
-        toast("Imported");
-      }catch(err){
-        toast("Import failed");
-      }finally{
-        e.target.value = "";
-      }
-    }
-
-    function resetLocal(){
-      if(!confirm("Reset local TSE data?")) return;
-      localStorage.removeItem(LS_KEY);
-      state = { videos: [], notes: [], news: DEFAULT_NEWS };
-      saveState();
-      selectedNoteId = null;
-      editor.innerHTML = "";
-      render();
-      toast("Reset");
-    }
-
-    function updateModePill(){
-      const pill = document.getElementById("modePill");
-      if(isApiMode()){
-        pill.textContent = "API Mode";
-      }else{
-        pill.textContent = "Local Mode";
-      }
-      document.getElementById("apiBase").value = apiCfg.base || "";
-      document.getElementById("apiToken").value = apiCfg.token || "";
-    }
-
-    /***********************
-     * MODAL
-     ***********************/
-    const overlay = document.getElementById("overlay");
-    const modalBody = document.getElementById("modalBody");
-    const modalTitle = document.getElementById("modalTitle");
-    const modalChip = document.getElementById("modalChip");
-    const modalOpenNewTab = document.getElementById("modalOpenNewTab");
-    document.getElementById("modalClose").onclick = closeModal;
-    overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeModal(); });
-
-    function openModal(title, chip, builder, openUrl){
-      modalTitle.textContent = title;
-      modalChip.textContent = chip;
-      modalBody.innerHTML = "";
-      builder(modalBody);
-      overlay.classList.add("show");
-      modalOpenNewTab.onclick = ()=> openUrl ? window.open(openUrl, "_blank", "noopener,noreferrer") : null;
-    }
-    function closeModal(){
-      overlay.classList.remove("show");
-      modalBody.innerHTML = "";
-    }
-
-    /***********************
-     * SEARCH + SORT
-     ***********************/
-    document.getElementById("search").addEventListener("input", ()=> render());
-
-    document.getElementById("sortNewest").onclick = ()=>{ videoSort="newest"; renderVideos(); };
-    document.getElementById("sortOldest").onclick = ()=>{ videoSort="oldest"; renderVideos(); };
-    document.getElementById("sortTitle").onclick = ()=>{ videoSort="title"; renderVideos(); };
-
-    /***********************
-     * COMMAND PALETTE (simple)
-     ***********************/
-    document.addEventListener("keydown", (e)=>{
-      const isCmdK = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k";
-      if(isCmdK){
-        e.preventDefault();
-        const cmd = prompt("Command: videos / upload / notes / news / account");
-        if(!cmd) return;
-        const c = cmd.trim().toLowerCase();
-        if(["videos","upload","notes","news","account"].includes(c)){
-          switchTab(c);
-        }else{
-          toast("Unknown command");
-        }
-      }
-      // Quick nav 1..5
-      if(!e.metaKey && !e.ctrlKey && !e.altKey){
-        if(e.key === "1") switchTab("videos");
-        if(e.key === "2") switchTab("upload");
-        if(e.key === "3") switchTab("notes");
-        if(e.key === "4") switchTab("news");
-        if(e.key === "5") switchTab("account");
-      }
-    });
-
-    /***********************
-     * UTIL
-     ***********************/
-    function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    /***********************
-     * INITIAL RENDER
-     ***********************/
-    function render(){
-      updateCounts();
-      updateModePill();
-
-      if(currentTab === "videos") renderVideos();
-      if(currentTab === "upload") {/* no-op */}
-      if(currentTab === "notes") renderNotes();
-      if(currentTab === "news") renderNews();
-      if(currentTab === "account") {/* no-op */}
-
-      // Enable/disable note buttons if selected
-      const hasSel = !!selectedNoteId;
-      document.getElementById("saveNoteBtn").disabled = !hasSel;
-      document.getElementById("deleteNoteBtn").disabled = !hasSel;
-    }
-
-    // Init
-    switchTab("videos");
-    setStatus(isApiMode() ? "API Mode" : "Local Mode");
-  </script>
+</script>
 </body>
 </html>
