@@ -7,256 +7,171 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --red: #E8132A;
-    --red-dark: #9C0A1B;
-    --white: #F5F0EB;
-    --black: #0A0A0A;
-    --track-tan: #C8A96E;
-    --track-tan-light: #DFC28A;
+    --red: #E8132A; --red-dark: #9C0A1B;
+    --white: #F5F0EB; --black: #0A0A0A;
+    --track-tan: #C8A96E; --track-tan-light: #DFC28A;
   }
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body { background: var(--black); color: var(--white); font-family: 'Barlow', Georgia, sans-serif; overflow-x: hidden; }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none; z-index: 9999; opacity: 0.4;
-  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--black); color:var(--white); font-family:'Barlow',Georgia,sans-serif; overflow-x:hidden; }
+  body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:9999; opacity:0.4; }
 
   /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.5rem 3rem;
-    transition: background 0.3s, backdrop-filter 0.3s;
-  }
-  nav.scrolled { background: rgba(10,10,10,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(232,19,42,0.15); }
-  .nav-logo { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.6rem; color: var(--white); text-decoration: none; }
-  .nav-logo span { color: var(--red); }
-  .nav-links { display: flex; gap: 1.5rem; list-style: none; align-items: center; }
-  .nav-links a { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.9rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,240,235,0.65); text-decoration: none; transition: color 0.2s; }
-  .nav-links a:hover { color: var(--white); }
-  .nav-cta { color: var(--white) !important; background: var(--red); padding: 0.6rem 1.5rem; transition: background 0.2s !important; }
-  .nav-cta:hover { background: var(--red-dark) !important; }
-  .nav-donate { color: var(--black) !important; background: var(--track-tan) !important; }
-  .nav-donate:hover { background: var(--track-tan-light) !important; }
-  @media (max-width: 768px) { .nav-links { display: none; } nav { padding: 1rem 1.5rem; } }
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; padding:1.5rem 3rem; transition:background 0.3s; }
+  nav.scrolled { background:rgba(10,10,10,0.92); backdrop-filter:blur(12px); border-bottom:1px solid rgba(232,19,42,0.15); }
+  .nav-logo { font-family:'Bebas Neue',Impact,sans-serif; font-size:1.6rem; color:var(--white); text-decoration:none; }
+  .nav-logo span { color:var(--red); }
+  .nav-links { display:flex; gap:1.5rem; list-style:none; align-items:center; }
+  .nav-links a { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.9rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,240,235,0.65); text-decoration:none; transition:color 0.2s; }
+  .nav-links a:hover { color:var(--white); }
+  .nav-cta { color:var(--white) !important; background:var(--red); padding:0.6rem 1.5rem; }
+  .nav-cta:hover { background:var(--red-dark) !important; }
+  .nav-donate { color:var(--black) !important; background:var(--track-tan) !important; }
+  .nav-donate:hover { background:var(--track-tan-light) !important; }
+  @media(max-width:768px){ .nav-links{display:none;} nav{padding:1rem 1.5rem;} }
 
   /* HERO */
-  .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; }
-  .track-lanes { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 200%; height: 60%; perspective: 600px; perspective-origin: 50% 0%; }
-  .lanes-inner { width: 100%; height: 100%; background: linear-gradient(to bottom, transparent 0%, #1a0f05 30%, #2a1808 100%); transform: rotateX(55deg); transform-origin: top center; position: relative; overflow: hidden; }
-  .lane-line { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--track-tan); opacity: 0.25; }
-  @keyframes dashRun { 0% { background-position: 0 0; } 100% { background-position: 0 200px; } }
-  .lane-dash { position: absolute; top: 0; bottom: 0; width: 3px; background: repeating-linear-gradient(to bottom, var(--track-tan-light) 0px, var(--track-tan-light) 30px, transparent 30px, transparent 60px); opacity: 0.15; animation: dashRun 1.4s linear infinite; }
-  .hero-spotlight { position: absolute; top: -10%; left: 50%; transform: translateX(-50%); width: 80%; height: 80%; background: radial-gradient(ellipse at 50% 0%, rgba(232,19,42,0.18) 0%, transparent 70%); pointer-events: none; }
-  .cross-bg { position: absolute; right: -4%; top: 8%; width: 320px; height: 320px; opacity: 0.05; animation: pulseGlow 4s ease-in-out infinite; }
-  .cross-bg-left { position: absolute; left: -5%; bottom: 15%; width: 200px; height: 200px; opacity: 0.04; animation: pulseGlow 6s ease-in-out infinite reverse; }
-  @keyframes pulseGlow { 0%, 100% { opacity: 0.04; transform: scale(1); } 50% { opacity: 0.09; transform: scale(1.05); } }
+  .hero { position:relative; min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center; overflow:hidden; }
+  .track-lanes { position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:200%; height:60%; perspective:600px; perspective-origin:50% 0%; }
+  .lanes-inner { width:100%; height:100%; background:linear-gradient(to bottom,transparent 0%,#1a0f05 30%,#2a1808 100%); transform:rotateX(55deg); transform-origin:top center; position:relative; overflow:hidden; }
+  .lane-line { position:absolute; top:0; bottom:0; width:2px; background:var(--track-tan); opacity:0.25; }
+  @keyframes dashRun { 0%{background-position:0 0} 100%{background-position:0 200px} }
+  .lane-dash { position:absolute; top:0; bottom:0; width:3px; background:repeating-linear-gradient(to bottom,var(--track-tan-light) 0px,var(--track-tan-light) 30px,transparent 30px,transparent 60px); opacity:0.15; animation:dashRun 1.4s linear infinite; }
+  .hero-spotlight { position:absolute; top:-10%; left:50%; transform:translateX(-50%); width:80%; height:80%; background:radial-gradient(ellipse at 50% 0%,rgba(232,19,42,0.18) 0%,transparent 70%); pointer-events:none; }
+  .cross-bg { position:absolute; right:-4%; top:8%; width:320px; height:320px; opacity:0.05; animation:pulseGlow 4s ease-in-out infinite; }
+  .cross-bg-left { position:absolute; left:-5%; bottom:15%; width:200px; height:200px; opacity:0.04; animation:pulseGlow 6s ease-in-out infinite reverse; }
+  @keyframes pulseGlow { 0%,100%{opacity:0.04;transform:scale(1)} 50%{opacity:0.09;transform:scale(1.05)} }
+  @keyframes heroFadeIn { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+  .hero-content { position:relative; z-index:10; text-align:center; max-width:900px; padding:2rem; animation:heroFadeIn 1s ease forwards; }
+  .event-tag { display:inline-block; font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-weight:600; font-size:0.85rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--red); border:1px solid var(--red); padding:0.35rem 1.2rem; margin-bottom:2rem; animation:heroFadeIn 1s 0.2s ease both; }
+  .hero-title { font-family:'Bebas Neue',Impact,sans-serif; font-size:clamp(5rem,14vw,12rem); line-height:0.88; color:var(--white); animation:heroFadeIn 1s 0.3s ease both; }
+  .hero-title .for-text { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:clamp(1.5rem,4vw,3rem); font-weight:300; letter-spacing:0.4em; text-transform:uppercase; display:block; color:var(--track-tan); margin:0.3rem 0; }
+  .hero-title .first-aid { color:var(--red); position:relative; display:inline-block; }
+  .hero-title .first-aid::after { content:''; position:absolute; bottom:0.05em; left:0; right:0; height:4px; background:var(--red); transform:scaleX(0); transform-origin:left; animation:underlineReveal 0.8s 1s ease forwards; }
+  @keyframes underlineReveal { to{transform:scaleX(1)} }
+  .hero-subtitle { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-weight:300; font-size:clamp(1rem,2.5vw,1.5rem); letter-spacing:0.12em; color:rgba(245,240,235,0.6); margin-top:1.5rem; animation:heroFadeIn 1s 0.5s ease both; }
+  .distance-badge { display:inline-flex; align-items:center; gap:0.6rem; font-family:'Bebas Neue',Impact,sans-serif; font-size:clamp(1.8rem,5vw,3.5rem); color:var(--black); background:var(--red); padding:0.3em 0.8em; margin-top:2rem; animation:heroFadeIn 1s 0.6s ease both; clip-path:polygon(0 0,calc(100% - 20px) 0,100% 50%,calc(100% - 20px) 100%,0 100%,20px 50%); }
+  .cta-group { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-top:2.5rem; animation:heroFadeIn 1s 0.8s ease both; }
+  .btn-primary { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-weight:700; font-size:1.1rem; letter-spacing:0.15em; text-transform:uppercase; text-decoration:none; color:var(--white); background:var(--red); padding:1rem 2.5rem; border:none; cursor:pointer; position:relative; transition:transform 0.2s,box-shadow 0.2s; clip-path:polygon(0 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,0 100%,12px 50%); display:inline-block; }
+  .btn-primary:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(232,19,42,0.4); background:var(--red-dark); }
+  .btn-secondary { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-weight:600; font-size:1.1rem; letter-spacing:0.15em; text-transform:uppercase; text-decoration:none; color:var(--track-tan); background:transparent; padding:1rem 2.5rem; border:1px solid var(--track-tan); transition:background 0.2s,color 0.2s,transform 0.2s; display:inline-block; }
+  .btn-secondary:hover { background:var(--track-tan); color:var(--black); transform:translateY(-3px); }
+  .scroll-hint { position:absolute; bottom:2rem; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:0.5rem; font-family:'Barlow Condensed',sans-serif; font-size:0.75rem; letter-spacing:0.25em; color:rgba(255,255,255,0.3); animation:heroFadeIn 1.5s 1.2s ease both; }
+  .scroll-line { width:1px; height:50px; background:linear-gradient(to bottom,rgba(255,255,255,0.3),transparent); animation:scrollBounce 2s ease-in-out infinite; }
+  @keyframes scrollBounce { 0%,100%{opacity:0.5} 50%{opacity:1} }
 
-  @keyframes heroFadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-  .hero-content { position: relative; z-index: 10; text-align: center; max-width: 900px; padding: 2rem; animation: heroFadeIn 1s ease forwards; }
-  .event-tag { display: inline-block; font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-weight: 600; font-size: 0.85rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--red); border: 1px solid var(--red); padding: 0.35rem 1.2rem; margin-bottom: 2rem; animation: heroFadeIn 1s 0.2s ease both; }
-  .hero-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(5rem, 14vw, 12rem); line-height: 0.88; color: var(--white); animation: heroFadeIn 1s 0.3s ease both; }
-  .hero-title .for-text { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: clamp(1.5rem, 4vw, 3rem); font-weight: 300; letter-spacing: 0.4em; text-transform: uppercase; display: block; color: var(--track-tan); margin: 0.3rem 0; }
-  .hero-title .first-aid { color: var(--red); position: relative; display: inline-block; }
-  .hero-title .first-aid::after { content: ''; position: absolute; bottom: 0.05em; left: 0; right: 0; height: 4px; background: var(--red); transform: scaleX(0); transform-origin: left; animation: underlineReveal 0.8s 1s ease forwards; }
-  @keyframes underlineReveal { to { transform: scaleX(1); } }
-  .hero-subtitle { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-weight: 300; font-size: clamp(1rem, 2.5vw, 1.5rem); letter-spacing: 0.12em; color: rgba(245,240,235,0.6); margin-top: 1.5rem; animation: heroFadeIn 1s 0.5s ease both; }
-  .distance-badge { display: inline-flex; align-items: center; gap: 0.6rem; font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(1.8rem, 5vw, 3.5rem); color: var(--black); background: var(--red); padding: 0.3em 0.8em; margin-top: 2rem; animation: heroFadeIn 1s 0.6s ease both; clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 50%, calc(100% - 20px) 100%, 0 100%, 20px 50%); }
-  .cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2.5rem; animation: heroFadeIn 1s 0.8s ease both; }
+  /* STATS */
+  .stats-bar { background:var(--red); padding:1.2rem 2rem; display:flex; justify-content:center; gap:4rem; flex-wrap:wrap; }
+  .stat-item { text-align:center; font-family:'Bebas Neue',Impact,sans-serif; }
+  .stat-num { font-size:2.5rem; color:var(--white); display:block; line-height:1; }
+  .stat-label { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.75rem; letter-spacing:0.2em; color:rgba(255,255,255,0.7); }
+  @media(max-width:768px){ .stats-bar{gap:2rem;} }
 
-  .btn-primary { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: var(--white); background: var(--red); padding: 1rem 2.5rem; border: none; cursor: pointer; position: relative; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%, 12px 50%); display: inline-block; }
-  .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(232,19,42,0.4); background: var(--red-dark); }
-  .btn-secondary { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-weight: 600; font-size: 1.1rem; letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; color: var(--track-tan); background: transparent; padding: 1rem 2.5rem; border: 1px solid var(--track-tan); transition: background 0.2s, color 0.2s, transform 0.2s; display: inline-block; }
-  .btn-secondary:hover { background: var(--track-tan); color: var(--black); transform: translateY(-3px); }
+  /* SHARED */
+  .section-wrap { padding:6rem 2rem; max-width:1100px; margin:0 auto; }
+  .section-label { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.8rem; letter-spacing:0.35em; text-transform:uppercase; color:var(--red); margin-bottom:1rem; display:flex; align-items:center; gap:1rem; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--red); opacity:0.3; max-width:80px; }
+  .section-title { font-family:'Bebas Neue',Impact,sans-serif; font-size:clamp(3rem,7vw,6rem); line-height:1; color:var(--white); }
+  .about-text { font-size:1.1rem; line-height:1.8; color:rgba(245,240,235,0.75); font-weight:300; }
+  .about-text strong { color:var(--white); font-weight:600; }
+  .divider { width:100%; height:1px; background:linear-gradient(to right,transparent,rgba(232,19,42,0.3),transparent); }
 
-  .scroll-hint { position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; letter-spacing: 0.25em; color: rgba(255,255,255,0.3); animation: heroFadeIn 1.5s 1.2s ease both; }
-  .scroll-line { width: 1px; height: 50px; background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent); animation: scrollBounce 2s ease-in-out infinite; }
-  @keyframes scrollBounce { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+  /* ABOUT */
+  .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; }
+  @media(max-width:768px){ .about-grid{grid-template-columns:1fr;gap:2rem;} .track-visual{display:none;} }
+  .track-visual { position:relative; aspect-ratio:1; display:flex; align-items:center; justify-content:center; }
+  @keyframes rotateDashes { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+  .track-ring { width:280px; height:280px; border-radius:50%; border:3px solid transparent; border-top-color:var(--red); border-right-color:var(--red); position:absolute; animation:rotateDashes 3s linear infinite; }
+  .track-ring-2 { width:240px; height:240px; border-radius:50%; border:1px dashed rgba(200,169,110,0.3); position:absolute; animation:rotateDashes 8s linear infinite reverse; }
+  .track-ring-3 { width:200px; height:200px; border-radius:50%; border:1px solid rgba(200,169,110,0.1); position:absolute; }
+  .track-center { font-family:'Bebas Neue',Impact,sans-serif; font-size:2.5rem; color:var(--white); text-align:center; position:relative; z-index:2; line-height:1.1; }
+  .track-center .km { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.9rem; letter-spacing:0.2em; color:var(--track-tan); display:block; }
+  .event-details-card { margin-top:2rem; border:1px solid rgba(232,19,42,0.25); background:rgba(232,19,42,0.05); padding:1.5rem 2rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .detail-label { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.75rem; letter-spacing:0.25em; color:var(--red); text-transform:uppercase; margin-bottom:0.3rem; }
+  .detail-value { font-family:'Bebas Neue',Impact,sans-serif; font-size:1.6rem; color:var(--white); line-height:1.1; }
+  .detail-sub { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.9rem; color:rgba(245,240,235,0.5); }
 
-  /* STATS BAR */
-  .stats-bar { background: var(--red); padding: 1.2rem 2rem; display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap; }
-  .stat-item { text-align: center; font-family: 'Bebas Neue', Impact, sans-serif; }
-  .stat-num { font-size: 2.5rem; color: var(--white); display: block; line-height: 1; }
-  .stat-label { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.75rem; letter-spacing: 0.2em; color: rgba(255,255,255,0.7); }
-  @media (max-width: 768px) { .stats-bar { gap: 2rem; } }
-
-  /* SECTIONS */
-  .section-wrap { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
-  .section-label { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.8rem; letter-spacing: 0.35em; text-transform: uppercase; color: var(--red); margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem; }
-  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--red); opacity: 0.3; max-width: 80px; }
-  .section-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(3rem, 7vw, 6rem); line-height: 1; color: var(--white); }
-  .about-text { font-size: 1.1rem; line-height: 1.8; color: rgba(245,240,235,0.75); font-weight: 300; }
-  .about-text strong { color: var(--white); font-weight: 600; }
-  .divider { width: 100%; height: 1px; background: linear-gradient(to right, transparent, rgba(232,19,42,0.3), transparent); }
-
-  /* ABOUT GRID */
-  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
-  @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; gap: 2rem; } .track-visual { display: none; } }
-  .track-visual { position: relative; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; }
-  @keyframes rotateDashes { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-  .track-ring { width: 280px; height: 280px; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--red); border-right-color: var(--red); position: absolute; animation: rotateDashes 3s linear infinite; }
-  .track-ring-2 { width: 240px; height: 240px; border-radius: 50%; border: 1px dashed rgba(200,169,110,0.3); position: absolute; animation: rotateDashes 8s linear infinite reverse; }
-  .track-ring-3 { width: 200px; height: 200px; border-radius: 50%; border: 1px solid rgba(200,169,110,0.1); position: absolute; }
-  .track-center { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 2.5rem; color: var(--white); text-align: center; position: relative; z-index: 2; line-height: 1.1; }
-  .track-center .km { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.9rem; letter-spacing: 0.2em; color: var(--track-tan); display: block; }
-
-  /* EVENT DETAILS CARD */
-  .event-details-card { margin-top: 2rem; border: 1px solid rgba(232,19,42,0.25); background: rgba(232,19,42,0.05); padding: 1.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .detail-label { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.75rem; letter-spacing: 0.25em; color: var(--red); text-transform: uppercase; margin-bottom: 0.3rem; }
-  .detail-value { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.6rem; color: var(--white); line-height: 1.1; }
-  .detail-sub { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.9rem; color: rgba(245,240,235,0.5); letter-spacing: 0.05em; }
-
-  /* HOW IT WORKS */
-  .how-section { background: rgba(232,19,42,0.04); border-top: 1px solid rgba(232,19,42,0.15); border-bottom: 1px solid rgba(232,19,42,0.15); padding: 6rem 2rem; }
-  .how-inner { max-width: 1100px; margin: 0 auto; }
-  .steps-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2rem; margin-top: 3rem; }
-  @media (max-width: 768px) { .steps-grid { grid-template-columns: 1fr; } }
-  .step-card { position: relative; padding: 2.5rem 2rem; border: 1px solid rgba(245,240,235,0.08); background: rgba(255,255,255,0.02); transition: border-color 0.3s, transform 0.3s; }
-  .step-card:hover { border-color: rgba(232,19,42,0.4); transform: translateY(-6px); }
-  .step-num { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 5rem; line-height: 1; color: rgba(232,19,42,0.12); position: absolute; top: 1rem; right: 1.5rem; }
-  .step-icon { font-size: 2.5rem; margin-bottom: 1.5rem; display: block; }
-  .step-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.8rem; color: var(--white); margin-bottom: 0.75rem; }
-  .step-desc { font-size: 0.95rem; line-height: 1.7; color: rgba(245,240,235,0.6); font-weight: 300; }
+  /* HOW */
+  .how-section { background:rgba(232,19,42,0.04); border-top:1px solid rgba(232,19,42,0.15); border-bottom:1px solid rgba(232,19,42,0.15); padding:6rem 2rem; }
+  .how-inner { max-width:1100px; margin:0 auto; }
+  .steps-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; margin-top:3rem; }
+  @media(max-width:768px){ .steps-grid{grid-template-columns:1fr;} }
+  .step-card { position:relative; padding:2.5rem 2rem; border:1px solid rgba(245,240,235,0.08); background:rgba(255,255,255,0.02); transition:border-color 0.3s,transform 0.3s; }
+  .step-card:hover { border-color:rgba(232,19,42,0.4); transform:translateY(-6px); }
+  .step-num { font-family:'Bebas Neue',Impact,sans-serif; font-size:5rem; line-height:1; color:rgba(232,19,42,0.12); position:absolute; top:1rem; right:1.5rem; }
+  .step-icon { font-size:2.5rem; margin-bottom:1.5rem; display:block; }
+  .step-title { font-family:'Bebas Neue',Impact,sans-serif; font-size:1.8rem; color:var(--white); margin-bottom:0.75rem; }
+  .step-desc { font-size:0.95rem; line-height:1.7; color:rgba(245,240,235,0.6); font-weight:300; }
 
   /* CAUSE */
-  .cause-section { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
-  @media (max-width: 768px) { .cause-section { grid-template-columns: 1fr; gap: 2rem; } }
-  .cause-quote { position: relative; padding: 3rem; border-left: 4px solid var(--red); background: linear-gradient(135deg, rgba(232,19,42,0.06), transparent); }
-  .cause-quote-text { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 300; line-height: 1.3; color: var(--white); font-style: italic; }
-  .cause-quote-text strong { color: var(--red); font-weight: 700; font-style: normal; }
-  .cause-cross { display: flex; align-items: center; justify-content: center; }
-  @keyframes crossPulse { 0%, 100% { filter: drop-shadow(0 0 10px rgba(232,19,42,0.4)); } 50% { filter: drop-shadow(0 0 30px rgba(232,19,42,0.8)); } }
-  .cross-svg { animation: crossPulse 3s ease-in-out infinite; }
-  .tag-pill { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.85rem; letter-spacing: 0.15em; padding: 0.4rem 1rem; border: 1px solid rgba(200,169,110,0.3); color: var(--track-tan); display: inline-block; }
+  .cause-section { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; }
+  @media(max-width:768px){ .cause-section{grid-template-columns:1fr;gap:2rem;} }
+  .cause-quote { position:relative; padding:3rem; border-left:4px solid var(--red); background:linear-gradient(135deg,rgba(232,19,42,0.06),transparent); }
+  .cause-quote-text { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:clamp(1.5rem,3vw,2.5rem); font-weight:300; line-height:1.3; color:var(--white); font-style:italic; }
+  .cause-quote-text strong { color:var(--red); font-weight:700; font-style:normal; }
+  .cause-cross { display:flex; align-items:center; justify-content:center; }
+  @keyframes crossPulse { 0%,100%{filter:drop-shadow(0 0 10px rgba(232,19,42,0.4))} 50%{filter:drop-shadow(0 0 30px rgba(232,19,42,0.8))} }
+  .cross-svg { animation:crossPulse 3s ease-in-out infinite; }
+  .tag-pill { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.85rem; letter-spacing:0.15em; padding:0.4rem 1rem; border:1px solid rgba(200,169,110,0.3); color:var(--track-tan); display:inline-block; }
 
   /* PRIZES */
-  .prize-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 3rem; }
-  @media (max-width: 768px) { .prize-grid { grid-template-columns: 1fr; } }
-  .prize-card { border: 1px solid rgba(245,240,235,0.08); background: rgba(255,255,255,0.02); padding: 2.5rem 2rem; position: relative; overflow: hidden; transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s; }
-  .prize-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(to right, var(--red), var(--track-tan)); transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease; }
-  .prize-card:hover { border-color: rgba(232,19,42,0.3); transform: translateY(-6px); box-shadow: 0 20px 50px rgba(232,19,42,0.1); }
-  .prize-card:hover::before { transform: scaleX(1); }
-  .prize-medal { font-size: 3rem; margin-bottom: 1rem; display: block; }
-  .prize-card-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.8rem; color: var(--white); margin-bottom: 0.75rem; }
-  .prize-card-desc { font-size: 0.95rem; line-height: 1.7; color: rgba(245,240,235,0.6); font-weight: 300; margin-bottom: 1.5rem; }
-  .prize-tag { display: inline-block; font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--track-tan); border: 1px solid rgba(200,169,110,0.3); padding: 0.25rem 0.75rem; }
-  .sponsor-banner { margin-top: 3rem; border: 1px solid rgba(200,169,110,0.2); background: rgba(200,169,110,0.04); padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; flex-wrap: wrap; }
+  .prize-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-top:3rem; }
+  @media(max-width:768px){ .prize-grid{grid-template-columns:1fr;} }
+  .prize-card { border:1px solid rgba(245,240,235,0.08); background:rgba(255,255,255,0.02); padding:2.5rem 2rem; position:relative; overflow:hidden; transition:border-color 0.3s,transform 0.3s; }
+  .prize-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(to right,var(--red),var(--track-tan)); transform:scaleX(0); transform-origin:left; transition:transform 0.4s ease; }
+  .prize-card:hover { border-color:rgba(232,19,42,0.3); transform:translateY(-6px); }
+  .prize-card:hover::before { transform:scaleX(1); }
+  .prize-medal { font-size:3rem; margin-bottom:1rem; display:block; }
+  .prize-card-title { font-family:'Bebas Neue',Impact,sans-serif; font-size:1.8rem; color:var(--white); margin-bottom:0.75rem; }
+  .prize-card-desc { font-size:0.95rem; line-height:1.7; color:rgba(245,240,235,0.6); font-weight:300; margin-bottom:1.5rem; }
+  .prize-tag { display:inline-block; font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.75rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--track-tan); border:1px solid rgba(200,169,110,0.3); padding:0.25rem 0.75rem; }
+  .sponsor-banner { margin-top:3rem; border:1px solid rgba(200,169,110,0.2); background:rgba(200,169,110,0.04); padding:2rem 2.5rem; display:flex; align-items:center; justify-content:space-between; gap:2rem; flex-wrap:wrap; }
 
   /* DONATE */
-  .donate-section { background: linear-gradient(135deg, rgba(232,19,42,0.06) 0%, rgba(0,0,0,0) 60%); padding: 8rem 2rem; position: relative; overflow: hidden; }
-  .donate-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(6rem,18vw,16rem); color: rgba(200,169,110,0.04); white-space: nowrap; pointer-events: none; user-select: none; }
-  .donate-inner { max-width: 700px; margin: 0 auto; position: relative; z-index: 2; }
-  .donate-widget { background: rgba(255,255,255,0.03); border: 1px solid rgba(245,240,235,0.1); padding: 2.5rem; }
-  .donate-amounts { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; margin-bottom: 1.5rem; }
-  .amount-btn { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.6rem; color: rgba(245,240,235,0.6); background: transparent; border: 1px solid rgba(245,240,235,0.15); padding: 0.5rem 1.4rem; cursor: pointer; transition: all 0.2s; min-width: 70px; }
-  .amount-btn:hover { border-color: var(--red); color: var(--white); }
-  .amount-btn.active { background: var(--red); border-color: var(--red); color: var(--white); }
-  .custom-amount-row { display: flex; align-items: center; border: 1px solid rgba(245,240,235,0.15); margin-bottom: 1.5rem; overflow: hidden; transition: border-color 0.2s; }
-  .custom-amount-row:focus-within { border-color: var(--track-tan); }
-  .custom-dollar { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.8rem; color: var(--track-tan); padding: 0.6rem 1rem; background: rgba(200,169,110,0.08); border-right: 1px solid rgba(245,240,235,0.1); line-height: 1; }
-  .custom-input { flex: 1; background: transparent; border: none; outline: none; color: var(--white); font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.8rem; padding: 0.6rem 1rem; width: 100%; }
-  .custom-input::placeholder { color: rgba(245,240,235,0.25); }
-  .impact-bar { display: flex; align-items: flex-start; gap: 1rem; background: rgba(232,19,42,0.07); border-left: 3px solid var(--red); padding: 1rem 1.2rem; }
-  .impact-icon { font-size: 1.5rem; flex-shrink: 0; }
-  .impact-text { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 1rem; line-height: 1.5; color: rgba(245,240,235,0.75); letter-spacing: 0.03em; }
-  .impact-num { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 1.4rem; color: var(--red); }
-  .kit-stat { border: 1px solid rgba(245,240,235,0.06); padding: 1.5rem 1rem; transition: border-color 0.3s; text-align: center; }
-  .kit-stat:hover { border-color: rgba(232,19,42,0.3); }
+  .donate-section { background:linear-gradient(135deg,rgba(232,19,42,0.06) 0%,rgba(0,0,0,0) 60%); padding:8rem 2rem; position:relative; overflow:hidden; }
+  .donate-bg-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Bebas Neue',Impact,sans-serif; font-size:clamp(6rem,18vw,16rem); color:rgba(200,169,110,0.04); white-space:nowrap; pointer-events:none; user-select:none; }
+  .donate-inner { max-width:700px; margin:0 auto; position:relative; z-index:2; }
+  .donate-widget { background:rgba(255,255,255,0.03); border:1px solid rgba(245,240,235,0.1); padding:2.5rem; }
+  .donate-amounts { display:flex; gap:0.75rem; flex-wrap:wrap; justify-content:center; margin-bottom:1.5rem; }
+  .amount-btn { font-family:'Bebas Neue',Impact,sans-serif; font-size:1.6rem; color:rgba(245,240,235,0.6); background:transparent; border:1px solid rgba(245,240,235,0.15); padding:0.5rem 1.4rem; cursor:pointer; transition:all 0.2s; min-width:70px; }
+  .amount-btn:hover { border-color:var(--red); color:var(--white); }
+  .amount-btn.active { background:var(--red); border-color:var(--red); color:var(--white); }
+  .custom-amount-row { display:flex; align-items:center; border:1px solid rgba(245,240,235,0.15); margin-bottom:1.5rem; overflow:hidden; transition:border-color 0.2s; }
+  .custom-amount-row:focus-within { border-color:var(--track-tan); }
+  .custom-dollar { font-family:'Bebas Neue',Impact,sans-serif; font-size:1.8rem; color:var(--track-tan); padding:0.6rem 1rem; background:rgba(200,169,110,0.08); border-right:1px solid rgba(245,240,235,0.1); line-height:1; }
+  .custom-input { flex:1; background:transparent; border:none; outline:none; color:var(--white); font-family:'Bebas Neue',Impact,sans-serif; font-size:1.8rem; padding:0.6rem 1rem; width:100%; }
+  .custom-input::placeholder { color:rgba(245,240,235,0.25); }
+  .impact-bar { display:flex; align-items:flex-start; gap:1rem; background:rgba(232,19,42,0.07); border-left:3px solid var(--red); padding:1rem 1.2rem; }
+  .impact-icon { font-size:1.5rem; flex-shrink:0; }
+  .impact-text { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:1rem; line-height:1.5; color:rgba(245,240,235,0.75); letter-spacing:0.03em; }
+  .impact-num { font-family:'Bebas Neue',Impact,sans-serif; font-size:1.4rem; color:var(--red); }
+  .kit-stat { border:1px solid rgba(245,240,235,0.06); padding:1.5rem 1rem; transition:border-color 0.3s; text-align:center; }
+  .kit-stat:hover { border-color:rgba(232,19,42,0.3); }
+
 
   /* SIGNUP */
-  .signup-section { text-align: center; padding: 8rem 2rem; position: relative; overflow: hidden; }
-  .signup-bg-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(8rem,20vw,18rem); color: rgba(232,19,42,0.04); white-space: nowrap; pointer-events: none; user-select: none; }
-  .signup-inner { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
-  .signup-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: clamp(3.5rem,9vw,8rem); line-height: 0.9; color: var(--white); margin-bottom: 1.5rem; }
-  .signup-subtitle { font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-weight: 300; font-size: 1.2rem; color: rgba(245,240,235,0.6); margin-bottom: 3rem; line-height: 1.6; letter-spacing: 0.04em; }
-  .signup-card { border: 1px solid rgba(245,240,235,0.12); padding: 2.5rem 2rem; text-align: left; background: rgba(255,255,255,0.02); transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s; max-width: 360px; margin: 0 auto; }
-  .signup-card:hover { border-color: var(--red); transform: translateY(-8px); box-shadow: 0 20px 60px rgba(232,19,42,0.15); }
-  .signup-card-icon { font-size: 2.5rem; margin-bottom: 1.2rem; display: block; }
-  .signup-card-title { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 2rem; color: var(--white); margin-bottom: 0.5rem; }
-  .signup-card-desc { font-size: 0.9rem; color: rgba(245,240,235,0.55); line-height: 1.6; font-weight: 300; margin-bottom: 1.5rem; }
+  .signup-section { text-align:center; padding:8rem 2rem; position:relative; overflow:hidden; }
+  .signup-bg-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Bebas Neue',Impact,sans-serif; font-size:clamp(8rem,20vw,18rem); color:rgba(232,19,42,0.04); white-space:nowrap; pointer-events:none; user-select:none; }
+  .signup-inner { position:relative; z-index:2; max-width:700px; margin:0 auto; }
+  .signup-title { font-family:'Bebas Neue',Impact,sans-serif; font-size:clamp(3.5rem,9vw,8rem); line-height:0.9; color:var(--white); margin-bottom:1.5rem; }
+  .signup-subtitle { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-weight:300; font-size:1.2rem; color:rgba(245,240,235,0.6); margin-bottom:3rem; line-height:1.6; letter-spacing:0.04em; }
+  .signup-card { border:1px solid rgba(245,240,235,0.12); padding:2.5rem 2rem; text-align:left; background:rgba(255,255,255,0.02); transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s; max-width:360px; margin:0 auto; }
+  .signup-card:hover { border-color:var(--red); transform:translateY(-8px); box-shadow:0 20px 60px rgba(232,19,42,0.15); }
+  .signup-card-icon { font-size:2.5rem; margin-bottom:1.2rem; display:block; }
+  .signup-card-title { font-family:'Bebas Neue',Impact,sans-serif; font-size:2rem; color:var(--white); margin-bottom:0.5rem; }
+  .signup-card-desc { font-size:0.9rem; color:rgba(245,240,235,0.55); line-height:1.6; font-weight:300; margin-bottom:1.5rem; }
 
   /* FOOTER */
-  footer { border-top: 1px solid rgba(245,240,235,0.08); padding: 3rem 2rem; text-align: center; font-family: 'Barlow Condensed', Arial Narrow, sans-serif; font-size: 0.85rem; letter-spacing: 0.15em; color: rgba(245,240,235,0.3); }
-  .footer-logo { font-family: 'Bebas Neue', Impact, sans-serif; font-size: 2rem; color: var(--red); display: block; margin-bottom: 1rem; }
+  footer { border-top:1px solid rgba(245,240,235,0.08); padding:3rem 2rem; text-align:center; font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.85rem; letter-spacing:0.15em; color:rgba(245,240,235,0.3); }
+  .footer-logo { font-family:'Bebas Neue',Impact,sans-serif; font-size:2rem; color:var(--red); display:block; margin-bottom:1rem; }
 
-
-  /* DONOR WALL */
-  .donor-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    border: 1px solid rgba(245,240,235,0.07);
-    background: rgba(255,255,255,0.02);
-    animation: donorSlideIn 0.5s ease forwards;
-    opacity: 0;
-  }
-  @keyframes donorSlideIn {
-    from { opacity: 0; transform: translateX(-20px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-  .donor-card:hover { border-color: rgba(232,19,42,0.25); background: rgba(232,19,42,0.03); }
-  .donor-avatar {
-    width: 42px; height: 42px; border-radius: 50%;
-    background: var(--red);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Bebas Neue', Impact, sans-serif;
-    font-size: 1.2rem; color: white; flex-shrink: 0;
-  }
-  .donor-name {
-    font-family: 'Barlow Condensed', Arial Narrow, sans-serif;
-    font-size: 1.1rem; font-weight: 600; color: var(--white);
-    letter-spacing: 0.04em; flex: 1;
-  }
-  .donor-time {
-    font-family: 'Barlow Condensed', Arial Narrow, sans-serif;
-    font-size: 0.78rem; letter-spacing: 0.1em;
-    color: rgba(245,240,235,0.3); flex: 1;
-  }
-  .donor-amount {
-    font-family: 'Bebas Neue', Impact, sans-serif;
-    font-size: 1.5rem; color: var(--track-tan);
-    white-space: nowrap;
-  }
-  .donor-badge {
-    font-family: 'Barlow Condensed', Arial Narrow, sans-serif;
-    font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
-    padding: 0.2rem 0.6rem; border: 1px solid;
-    white-space: nowrap;
-  }
-  .badge-hero   { color: #FFD700; border-color: rgba(255,215,0,0.3); }
-  .badge-champ  { color: var(--track-tan); border-color: rgba(200,169,110,0.3); }
-  .badge-friend { color: rgba(245,240,235,0.5); border-color: rgba(245,240,235,0.15); }
-
-  /* Admin list item */
-  .admin-donor-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0.5rem 0.75rem;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(245,240,235,0.08);
-    font-family: 'Barlow Condensed', Arial Narrow, sans-serif;
-    font-size: 0.95rem; color: rgba(245,240,235,0.7); gap: 0.5rem;
-  }
-  .admin-donor-row button {
-    background: none; border: none; color: var(--red);
-    cursor: pointer; font-size: 1rem; line-height: 1; padding: 0 0.25rem;
-  }
-  .admin-donor-row button:hover { color: #ff4455; }
-
-  /* FADE UP ANIMATION */
-  .fade-up { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
-  .fade-up.visible { opacity: 1; transform: translateY(0); }
+  /* FADE UP */
+  .fade-up { opacity:0; transform:translateY(28px); transition:opacity 0.7s ease,transform 0.7s ease; }
+  .fade-up.visible { opacity:1; transform:translateY(0); }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <nav id="navbar">
   <a href="#" class="nav-logo">R<span>4</span>FA</a>
   <ul class="nav-links">
@@ -274,15 +189,11 @@
   <div style="position:absolute;inset:0;background:#0A0A0A;"></div>
   <div class="track-lanes"><div class="lanes-inner" id="lanesInner"></div></div>
   <div class="hero-spotlight"></div>
-  <svg class="cross-bg" viewBox="0 0 100 100" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="10" width="20" height="80" rx="4"/><rect x="10" y="40" width="80" height="20" rx="4"/></svg>
-  <svg class="cross-bg-left" viewBox="0 0 100 100" fill="white" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="10" width="20" height="80" rx="4"/><rect x="10" y="40" width="80" height="20" rx="4"/></svg>
+  <svg class="cross-bg" viewBox="0 0 100 100" fill="white"><rect x="40" y="10" width="20" height="80" rx="4"/><rect x="10" y="40" width="80" height="20" rx="4"/></svg>
+  <svg class="cross-bg-left" viewBox="0 0 100 100" fill="white"><rect x="40" y="10" width="20" height="80" rx="4"/><rect x="10" y="40" width="80" height="20" rx="4"/></svg>
   <div class="hero-content">
     <div class="event-tag">April 4, 2026 &middot; Columbus North High School</div>
-    <h1 class="hero-title">
-      Race
-      <span class="for-text">For</span>
-      <span class="first-aid">First Aid</span>
-    </h1>
+    <h1 class="hero-title">Race<span class="for-text">For</span><span class="first-aid">First Aid</span></h1>
     <p class="hero-subtitle">One day. One mile. One cause that matters.</p>
     <div class="distance-badge">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
@@ -297,7 +208,7 @@
   <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
 </section>
 
-<!-- STATS BAR -->
+<!-- STATS -->
 <div class="stats-bar">
   <div class="stat-item"><span class="stat-num">APR 4</span><span class="stat-label">2026</span></div>
   <div class="stat-item"><span class="stat-num">10AM</span><span class="stat-label">To 2PM</span></div>
@@ -306,148 +217,92 @@
 </div>
 
 <!-- ABOUT -->
-<div id="about">
-  <div class="section-wrap">
-    <div class="about-grid">
-      <div>
-        <div class="section-label fade-up">About the Event</div>
-        <h2 class="section-title fade-up">Run With<br>Purpose.</h2>
-        <p class="about-text fade-up" style="margin-top:1.5rem;">
-          <strong>Race for First Aid</strong> is a one-day track meet built around the iconic 1600m &mdash; the mile.
-          Created by <strong>Aiden Hayes</strong> as his senior project at <strong>Columbus North High School</strong>,
-          this event brings middle and high school students together to compete, fundraise, and rally around a cause that saves lives.
-        </p>
-        <p class="about-text fade-up" style="margin-top:1rem;">
-          Whether you're chasing a personal best or running your first mile, this event is for you.
-          <strong>Every step, every lap, every second</strong> you run puts first aid kits into the hands
-          of local businesses, churches, hospitals, and organizations in our community.
-        </p>
-        <div class="event-details-card fade-up">
-          <div><div class="detail-label">Date</div><div class="detail-value">April 4, 2026</div></div>
-          <div><div class="detail-label">Time</div><div class="detail-value">10:00 AM &ndash; 2:00 PM</div></div>
-          <div style="grid-column:1/-1;"><div class="detail-label">Location</div><div class="detail-value">Columbus North High School</div><div class="detail-sub">Columbus, Indiana</div></div>
-        </div>
+<div id="about"><div class="section-wrap">
+  <div class="about-grid">
+    <div>
+      <div class="section-label fade-up">About the Event</div>
+      <h2 class="section-title fade-up">Run With<br>Purpose.</h2>
+      <p class="about-text fade-up" style="margin-top:1.5rem;"><strong>Race for First Aid</strong> is a one-day track meet built around the iconic 1600m &mdash; the mile. Created by <strong>Aiden Hayes</strong> as his senior project at <strong>Columbus North High School</strong>, this event brings middle and high school students together to compete, fundraise, and rally around a cause that saves lives.</p>
+      <p class="about-text fade-up" style="margin-top:1rem;">Whether you're chasing a personal best or running your first mile, this event is for you. <strong>Every step, every lap, every second</strong> you run puts first aid kits into the hands of local businesses, churches, hospitals, and organizations in our community.</p>
+      <div class="event-details-card fade-up">
+        <div><div class="detail-label">Date</div><div class="detail-value">April 4, 2026</div></div>
+        <div><div class="detail-label">Time</div><div class="detail-value">10:00 AM &ndash; 2:00 PM</div></div>
+        <div style="grid-column:1/-1;"><div class="detail-label">Location</div><div class="detail-value">Columbus North High School</div><div class="detail-sub">Columbus, Indiana</div></div>
       </div>
-      <div class="track-visual fade-up">
-        <div class="track-ring"></div>
-        <div class="track-ring-2"></div>
-        <div class="track-ring-3"></div>
-        <div class="track-center">
-          <svg width="40" height="40" viewBox="0 0 100 100" fill="#E8132A" style="display:block;margin:0 auto 0.4em;"><rect x="40" y="5" width="20" height="90" rx="6"/><rect x="5" y="40" width="90" height="20" rx="6"/></svg>
-          1600m
-          <span class="km">1 MILE &middot; 4 LAPS</span>
-        </div>
+    </div>
+    <div class="track-visual fade-up">
+      <div class="track-ring"></div><div class="track-ring-2"></div><div class="track-ring-3"></div>
+      <div class="track-center">
+        <svg width="40" height="40" viewBox="0 0 100 100" fill="#E8132A" style="display:block;margin:0 auto 0.4em;"><rect x="40" y="5" width="20" height="90" rx="6"/><rect x="5" y="40" width="90" height="20" rx="6"/></svg>
+        1600m<span class="km">1 MILE &middot; 4 LAPS</span>
       </div>
     </div>
   </div>
-</div>
+</div></div>
 
 <div class="divider"></div>
 
-<!-- HOW IT WORKS -->
-<div class="how-section" id="how">
-  <div class="how-inner">
-    <div class="section-label fade-up">Race Day</div>
-    <h2 class="section-title fade-up">How It<br>Works</h2>
-    <div class="steps-grid">
-      <div class="step-card fade-up">
-        <span class="step-num">01</span>
-        <span class="step-icon">&#128203;</span>
-        <div class="step-title">Register</div>
-        <p class="step-desc">Sign up online before race day. Secure your spot on the starting line. Open to middle and high school runners of all paces.</p>
-      </div>
-      <div class="step-card fade-up" style="transition-delay:0.1s;">
-        <span class="step-num">02</span>
-        <span class="step-icon">&#127967;</span>
-        <div class="step-title">Show Up</div>
-        <p class="step-desc">Come to Columbus North High School on April 4th between 10AM&ndash;2PM. Check in, warm up, and get ready to race. No experience needed.</p>
-      </div>
-      <div class="step-card fade-up" style="transition-delay:0.2s;">
-        <span class="step-num">03</span>
-        <span class="step-icon">&#127939;</span>
-        <div class="step-title">Race</div>
-        <p class="step-desc">Toe the line. Go all out or pace yourself. Every runner who finishes the mile makes a difference for first aid in our community.</p>
-      </div>
-    </div>
+<!-- HOW -->
+<div class="how-section" id="how"><div class="how-inner">
+  <div class="section-label fade-up">Race Day</div>
+  <h2 class="section-title fade-up">How It<br>Works</h2>
+  <div class="steps-grid">
+    <div class="step-card fade-up"><span class="step-num">01</span><span class="step-icon">&#128203;</span><div class="step-title">Register</div><p class="step-desc">Sign up online before race day. Secure your spot on the starting line. Open to middle and high school runners of all paces.</p></div>
+    <div class="step-card fade-up" style="transition-delay:0.1s;"><span class="step-num">02</span><span class="step-icon">&#127967;</span><div class="step-title">Show Up</div><p class="step-desc">Come to Columbus North High School on April 4th between 10AM&ndash;2PM. Check in, warm up, and get ready to race. No experience needed.</p></div>
+    <div class="step-card fade-up" style="transition-delay:0.2s;"><span class="step-num">03</span><span class="step-icon">&#127939;</span><div class="step-title">Race</div><p class="step-desc">Toe the line. Go all out or pace yourself. Every runner who finishes the mile makes a difference for first aid in our community.</p></div>
   </div>
-</div>
+</div></div>
 
 <div class="divider"></div>
 
 <!-- CAUSE -->
-<div id="cause">
-  <div class="section-wrap">
-    <div class="cause-section">
-      <div class="cause-quote fade-up">
-        <div class="section-label" style="margin-bottom:1.5rem;">Why We Run</div>
-        <p class="cause-quote-text">"First aid isn't just a skill &mdash; it's the difference between <strong>life and loss</strong> in the minutes before emergency services arrive."</p>
-        <p class="about-text" style="margin-top:2rem;">
-          <strong>Every dollar raised goes directly toward purchasing first aid kits</strong> to be donated
-          to local businesses, churches, hospitals, and organizations throughout our community.
-          No overhead. No admin costs. Your miles become kits in the places people need them most.
-        </p>
-        <div style="margin-top:2rem;display:flex;flex-wrap:wrap;gap:0.75rem;">
-          <span class="tag-pill">&#127978; Local Businesses</span>
-          <span class="tag-pill">&#9961; Churches</span>
-          <span class="tag-pill">&#127973; Hospitals</span>
-          <span class="tag-pill">&#127963; Community Orgs</span>
-        </div>
-        <p class="about-text" style="margin-top:1.5rem;font-size:0.9rem;">A senior project by <strong>Aiden Hayes</strong> &middot; Columbus North High School</p>
+<div id="cause"><div class="section-wrap">
+  <div class="cause-section">
+    <div class="cause-quote fade-up">
+      <div class="section-label" style="margin-bottom:1.5rem;">Why We Run</div>
+      <p class="cause-quote-text">"First aid isn't just a skill &mdash; it's the difference between <strong>life and loss</strong> in the minutes before emergency services arrive."</p>
+      <p class="about-text" style="margin-top:2rem;"><strong>Every dollar raised goes directly toward purchasing first aid kits</strong> to be donated to local businesses, churches, hospitals, and organizations throughout our community. No overhead. No admin costs. Your miles become kits in the places people need them most.</p>
+      <div style="margin-top:2rem;display:flex;flex-wrap:wrap;gap:0.75rem;">
+        <span class="tag-pill">&#127978; Local Businesses</span>
+        <span class="tag-pill">&#9961; Churches</span>
+        <span class="tag-pill">&#127973; Hospitals</span>
+        <span class="tag-pill">&#127963; Community Orgs</span>
       </div>
-      <div class="cause-cross fade-up">
-        <svg class="cross-svg" width="220" height="220" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <defs><linearGradient id="crossGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#E8132A"/><stop offset="100%" style="stop-color:#9C0A1B"/></linearGradient></defs>
-          <rect x="37" y="5" width="26" height="90" rx="8" fill="url(#crossGrad)"/>
-          <rect x="5" y="37" width="90" height="26" rx="8" fill="url(#crossGrad)"/>
-          <rect x="45" y="8" width="6" height="20" rx="3" fill="rgba(255,255,255,0.25)"/>
-          <rect x="8" y="45" width="20" height="6" rx="3" fill="rgba(255,255,255,0.25)"/>
-        </svg>
-      </div>
+      <p class="about-text" style="margin-top:1.5rem;font-size:0.9rem;">A senior project by <strong>Aiden Hayes</strong> &middot; Columbus North High School</p>
+    </div>
+    <div class="cause-cross fade-up">
+      <svg class="cross-svg" width="220" height="220" viewBox="0 0 100 100">
+        <defs><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#E8132A"/><stop offset="100%" style="stop-color:#9C0A1B"/></linearGradient></defs>
+        <rect x="37" y="5" width="26" height="90" rx="8" fill="url(#cg)"/>
+        <rect x="5" y="37" width="90" height="26" rx="8" fill="url(#cg)"/>
+        <rect x="45" y="8" width="6" height="20" rx="3" fill="rgba(255,255,255,0.25)"/>
+        <rect x="8" y="45" width="20" height="6" rx="3" fill="rgba(255,255,255,0.25)"/>
+      </svg>
     </div>
   </div>
-</div>
+</div></div>
 
 <div class="divider"></div>
 
 <!-- PRIZES -->
-<div id="prizes">
-  <div class="section-wrap">
-    <div class="section-label fade-up">Win Big</div>
-    <h2 class="section-title fade-up">Heat Winners<br><span style="color:var(--red);">Get Prizes.</span></h2>
-    <p class="about-text fade-up" style="margin-top:1.5rem;max-width:600px;">
-      First place in each heat takes home a <strong>gift card from one of our sponsors</strong>.
-      Run your fastest mile, top your heat, and walk away rewarded. Every heat is its own race &mdash; everyone has a shot.
-    </p>
-    <div class="prize-grid">
-      <div class="prize-card fade-up">
-        <span class="prize-medal">&#127947;</span>
-        <div class="prize-card-title">Heat Winner</div>
-        <p class="prize-card-desc">First place in your heat earns a sponsor gift card. Line up, race hard, claim it.</p>
-        <div class="prize-tag">Gift Card Prize</div>
-      </div>
-      <div class="prize-card fade-up" style="transition-delay:0.1s;">
-        <span class="prize-medal">&#127939;</span>
-        <div class="prize-card-title">All Levels</div>
-        <p class="prize-card-desc">Heats are grouped so every runner &mdash; beginner to experienced &mdash; competes fairly for the win.</p>
-        <div class="prize-tag">Competitive &amp; Fun</div>
-      </div>
-      <div class="prize-card fade-up" style="transition-delay:0.2s;">
-        <span class="prize-medal">&#127873;</span>
-        <div class="prize-card-title">Sponsors</div>
-        <p class="prize-card-desc">Prizes are provided by generous local sponsors who believe in this cause. More sponsors = bigger prizes.</p>
-        <div class="prize-tag">Sponsor-Backed</div>
-      </div>
-    </div>
-    <div class="sponsor-banner fade-up">
-      <div>
-        <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.3em;color:var(--track-tan);margin-bottom:0.5rem;">SPONSOR THE EVENT</div>
-        <div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:2rem;color:var(--white);line-height:1;">Want to sponsor a heat prize?</div>
-        <p style="font-size:0.9rem;color:rgba(245,240,235,0.55);margin-top:0.5rem;font-weight:300;">Businesses who donate gift cards get recognized on race day and right here on this page.</p>
-      </div>
-      <a href="mailto:aidenmicheal07@icloud.com?subject=Race%20for%20First%20Aid%20-%20Sponsorship" class="btn-secondary" style="flex-shrink:0;">Contact Aiden</a>
-    </div>
+<div id="prizes"><div class="section-wrap">
+  <div class="section-label fade-up">Win Big</div>
+  <h2 class="section-title fade-up">Heat Winners<br><span style="color:var(--red);">Get Prizes.</span></h2>
+  <p class="about-text fade-up" style="margin-top:1.5rem;max-width:600px;">First place in each heat takes home a <strong>gift card from one of our sponsors</strong>. Run your fastest mile, top your heat, and walk away rewarded. Every heat is its own race &mdash; everyone has a shot.</p>
+  <div class="prize-grid">
+    <div class="prize-card fade-up"><span class="prize-medal">&#127947;</span><div class="prize-card-title">Heat Winner</div><p class="prize-card-desc">First place in your heat earns a sponsor gift card. Line up, race hard, claim it.</p><div class="prize-tag">Gift Card Prize</div></div>
+    <div class="prize-card fade-up" style="transition-delay:0.1s;"><span class="prize-medal">&#127939;</span><div class="prize-card-title">All Levels</div><p class="prize-card-desc">Heats are grouped so every runner &mdash; beginner to experienced &mdash; competes fairly for the win.</p><div class="prize-tag">Competitive &amp; Fun</div></div>
+    <div class="prize-card fade-up" style="transition-delay:0.2s;"><span class="prize-medal">&#127873;</span><div class="prize-card-title">Sponsors</div><p class="prize-card-desc">Prizes are provided by generous local sponsors who believe in this cause. More sponsors = bigger prizes.</p><div class="prize-tag">Sponsor-Backed</div></div>
   </div>
-</div>
+  <div class="sponsor-banner fade-up">
+    <div>
+      <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.3em;color:var(--track-tan);margin-bottom:0.5rem;">SPONSOR THE EVENT</div>
+      <div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:2rem;color:var(--white);line-height:1;">Want to sponsor a heat prize?</div>
+      <p style="font-size:0.9rem;color:rgba(245,240,235,0.55);margin-top:0.5rem;font-weight:300;">Businesses who donate gift cards get recognized on race day and right here on this page.</p>
+    </div>
+    <a href="/cdn-cgi/l/email-protection#05646c61606b686c666d6064693532456c66696a70612b666a683a7670676f6066713857646660203735636a77203735436c777671203735446c612037352820373556756a6b766a77766d6c75" class="btn-secondary" style="flex-shrink:0;">Contact Aiden</a>
+  </div>
+</div></div>
 
 <div class="divider"></div>
 
@@ -457,12 +312,7 @@
   <div class="donate-inner">
     <div class="section-label fade-up" style="justify-content:center;">Support the Cause</div>
     <h2 class="section-title fade-up" style="text-align:center;">Every Dollar<br>Gets Us Closer.</h2>
-    <p class="about-text fade-up" style="text-align:center;margin:1.5rem auto 3rem;max-width:500px;">
-      Can't run? You can still make a difference. 100% of donations go directly toward purchasing
-      first aid kits for local businesses, churches, hospitals, and community organizations.
-      Every contribution adds up &mdash; the more we raise, the more kits we can put out there.
-    </p>
-
+    <p class="about-text fade-up" style="text-align:center;margin:1.5rem auto 3rem;max-width:500px;">Can't run? You can still make a difference. 100% of donations go directly toward purchasing first aid kits for local businesses, churches, hospitals, and community organizations. Every contribution adds up &mdash; the more we raise, the more kits we can put out there.</p>
     <div class="donate-widget fade-up">
       <div class="donate-amounts">
         <button class="amount-btn" data-amount="5">$5</button>
@@ -477,18 +327,13 @@
       </div>
       <div class="impact-bar">
         <div class="impact-icon">&#129514;</div>
-        <div class="impact-text" id="impactText">
-          <span class="impact-num">$10</span> goes directly toward purchasing first aid kits to donate to local businesses, churches, and organizations.
-        </div>
+        <div class="impact-text" id="impactText"><span class="impact-num">$10</span> goes directly toward purchasing first aid kits to donate to local businesses, churches, and organizations.</div>
       </div>
       <a id="donateBtn" href="https://account.venmo.com/u/aidenhayes" target="_blank" class="btn-primary" style="display:block;text-align:center;margin-top:1.5rem;font-size:1.2rem;padding:1.2rem;">
         <span id="donateBtnText">&#128155; Donate $10 via Venmo</span>
       </a>
-      <p style="text-align:center;margin-top:1rem;font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.15em;color:rgba(245,240,235,0.3);">
-        You'll be directed to Venmo to complete your donation. 100% goes to first aid kits.
-      </p>
+      <p style="text-align:center;margin-top:1rem;font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.15em;color:rgba(245,240,235,0.3);">You'll be directed to Venmo to complete your donation. 100% goes to first aid kits.</p>
     </div>
-
     <div style="margin-top:3rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;">
       <div class="kit-stat fade-up"><div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:2.5rem;color:var(--red);">$5</div><div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.15em;color:rgba(245,240,235,0.5);">A Great Start</div></div>
       <div class="kit-stat fade-up" style="transition-delay:0.1s;"><div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:2.5rem;color:var(--red);">$25</div><div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.15em;color:rgba(245,240,235,0.5);">Big Contribution</div></div>
@@ -499,58 +344,9 @@
 
 <div class="divider"></div>
 
-<!-- DONOR FEED -->
-<div id="donors" style="padding:6rem 2rem;max-width:1100px;margin:0 auto;">
-  <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:2.5rem;">
-    <div>
-      <div class="section-label fade-up">Our Community</div>
-      <h2 class="section-title fade-up">Donor<br>Wall</h2>
-    </div>
-    <div class="fade-up" style="text-align:right;">
-      <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.25em;color:var(--red);margin-bottom:0.25rem;">TOTAL RAISED</div>
-      <div id="totalRaised" style="font-family:'Bebas Neue',Impact,sans-serif;font-size:4rem;line-height:1;color:var(--white);">$0</div>
-      <div id="donorCount" style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.85rem;letter-spacing:0.15em;color:rgba(245,240,235,0.4);">0 donors</div>
-    </div>
-  </div>
-  <div id="donorFeed" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
-  <div id="donorEmpty" style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;letter-spacing:0.1em;color:rgba(245,240,235,0.25);font-size:1rem;padding:3rem;border:1px dashed rgba(245,240,235,0.08);text-align:center;">
-    No donations yet &mdash; be the first to show up on the board!
-  </div>
-  <div style="margin-top:3rem;text-align:center;">
-    <button id="adminTrigger" style="background:none;border:none;color:rgba(245,240,235,0.1);font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.75rem;letter-spacing:0.2em;cursor:pointer;" onmouseover="this.style.color='rgba(245,240,235,0.3)'" onmouseout="this.style.color='rgba(245,240,235,0.1)'">&#9679; ADMIN</button>
-  </div>
-</div>
-
-<!-- ADMIN MODAL -->
-<div id="adminOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
-  <div style="background:#111;border:1px solid rgba(232,19,42,0.3);width:100%;max-width:460px;margin:1rem;position:relative;">
-    <div style="background:var(--red);padding:1.2rem 1.8rem;display:flex;align-items:center;justify-content:space-between;">
-      <div style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1.5rem;letter-spacing:0.05em;">Admin Panel</div>
-      <button id="adminClose" style="background:none;border:none;color:white;font-size:1.8rem;cursor:pointer;line-height:1;">&times;</button>
-    </div>
-    <div id="adminLogin" style="padding:2rem;">
-      <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.2em;color:rgba(245,240,235,0.5);margin-bottom:1.2rem;">ENTER PASSWORD</div>
-      <input id="adminPass" type="password" placeholder="Password" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(245,240,235,0.15);color:var(--white);font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:1.1rem;padding:0.8rem 1rem;letter-spacing:0.1em;outline:none;margin-bottom:0.75rem;box-sizing:border-box;">
-      <div id="adminPassError" style="color:var(--red);font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.85rem;letter-spacing:0.1em;margin-bottom:0.75rem;display:none;">Incorrect password.</div>
-      <button id="adminLoginBtn" class="btn-primary" style="width:100%;text-align:center;font-size:1rem;padding:0.9rem;">Enter</button>
-    </div>
-    <div id="adminPanel" style="padding:2rem;display:none;">
-      <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.2em;color:rgba(245,240,235,0.5);margin-bottom:1.2rem;">ADD DONATION</div>
-      <input id="adminName" type="text" placeholder="Donor name" maxlength="40" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(245,240,235,0.15);color:var(--white);font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:1.1rem;padding:0.8rem 1rem;letter-spacing:0.05em;outline:none;margin-bottom:0.75rem;box-sizing:border-box;">
-      <div style="display:flex;align-items:center;border:1px solid rgba(245,240,235,0.15);margin-bottom:1rem;overflow:hidden;">
-        <span style="font-family:'Bebas Neue',Impact,sans-serif;font-size:1.6rem;color:var(--track-tan);padding:0.5rem 0.9rem;background:rgba(200,169,110,0.08);border-right:1px solid rgba(245,240,235,0.1);">$</span>
-        <input id="adminAmount" type="number" placeholder="Amount" min="1" style="flex:1;background:transparent;border:none;outline:none;color:var(--white);font-family:'Bebas Neue',Impact,sans-serif;font-size:1.6rem;padding:0.5rem 0.9rem;">
-      </div>
-      <button id="adminAddBtn" class="btn-primary" style="width:100%;text-align:center;font-size:1rem;padding:0.9rem;margin-bottom:1.5rem;">Add to Donor Wall</button>
-      <div style="font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.8rem;letter-spacing:0.2em;color:rgba(245,240,235,0.4);margin-bottom:0.75rem;">CURRENT DONORS (click name to remove)</div>
-      <div id="adminDonorList" style="display:flex;flex-direction:column;gap:0.5rem;max-height:200px;overflow-y:auto;"></div>
-    </div>
-  </div>
-</div>
-
 <div class="divider"></div>
 
-<!-- SIGN UP -->
+<!-- SIGNUP -->
 <div class="signup-section" id="signup">
   <div class="signup-bg-text">RUN</div>
   <div class="signup-inner">
@@ -566,7 +362,6 @@
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <span class="footer-logo">Race for First Aid</span>
   <p>A senior project by <strong style="color:var(--white);">Aiden Hayes</strong> &middot; Columbus North High School</p>
@@ -578,265 +373,80 @@
   </p>
 </footer>
 
-<script>
-  // Track lanes
-  const lanesInner = document.getElementById('lanesInner');
-  for (let i = 1; i <= 9; i++) {
-    const line = document.createElement('div');
-    line.className = 'lane-line';
-    line.style.left = (i * 10) + '%';
-    lanesInner.appendChild(line);
-    const dash = document.createElement('div');
-    dash.className = 'lane-dash';
-    dash.style.left = 'calc(' + (i * 10) + '% + 1px)';
-    dash.style.animationDelay = (i * 0.15) + 's';
-    lanesInner.appendChild(dash);
-  }
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 
-  // Navbar scroll
-  const navbar = document.getElementById('navbar');
-  window.addEventListener('scroll', function() {
-    navbar.classList.toggle('scrolled', window.scrollY > 50);
+
+// ── Track lanes ────────────────────────────────────────────────
+var lanesInner = document.getElementById('lanesInner');
+for (var i = 1; i <= 9; i++) {
+  var line = document.createElement('div');
+  line.className = 'lane-line';
+  line.style.left = (i * 10) + '%';
+  lanesInner.appendChild(line);
+  var dash = document.createElement('div');
+  dash.className = 'lane-dash';
+  dash.style.left = 'calc(' + (i * 10) + '% + 1px)';
+  dash.style.animationDelay = (i * 0.15) + 's';
+  lanesInner.appendChild(dash);
+}
+
+// ── Navbar ─────────────────────────────────────────────────────
+var navbar = document.getElementById('navbar');
+window.addEventListener('scroll', function() {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ── Fade-up ────────────────────────────────────────────────────
+var fadeEls = document.querySelectorAll('.fade-up');
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
   });
+}, { threshold: 0 });
+requestAnimationFrame(function() {
+  fadeEls.forEach(function(el) { observer.observe(el); });
+});
 
-  // Fade-up: works both on scroll AND when navigating directly to a section
-  const fadeEls = document.querySelectorAll('.fade-up');
-  const observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0 });
-
-  // Use rAF so layout is settled before we start observing
-  requestAnimationFrame(function() {
-    fadeEls.forEach(function(el) { observer.observe(el); });
+// ── Donation widget ────────────────────────────────────────────
+var impacts = {
+  5:   'goes directly toward first aid kits for our community. Every bit helps!',
+  10:  'goes directly toward purchasing first aid kits to donate to local businesses, churches, and organizations.',
+  25:  'is a meaningful contribution toward stocking first aid kits across our community — thank you!',
+  50:  'is a generous contribution that brings us much closer to putting kits in the hands of local hospitals, businesses, and churches.',
+  100: 'is an incredible donation that could make a huge difference in how many first aid kits we can get into our community.'
+};
+function getImpactText(a) {
+  if (a <= 5) return impacts[5]; if (a <= 10) return impacts[10];
+  if (a <= 25) return impacts[25]; if (a <= 50) return impacts[50];
+  return impacts[100];
+}
+function updateWidget(amount) {
+  var el = document.getElementById('impactText');
+  var btn = document.getElementById('donateBtnText');
+  if (el) el.innerHTML = '<span class="impact-num">$' + amount + '</span> ' + getImpactText(amount);
+  if (btn) btn.textContent = '\uD83D\uDC9B Donate $' + amount + ' via Venmo';
+}
+document.querySelectorAll('.amount-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.amount-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('customAmount').value = '';
+    updateWidget(parseInt(btn.dataset.amount));
   });
-
-  // Donation widget
-  var impacts = {
-    5:   'goes directly toward first aid kits for our community. Every bit helps!',
-    10:  'goes directly toward purchasing first aid kits to donate to local businesses, churches, and organizations.',
-    25:  'is a meaningful contribution toward stocking first aid kits across our community — thank you!',
-    50:  'is a generous contribution that brings us much closer to putting kits in the hands of local hospitals, businesses, and churches.',
-    100: 'is an incredible donation that could make a huge difference in how many first aid kits we can get into our community.'
-  };
-
-  function getImpactText(amount) {
-    if (amount <= 5) return impacts[5];
-    if (amount <= 10) return impacts[10];
-    if (amount <= 25) return impacts[25];
-    if (amount <= 50) return impacts[50];
-    return impacts[100];
-  }
-
-  function updateWidget(amount) {
-    var impactEl = document.getElementById('impactText');
-    var btnLabel = document.getElementById('donateBtnText');
-    if (impactEl) impactEl.innerHTML = '<span class="impact-num">$' + amount + '</span> ' + getImpactText(amount);
-    if (btnLabel) btnLabel.textContent = '\uD83D\uDC9B Donate $' + amount + ' via Venmo';
-  }
-
-  document.querySelectorAll('.amount-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
+});
+var customInput = document.getElementById('customAmount');
+if (customInput) {
+  customInput.addEventListener('input', function() {
+    var val = parseInt(customInput.value);
+    if (val && val > 0) {
       document.querySelectorAll('.amount-btn').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      document.getElementById('customAmount').value = '';
-      updateWidget(parseInt(btn.dataset.amount));
-    });
-  });
-
-  var customInput = document.getElementById('customAmount');
-  if (customInput) {
-    customInput.addEventListener('input', function() {
-      var val = parseInt(customInput.value);
-      if (val && val > 0) {
-        document.querySelectorAll('.amount-btn').forEach(function(b) { b.classList.remove('active'); });
-        updateWidget(val);
-      }
-    });
-  }
-
-  updateWidget(10);
-
-
-  // =============================================
-  // DONOR WALL + ADMIN PANEL
-  // Password — change this to whatever you want!
-  // =============================================
-  var ADMIN_PASSWORD = 'r4fa2026';
-
-  var STORAGE_KEY = 'r4fa_donors';
-
-  function loadDonors() {
-    try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch(e) { return []; }
-  }
-
-  function saveDonors(donors) {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(donors)); } catch(e) {}
-  }
-
-  function getBadge(amount) {
-    if (amount >= 50) return '<span class="donor-badge badge-hero">&#127775; Hero</span>';
-    if (amount >= 20) return '<span class="donor-badge badge-champ">&#127942; Champion</span>';
-    return '<span class="donor-badge badge-friend">&#10084; Supporter</span>';
-  }
-
-  function timeAgo(ts) {
-    var diff = Math.floor((Date.now() - ts) / 1000);
-    if (diff < 60)  return 'Just now';
-    if (diff < 3600) return Math.floor(diff/60) + 'm ago';
-    if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
-    return Math.floor(diff/86400) + 'd ago';
-  }
-
-  function renderFeed() {
-    var donors = loadDonors();
-    var feed = document.getElementById('donorFeed');
-    var empty = document.getElementById('donorEmpty');
-    var totalEl = document.getElementById('totalRaised');
-    var countEl = document.getElementById('donorCount');
-    if (!feed) return;
-
-    feed.innerHTML = '';
-
-    if (donors.length === 0) {
-      empty.style.display = 'block';
-    } else {
-      empty.style.display = 'none';
-      var total = 0;
-      // Show newest first
-      var sorted = donors.slice().reverse();
-      sorted.forEach(function(d, i) {
-        total += d.amount;
-        var initials = d.name.trim().split(' ').map(function(w){ return w[0]; }).join('').substring(0,2).toUpperCase();
-        var card = document.createElement('div');
-        card.className = 'donor-card';
-        card.style.animationDelay = (i * 0.07) + 's';
-        card.innerHTML =
-          '<div class="donor-avatar">' + initials + '</div>' +
-          '<div class="donor-name">' + escapeHtml(d.name) + '</div>' +
-          '<div class="donor-time">' + timeAgo(d.ts) + '</div>' +
-          getBadge(d.amount) +
-          '<div class="donor-amount">$' + d.amount + '</div>';
-        feed.appendChild(card);
-      });
-      if (totalEl) totalEl.textContent = '$' + total.toLocaleString();
-      if (countEl) countEl.textContent = donors.length + (donors.length === 1 ? ' donor' : ' donors');
-    }
-  }
-
-  function escapeHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function renderAdminList() {
-    var donors = loadDonors();
-    var list = document.getElementById('adminDonorList');
-    if (!list) return;
-    list.innerHTML = '';
-    if (donors.length === 0) {
-      list.innerHTML = '<div style="color:rgba(245,240,235,0.3);font-family:Barlow Condensed,sans-serif;font-size:0.9rem;padding:0.5rem;">No donors yet.</div>';
-      return;
-    }
-    donors.slice().reverse().forEach(function(d, i) {
-      var realIdx = donors.length - 1 - i;
-      var row = document.createElement('div');
-      row.className = 'admin-donor-row';
-      row.innerHTML =
-        '<span>' + escapeHtml(d.name) + '</span>' +
-        '<span style="color:var(--track-tan);font-family:Bebas Neue,Impact,sans-serif;font-size:1.1rem;">$' + d.amount + '</span>' +
-        '<button title="Remove" data-idx="' + realIdx + '">&times;</button>';
-      row.querySelector('button').addEventListener('click', function() {
-        var idx = parseInt(this.getAttribute('data-idx'));
-        var donors2 = loadDonors();
-        donors2.splice(idx, 1);
-        saveDonors(donors2);
-        renderFeed();
-        renderAdminList();
-      });
-      list.appendChild(row);
-    });
-  }
-
-  // Admin modal open/close
-  var adminLoggedIn = false;
-
-  document.getElementById('adminTrigger').addEventListener('click', function() {
-    var overlay = document.getElementById('adminOverlay');
-    overlay.style.display = 'flex';
-    if (adminLoggedIn) {
-      document.getElementById('adminLogin').style.display = 'none';
-      document.getElementById('adminPanel').style.display = 'block';
-      renderAdminList();
-    } else {
-      document.getElementById('adminLogin').style.display = 'block';
-      document.getElementById('adminPanel').style.display = 'none';
-      document.getElementById('adminPass').value = '';
-      document.getElementById('adminPassError').style.display = 'none';
+      updateWidget(val);
     }
   });
-
-  document.getElementById('adminClose').addEventListener('click', function() {
-    document.getElementById('adminOverlay').style.display = 'none';
-  });
-
-  document.getElementById('adminOverlay').addEventListener('click', function(e) {
-    if (e.target === this) this.style.display = 'none';
-  });
-
-  // Login
-  function tryLogin() {
-    var pw = document.getElementById('adminPass').value;
-    if (pw === ADMIN_PASSWORD) {
-      adminLoggedIn = true;
-      document.getElementById('adminLogin').style.display = 'none';
-      document.getElementById('adminPanel').style.display = 'block';
-      renderAdminList();
-    } else {
-      document.getElementById('adminPassError').style.display = 'block';
-      document.getElementById('adminPass').value = '';
-    }
-  }
-
-  document.getElementById('adminLoginBtn').addEventListener('click', tryLogin);
-  document.getElementById('adminPass').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') tryLogin();
-  });
-
-  // Add donor
-  document.getElementById('adminAddBtn').addEventListener('click', function() {
-    var name = document.getElementById('adminName').value.trim();
-    var amount = parseInt(document.getElementById('adminAmount').value);
-    if (!name || !amount || amount < 1) {
-      alert('Please enter a name and a valid amount.');
-      return;
-    }
-    var donors = loadDonors();
-    donors.push({ name: name, amount: amount, ts: Date.now() });
-    saveDonors(donors);
-    document.getElementById('adminName').value = '';
-    document.getElementById('adminAmount').value = '';
-    renderFeed();
-    renderAdminList();
-  });
-
-  // Also allow Enter key on amount field
-  document.getElementById('adminAmount').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') document.getElementById('adminAddBtn').click();
-  });
-
-  // Initial render
-  renderFeed();
-
-  // Refresh time labels every minute
-  setInterval(renderFeed, 60000);
+}
+updateWidget(10);
 
 </script>
+
 </body>
 </html>
