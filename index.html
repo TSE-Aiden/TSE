@@ -152,10 +152,12 @@
   /* SIGNUP */
   .signup-section { text-align:center; padding:8rem 2rem; position:relative; overflow:hidden; }
   .signup-bg-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-family:'Bebas Neue',Impact,sans-serif; font-size:clamp(8rem,20vw,18rem); color:rgba(232,19,42,0.04); white-space:nowrap; pointer-events:none; user-select:none; }
-  .signup-inner { position:relative; z-index:2; max-width:700px; margin:0 auto; }
+  .signup-inner { position:relative; z-index:2; max-width:900px; margin:0 auto; }
+  .signup-cards { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; }
+  @media(max-width:640px){ .signup-cards{ grid-template-columns:1fr; } }
   .signup-title { font-family:'Bebas Neue',Impact,sans-serif; font-size:clamp(3.5rem,9vw,8rem); line-height:0.9; color:var(--white); margin-bottom:1.5rem; }
   .signup-subtitle { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-weight:300; font-size:1.2rem; color:rgba(245,240,235,0.6); margin-bottom:3rem; line-height:1.6; letter-spacing:0.04em; }
-  .signup-card { border:1px solid rgba(245,240,235,0.12); padding:2.5rem 2rem; text-align:left; background:rgba(255,255,255,0.02); transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s; max-width:360px; margin:0 auto; }
+  .signup-card { border:1px solid rgba(245,240,235,0.12); padding:2.5rem 2rem; text-align:left; background:rgba(255,255,255,0.02); transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s; }
   .signup-card:hover { border-color:var(--red); transform:translateY(-8px); box-shadow:0 20px 60px rgba(232,19,42,0.15); }
   .signup-card-icon { font-size:2.5rem; margin-bottom:1.2rem; display:block; }
   .signup-card-title { font-family:'Bebas Neue',Impact,sans-serif; font-size:2rem; color:var(--white); margin-bottom:0.5rem; }
@@ -213,6 +215,7 @@
       <a href="https://docs.google.com/forms/d/e/1FAIpQLSc0iqoB5u7b5lRM3DONtxp4vQfEm4R1dRCUySzZjy3eHWPp6A/viewform" target="_blank" class="btn-primary">&#127939; Sign Up to Run</a>
       <a href="#donate" class="btn-secondary" style="border-color:var(--track-tan);color:var(--track-tan);">&#128155; Donate</a>
       <a href="#about" class="btn-secondary">Learn More</a>
+      <a href="https://forms.gle/jJSVtSvLjPQhPC2G9" target="_blank" class="btn-secondary" style="border-color:rgba(245,240,235,0.4);color:rgba(245,240,235,0.8);">&#129309; Volunteer</a>
     </div>
   </div>
   <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
@@ -376,7 +379,7 @@
   </div>
 
   <p class="fade-up" style="margin-top:3rem;font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:0.9rem;letter-spacing:0.1em;color:rgba(245,240,235,0.4);">
-    Interested in sponsoring? &nbsp;<a href="mailto:aidenmicheal07@icloud.com?subject=Race%20for%20First%20Aid%20-%20Sponsorship" style="color:var(--track-tan);text-decoration:none;">Get in touch &rarr;</a>
+    Interested in sponsoring? &nbsp;<a href="/cdn-cgi/l/email-protection#55343c31303b383c363d3034396562153c36393a20317b363a386a2620373f3036216807343630706765333a27706765133c272621706765143c317067657870676506253a3b263a27263d3c25" style="color:var(--track-tan);text-decoration:none;">Get in touch &rarr;</a>
   </p>
 </div>
 
@@ -389,11 +392,19 @@
     <div class="section-label fade-up" style="justify-content:center;">Join the Race</div>
     <h2 class="signup-title fade-up">Ready<br>to Run?</h2>
     <p class="signup-subtitle fade-up">Open to middle and high school students. Show up, run the mile, and help put first aid kits into your community.</p>
-    <div class="signup-card fade-up">
-      <span class="signup-card-icon">&#127939;</span>
-      <div class="signup-card-title">Runner</div>
-      <p class="signup-card-desc">Sign up to compete in the 1600m. Every stride raises funds and awareness for first aid in our community.</p>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSc0iqoB5u7b5lRM3DONtxp4vQfEm4R1dRCUySzZjy3eHWPp6A/viewform" target="_blank" class="btn-primary" style="display:block;width:100%;text-align:center;">Sign Up to Run</a>
+    <div class="signup-cards">
+      <div class="signup-card fade-up">
+        <span class="signup-card-icon">&#127939;</span>
+        <div class="signup-card-title">Runner</div>
+        <p class="signup-card-desc">Sign up to compete in the 1600m. Every stride raises funds and awareness for first aid in our community.</p>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSc0iqoB5u7b5lRM3DONtxp4vQfEm4R1dRCUySzZjy3eHWPp6A/viewform" target="_blank" class="btn-primary" style="display:block;width:100%;text-align:center;">Sign Up to Run</a>
+      </div>
+      <div class="signup-card fade-up" style="transition-delay:0.1s;border-color:rgba(200,169,110,0.2);">
+        <span class="signup-card-icon">&#129309;</span>
+        <div class="signup-card-title">Volunteer</div>
+        <p class="signup-card-desc">Help make race day happen. Volunteers assist with check-in, timing, cheering, and keeping things running smoothly.</p>
+        <a href="https://forms.gle/jJSVtSvLjPQhPC2G9" target="_blank" class="btn-secondary" style="display:block;width:100%;text-align:center;border-color:var(--track-tan);color:var(--track-tan);">Sign Up to Volunteer</a>
+      </div>
     </div>
   </div>
 </div>
@@ -409,7 +420,7 @@
   </p>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 
 
 // ── Track lanes ────────────────────────────────────────────────
@@ -481,8 +492,6 @@ if (customInput) {
   });
 }
 updateWidget(10);
-
 </script>
-
 </body>
 </html>
