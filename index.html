@@ -4,20 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Race for First Aid</title>
-<meta name="description" content="Race for First Aid — a 1600m fundraising track meet on April 4, 2026 at Columbus North High School. Run the mile, raise money for first aid kits in our community.">
-<meta name="theme-color" content="#E8132A">
-<meta property="og:title" content="Race for First Aid">
-<meta property="og:description" content="Run the mile. Help your community. April 4, 2026 at Columbus North High School, Columbus, Indiana.">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://placehold.co/1200x630/0A0A0A/E8132A?text=Race+for+First+Aid">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Race for First Aid">
-<meta name="twitter:description" content="Run the mile. Help your community. April 4, 2026 at Columbus North High School.">
-<!-- Favicon: red first aid cross as SVG data URI -->
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230A0A0A'/%3E%3Crect x='40' y='10' width='20' height='80' rx='6' fill='%23E8132A'/%3E%3Crect x='10' y='40' width='80' height='20' rx='6' fill='%23E8132A'/%3E%3C/svg%3E">
-<!-- Font preconnect for faster loading -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@300;400;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -190,67 +176,6 @@
   .sponsor-slot:hover { border-color:rgba(200,169,110,0.3); }
   .sponsor-placeholder { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.78rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,240,235,0.18); }
 
-
-  /* SCROLL PROGRESS BAR */
-  .progress-bar { position:fixed; top:0; left:0; height:3px; background:var(--red); z-index:9999; width:0%; transition:width 0.1s linear; box-shadow:0 0 8px rgba(232,19,42,0.6); }
-
-  /* MOBILE NAV */
-  .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:4px; }
-  .hamburger span { display:block; width:24px; height:2px; background:var(--white); transition:all 0.3s; }
-  .hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
-  .hamburger.open span:nth-child(2) { opacity:0; }
-  .hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
-  .mobile-nav { display:none; position:fixed; inset:0; background:rgba(10,10,10,0.97); z-index:99; flex-direction:column; align-items:center; justify-content:center; gap:2rem; }
-  .mobile-nav.open { display:flex; }
-  .mobile-nav a { font-family:'Bebas Neue',Impact,sans-serif; font-size:3rem; color:var(--white); text-decoration:none; letter-spacing:0.1em; transition:color 0.2s; }
-  .mobile-nav a:hover { color:var(--red); }
-  .mobile-nav .mobile-cta { color:var(--black) !important; background:var(--track-tan); padding:0.5rem 2rem; font-size:2rem; }
-  @media(max-width:768px){ .hamburger{display:flex;} }
-
-  /* COUNTDOWN */
-  .countdown { display:flex; gap:1.5rem; justify-content:center; margin-top:2rem; animation:heroFadeIn 1s 0.7s ease both; }
-  .countdown-item { text-align:center; }
-  .countdown-num { font-family:'Bebas Neue',Impact,sans-serif; font-size:clamp(2.5rem,6vw,4.5rem); line-height:1; color:var(--white); display:block; min-width:2ch; }
-  .countdown-label { font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.7rem; letter-spacing:0.3em; color:rgba(245,240,235,0.4); text-transform:uppercase; }
-  .countdown-sep { font-family:'Bebas Neue',Impact,sans-serif; font-size:clamp(2rem,5vw,3.5rem); color:rgba(232,19,42,0.5); align-self:flex-start; padding-top:0.1em; }
-
-  /* NAV ACTIVE STATE */
-  .nav-links a.active { color:var(--white); }
-
-  /* FOOTER UPGRADE */
-  .footer-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:2rem; max-width:900px; margin:0 auto 2rem; text-align:left; }
-  @media(max-width:600px){ .footer-grid{ grid-template-columns:1fr; text-align:center; } }
-  .footer-col-title { font-family:'Bebas Neue',Impact,sans-serif; font-size:1.1rem; color:var(--white); letter-spacing:0.1em; margin-bottom:0.75rem; }
-  .footer-col a { display:block; color:rgba(245,240,235,0.4); text-decoration:none; margin-bottom:0.4rem; font-size:0.85rem; letter-spacing:0.1em; transition:color 0.2s; }
-  .footer-col a:hover { color:var(--track-tan); }
-  .footer-col p { color:rgba(245,240,235,0.4); font-size:0.85rem; line-height:1.7; }
-
-
-  /* BACK TO TOP */
-  .back-to-top { position:fixed; bottom:2rem; right:2rem; width:46px; height:46px; background:var(--red); color:var(--white); border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.2rem; z-index:500; opacity:0; transform:translateY(20px); transition:opacity 0.3s, transform 0.3s, background 0.2s; pointer-events:none; clip-path:polygon(50% 0%,100% 40%,80% 40%,80% 100%,20% 100%,20% 40%,0% 40%); }
-  .back-to-top.visible { opacity:1; transform:translateY(0); pointer-events:all; }
-  .back-to-top:hover { background:var(--red-dark); }
-
-  /* SPONSOR PLACEHOLDER PULSE */
-  @keyframes sponsorPulse { 0%,100%{ border-color:rgba(245,240,235,0.08); } 50%{ border-color:rgba(200,169,110,0.25); } }
-  .sponsor-slot:has(.sponsor-placeholder) { animation:sponsorPulse 3s ease-in-out infinite; }
-
-  /* TILT CARDS — handled in JS, just need transition */
-  .step-card, .prize-card { transform-style:preserve-3d; will-change:transform; }
-
-  /* CONFETTI CANVAS */
-  #confetti-canvas { position:fixed; inset:0; pointer-events:none; z-index:9998; }
-
-
-  /* TOAST NOTIFICATION */
-  .toast { position:fixed; bottom:5rem; left:50%; transform:translateX(-50%) translateY(20px); background:rgba(20,20,20,0.95); border:1px solid rgba(232,19,42,0.4); color:var(--white); font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:1rem; letter-spacing:0.1em; padding:0.85rem 1.8rem; z-index:9997; opacity:0; transition:opacity 0.3s, transform 0.3s; pointer-events:none; white-space:nowrap; backdrop-filter:blur(8px); }
-  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-  .toast-icon { color:var(--red); margin-right:0.5rem; }
-
-  /* SHARE BUTTON */
-  .share-btn { display:inline-flex; align-items:center; gap:0.5rem; font-family:'Barlow Condensed',Arial Narrow,sans-serif; font-size:0.85rem; letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,240,235,0.5); background:none; border:1px solid rgba(245,240,235,0.15); padding:0.5rem 1.2rem; cursor:pointer; transition:all 0.2s; }
-  .share-btn:hover { color:var(--white); border-color:rgba(245,240,235,0.4); }
-
   /* FADE UP */
   .fade-up { opacity:0; transform:translateY(28px); transition:opacity 0.7s ease,transform 0.7s ease; }
   .fade-up.visible { opacity:1; transform:translateY(0); }
@@ -258,14 +183,8 @@
 </head>
 <body>
 
-<div class="progress-bar" id="progressBar"></div>
-<canvas id="confetti-canvas"></canvas>
-<div class="toast" id="toast"><span class="toast-icon">&#10084;</span> <span id="toastMsg">Thanks! Completing on Venmo...</span></div>
-<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8679;</button>
-
 <nav id="navbar">
   <a href="#" class="nav-logo">R<span>4</span>FA</a>
-  <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#how">The Race</a></li>
@@ -276,16 +195,6 @@
     <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSc0iqoB5u7b5lRM3DONtxp4vQfEm4R1dRCUySzZjy3eHWPp6A/viewform" target="_blank" class="nav-cta">Sign Up</a></li>
   </ul>
 </nav>
-
-<div class="mobile-nav" id="mobileNav">
-  <a href="#about" class="mobile-link">About</a>
-  <a href="#how" class="mobile-link">The Race</a>
-  <a href="#prizes" class="mobile-link">Prizes</a>
-  <a href="#cause" class="mobile-link">The Cause</a>
-  <a href="#sponsors" class="mobile-link">Sponsors</a>
-  <a href="#signup" class="mobile-link">Sign Up</a>
-  <a href="#donate" class="mobile-cta mobile-link">Donate</a>
-</div>
 
 <!-- HERO -->
 <section class="hero">
@@ -302,22 +211,11 @@
       <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
       1600m &middot; The Mile
     </div>
-    <div class="countdown" id="countdown">
-      <div class="countdown-item"><span class="countdown-num" id="cd-days">--</span><span class="countdown-label">Days</span></div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-item"><span class="countdown-num" id="cd-hours">--</span><span class="countdown-label">Hours</span></div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-item"><span class="countdown-num" id="cd-mins">--</span><span class="countdown-label">Mins</span></div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-item"><span class="countdown-num" id="cd-secs">--</span><span class="countdown-label">Secs</span></div>
-    </div>
-
     <div class="cta-group">
       <a href="https://docs.google.com/forms/d/e/1FAIpQLSc0iqoB5u7b5lRM3DONtxp4vQfEm4R1dRCUySzZjy3eHWPp6A/viewform" target="_blank" class="btn-primary">&#127939; Sign Up to Run</a>
       <a href="#donate" class="btn-secondary" style="border-color:var(--track-tan);color:var(--track-tan);">&#128155; Donate</a>
       <a href="#about" class="btn-secondary">Learn More</a>
       <a href="https://forms.gle/jJSVtSvLjPQhPC2G9" target="_blank" class="btn-secondary" style="border-color:rgba(245,240,235,0.4);color:rgba(245,240,235,0.8);">&#129309; Volunteer</a>
-      <button class="share-btn btn-secondary" id="shareBtn" style="border-color:rgba(245,240,235,0.4);color:rgba(245,240,235,0.8);">&#8679; Share</button>
     </div>
   </div>
   <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
@@ -511,33 +409,15 @@
   </div>
 </div>
 
-<footer style="padding:4rem 2rem 2rem;">
+<footer>
   <span class="footer-logo">Race for First Aid</span>
-  <div class="footer-grid">
-    <div class="footer-col">
-      <div class="footer-col-title">Event</div>
-      <p>April 4, 2026<br>10AM &ndash; 2PM<br>Columbus North High School<br>Columbus, Indiana</p>
-    </div>
-    <div class="footer-col">
-      <div class="footer-col-title">Links</div>
-      <a href="#about">About</a>
-      <a href="#how">How It Works</a>
-      <a href="#prizes">Prizes</a>
-      <a href="#cause">The Cause</a>
-      <a href="#sponsors">Sponsors</a>
-      <a href="#donate">Donate</a>
-    </div>
-    <div class="footer-col">
-      <div class="footer-col-title">Get Involved</div>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSc0iqoB5u7b5lRM3DONtxp4vQfEm4R1dRCUySzZjy3eHWPp6A/viewform" target="_blank">Sign Up to Run &rarr;</a>
-      <a href="https://forms.gle/jJSVtSvLjPQhPC2G9" target="_blank">Volunteer &rarr;</a>
-      <a href="#donate">Donate &rarr;</a>
-      <a href="mailto:aidenmicheal07@icloud.com?subject=Race%20for%20First%20Aid%20-%20Sponsorship">Sponsor the Event &rarr;</a>
-    </div>
-  </div>
-  <div style="border-top:1px solid rgba(245,240,235,0.08);padding-top:1.5rem;font-size:0.8rem;color:rgba(245,240,235,0.25);letter-spacing:0.15em;">
-    A senior project by <strong style="color:rgba(245,240,235,0.4);">Aiden Hayes</strong> &middot; Columbus North High School &middot; 1600m &middot; First Aid Kits for Our Community
-  </div>
+  <p>A senior project by <strong style="color:var(--white);">Aiden Hayes</strong> &middot; Columbus North High School</p>
+  <p style="margin-top:0.5rem;">April 4, 2026 &middot; 10AM&ndash;2PM &middot; Columbus, Indiana</p>
+  <p style="margin-top:0.5rem;">1600m &middot; The Mile &middot; First Aid Kits for Our Community</p>
+  <p style="margin-top:1.5rem;display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;">
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSc0iqoB5u7b5lRM3DONtxp4vQfEm4R1dRCUySzZjy3eHWPp6A/viewform" target="_blank" style="color:var(--red);text-decoration:none;letter-spacing:0.15em;">SIGN UP TO RUN &rarr;</a>
+    <a href="#donate" style="color:var(--track-tan);text-decoration:none;letter-spacing:0.15em;">DONATE &rarr;</a>
+  </p>
 </footer>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
@@ -612,254 +492,6 @@ if (customInput) {
   });
 }
 updateWidget(10);
-
-  // ── SCROLL PROGRESS BAR ───────────────────────────────────
-  var progressBar = document.getElementById('progressBar');
-  window.addEventListener('scroll', function() {
-    var scrollTop = window.scrollY;
-    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    if (progressBar) progressBar.style.width = pct + '%';
-  });
-
-  // ── ACTIVE NAV ON SCROLL ──────────────────────────────────
-  var sections = document.querySelectorAll('div[id], section[id]');
-  var navLinks = document.querySelectorAll('.nav-links a');
-  window.addEventListener('scroll', function() {
-    var scrollY = window.scrollY + 120;
-    sections.forEach(function(sec) {
-      if (scrollY >= sec.offsetTop && scrollY < sec.offsetTop + sec.offsetHeight) {
-        navLinks.forEach(function(a) {
-          a.classList.toggle('active', a.getAttribute('href') === '#' + sec.id);
-        });
-      }
-    });
-  });
-
-  // ── MOBILE NAV ────────────────────────────────────────────
-  var hamburger = document.getElementById('hamburger');
-  var mobileNav = document.getElementById('mobileNav');
-  hamburger.addEventListener('click', function() {
-    hamburger.classList.toggle('open');
-    mobileNav.classList.toggle('open');
-    document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
-  });
-  document.querySelectorAll('.mobile-link').forEach(function(link) {
-    link.addEventListener('click', function() {
-      hamburger.classList.remove('open');
-      mobileNav.classList.remove('open');
-      document.body.style.overflow = '';
-    });
-  });
-
-  // ── COUNTDOWN TIMER ───────────────────────────────────────
-  function updateCountdown() {
-    var raceDay = new Date('April 4, 2026 10:00:00').getTime();
-    var now = new Date().getTime();
-    var diff = raceDay - now;
-    if (diff <= 0) {
-      var cd = document.getElementById('countdown');
-      if (cd) cd.innerHTML = '<div style="font-family:Bebas Neue,Impact,sans-serif;font-size:2.5rem;color:var(--red);letter-spacing:0.1em;">Race Day is Here!</div>';
-      return;
-    }
-    var days  = Math.floor(diff / (1000 * 60 * 60 * 24));
-    var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    var mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    var secs  = Math.floor((diff % (1000 * 60)) / 1000);
-    function pad(n) { return n < 10 ? '0' + n : n; }
-    var d = document.getElementById('cd-days');
-    var h = document.getElementById('cd-hours');
-    var m = document.getElementById('cd-mins');
-    var s = document.getElementById('cd-secs');
-    if (d) d.textContent = pad(days);
-    if (h) h.textContent = pad(hours);
-    if (m) m.textContent = pad(mins);
-    if (s) s.textContent = pad(secs);
-  }
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-
-
-  // ── BACK TO TOP ───────────────────────────────────────────
-  var backToTop = document.getElementById('backToTop');
-  window.addEventListener('scroll', function() {
-    if (backToTop) backToTop.classList.toggle('visible', window.scrollY > 400);
-  });
-  if (backToTop) {
-    backToTop.addEventListener('click', function() {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
-
-  // ── STATS COUNTER ANIMATION ───────────────────────────────
-  function animateCounter(el, target, suffix, duration) {
-    var start = 0;
-    var step = target / (duration / 16);
-    var current = 0;
-    var timer = setInterval(function() {
-      current += step;
-      if (current >= target) { current = target; clearInterval(timer); }
-      el.textContent = Math.floor(current) + suffix;
-    }, 16);
-  }
-  var statsObserver = new IntersectionObserver(function(entries) {
-    entries.forEach(function(e) {
-      if (!e.isIntersecting) return;
-      statsObserver.unobserve(e.target);
-      var items = e.target.querySelectorAll('.stat-num');
-      var data = [
-        { val: 4,    suffix: '' },
-        { val: 10,   suffix: 'AM' },
-        { val: 1600, suffix: '' },
-        { val: 100,  suffix: '%' }
-      ];
-      items.forEach(function(el, i) {
-        if (data[i]) setTimeout(function() {
-          animateCounter(el, data[i].val, data[i].suffix, 1200);
-        }, i * 150);
-      });
-    });
-  }, { threshold: 0.5 });
-  var statsBar = document.querySelector('.stats-bar');
-  if (statsBar) statsObserver.observe(statsBar);
-
-  // ── CARD TILT EFFECT ──────────────────────────────────────
-  document.querySelectorAll('.step-card, .prize-card').forEach(function(card) {
-    card.addEventListener('mousemove', function(e) {
-      var rect = card.getBoundingClientRect();
-      var x = e.clientX - rect.left;
-      var y = e.clientY - rect.top;
-      var cx = rect.width / 2;
-      var cy = rect.height / 2;
-      var rotX = ((y - cy) / cy) * -6;
-      var rotY = ((x - cx) / cx) * 6;
-      card.style.transform = 'perspective(600px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg) translateY(-6px)';
-    });
-    card.addEventListener('mouseleave', function() {
-      card.style.transform = '';
-    });
-  });
-
-  // ── CONFETTI ON DONATE ────────────────────────────────────
-  var canvas = document.getElementById('confetti-canvas');
-  var ctx = canvas ? canvas.getContext('2d') : null;
-  var confettiPieces = [];
-  var confettiRunning = false;
-
-  function resizeCanvas() {
-    if (canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-  }
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
-
-  function randomRange(a, b) { return a + Math.random() * (b - a); }
-
-  function spawnConfetti() {
-    var colors = ['#E8132A','#C8A96E','#FFFFFF','#FF6B6B','#DFC28A','#FF0000'];
-    for (var i = 0; i < 120; i++) {
-      confettiPieces.push({
-        x: randomRange(window.innerWidth * 0.3, window.innerWidth * 0.7),
-        y: window.innerHeight * 0.6,
-        vx: randomRange(-6, 6),
-        vy: randomRange(-18, -6),
-        size: randomRange(6, 14),
-        color: colors[Math.floor(Math.random() * colors.length)],
-        rot: randomRange(0, 360),
-        rotV: randomRange(-4, 4),
-        shape: Math.random() > 0.5 ? 'rect' : 'circle',
-        gravity: randomRange(0.4, 0.7),
-        alpha: 1
-      });
-    }
-  }
-
-  function drawConfetti() {
-    if (!ctx || confettiPieces.length === 0) { confettiRunning = false; return; }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    confettiPieces = confettiPieces.filter(function(p) { return p.alpha > 0.05; });
-    confettiPieces.forEach(function(p) {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += p.gravity;
-      p.vx *= 0.99;
-      p.rot += p.rotV;
-      if (p.y > window.innerHeight * 0.75) p.alpha -= 0.025;
-      ctx.save();
-      ctx.globalAlpha = Math.max(0, p.alpha);
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.rot * Math.PI / 180);
-      ctx.fillStyle = p.color;
-      if (p.shape === 'rect') {
-        ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
-      } else {
-        ctx.beginPath();
-        ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-    });
-    if (confettiPieces.length > 0) requestAnimationFrame(drawConfetti);
-    else { confettiRunning = false; ctx.clearRect(0, 0, canvas.width, canvas.height); }
-  }
-
-  var donateBtn = document.getElementById('donateBtn');
-  if (donateBtn) {
-    donateBtn.addEventListener('click', function() {
-      spawnConfetti();
-      if (!confettiRunning) { confettiRunning = true; drawConfetti(); }
-    });
-  }
-
-
-  // ── TOAST HELPER ──────────────────────────────────────────
-  function showToast(msg, duration) {
-    var toast = document.getElementById('toast');
-    var toastMsg = document.getElementById('toastMsg');
-    if (!toast) return;
-    if (toastMsg) toastMsg.textContent = msg;
-    toast.classList.add('show');
-    setTimeout(function() { toast.classList.remove('show'); }, duration || 3000);
-  }
-
-  // ── TOAST ON DONATE CLICK ─────────────────────────────────
-  var donateBtnEl = document.getElementById('donateBtn');
-  if (donateBtnEl) {
-    donateBtnEl.addEventListener('click', function() {
-      showToast('\u2764 Thanks! Completing your donation on Venmo...', 3500);
-    });
-  }
-
-  // ── SHARE BUTTON ──────────────────────────────────────────
-  var shareBtn = document.getElementById('shareBtn');
-  if (shareBtn) {
-    shareBtn.addEventListener('click', function() {
-      var shareData = {
-        title: 'Race for First Aid',
-        text: 'Run the mile. Help your community. April 4, 2026 at Columbus North High School!',
-        url: window.location.href
-      };
-      if (navigator.share) {
-        navigator.share(shareData).catch(function() {});
-      } else {
-        navigator.clipboard.writeText(window.location.href).then(function() {
-          showToast('\uD83D\uDCCB Link copied to clipboard!', 2500);
-          shareBtn.textContent = '\u2713 Copied!';
-          setTimeout(function() { shareBtn.innerHTML = '&#8679; Share this Event'; }, 2500);
-        }).catch(function() {
-          showToast('Share this page: ' + window.location.href, 4000);
-        });
-      }
-    });
-  }
-
-  // ── PARALLAX HERO TRACK LANES ─────────────────────────────
-  var trackLanes = document.querySelector('.track-lanes');
-  window.addEventListener('scroll', function() {
-    if (trackLanes) {
-      trackLanes.style.transform = 'translateX(-50%) translateY(' + (window.scrollY * 0.25) + 'px)';
-    }
-  }, { passive: true });
-
 </script>
 </body>
 </html>
