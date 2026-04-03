@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Race for First Aid – Heat Sheet</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0a;
+      color: #fff;
+      font-family: 'Open Sans', sans-serif;
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+      position: relative;
+    }
+
+    .header-band {
+      background: linear-gradient(135deg, #cc0000 0%, #8b0000 50%, #cc0000 100%);
+      padding: 18px 0 10px;
+      border-radius: 10px 10px 0 0;
+      border-top: 4px solid #ff3333;
+    }
+
+    .cross-icon {
+      font-size: 42px;
+      margin-bottom: 4px;
+      display: block;
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.4));
+    }
+
+    .header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.7);
+    }
+
+    .header h1 span { color: #1a6fc4; }
+
+    .header-sub {
+      background: #1b1b1b;
+      border: 2px solid #cc0000;
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      padding: 10px 20px 14px;
+    }
+
+    .header-sub h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 22px;
+      color: #e8e8e8;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+
+    .header-sub p {
+      color: #999;
+      font-size: 13px;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    .pulse-line {
+      height: 3px;
+      background: linear-gradient(90deg, transparent 0%, #cc0000 20%, #fff 40%, #cc0000 60%, transparent 100%);
+      margin: 18px 0;
+      border-radius: 2px;
+    }
+
+    /* ── Section dividers ── */
+    .gender-section { margin-bottom: 40px; }
+
+    .gender-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .gender-title h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      padding: 8px 22px;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .gender-title h2.boys {
+      background: linear-gradient(135deg, #1b3a6b, #1a6fc4);
+      border-left: 5px solid #4db8ff;
+      box-shadow: 0 4px 14px rgba(26,111,196,0.4);
+    }
+
+    .gender-title h2.girls {
+      background: linear-gradient(135deg, #8b0000, #cc0000);
+      border-left: 5px solid #ff6666;
+      box-shadow: 0 4px 14px rgba(204,0,0,0.4);
+    }
+
+    .gender-line {
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, #444, transparent);
+    }
+
+    /* ── Event block ── */
+    .event-block {
+      margin-bottom: 28px;
+    }
+
+    .event-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #1b1b1b;
+      border: 1px solid #333;
+      border-left: 4px solid #cc0000;
+      padding: 7px 18px 7px 12px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+
+    .event-label .event-icon { font-size: 16px; }
+
+    .event-label h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 16px;
+      letter-spacing: 2px;
+      color: #ff5555;
+      text-transform: uppercase;
+    }
+
+    /* ── Heats grid ── */
+    .heats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .heat-card {
+      flex: 1;
+      min-width: 240px;
+      max-width: 380px;
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    }
+
+    .heat-header {
+      background: linear-gradient(135deg, #1b1b1b, #2a2a2a);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid #cc0000;
+    }
+
+    .heat-header .heat-num {
+      font-family: 'Oswald', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #ff5555;
+      text-transform: uppercase;
+    }
+
+    .heat-header .heat-badge {
+      background: #cc0000;
+      color: #fff;
+      font-size: 10px;
+      font-family: 'Oswald', sans-serif;
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: 1px;
+    }
+
+    .heat-body { padding: 8px 0; }
+
+    .lane-row {
+      display: flex;
+      align-items: center;
+      padding: 7px 14px;
+      border-bottom: 1px solid #1e1e1e;
+      transition: background 0.15s;
+    }
+
+    .lane-row:last-child { border-bottom: none; }
+    .lane-row:hover { background: #1c1c1c; }
+
+    .lane-num {
+      width: 28px;
+      height: 28px;
+      background: #cc0000;
+      color: #fff;
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-right: 12px;
+    }
+
+    .athlete-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #eee;
+      flex: 1;
+    }
+
+    .athlete-age {
+      font-size: 11px;
+      color: #888;
+      background: #222;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 8px;
+    }
+
+    .note-tag {
+      font-size: 10px;
+      color: #ffcc00;
+      background: #332800;
+      padding: 1px 6px;
+      border-radius: 8px;
+      margin-left: 6px;
+      border: 1px solid #554400;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #222;
+    }
+
+    .footer p {
+      color: #555;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    .footer .logo-text {
+      font-family: 'Oswald', sans-serif;
+      font-size: 16px;
+      color: #cc0000;
+      letter-spacing: 3px;
+      margin-bottom: 6px;
+    }
+
+    .footer .logo-text span { color: #1a6fc4; }
+
+    /* Decorative heartbeat bar */
+    .heartbeat-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      margin: 10px 0;
+    }
+
+    .hb {
+      display: inline-block;
+      width: 3px;
+      background: #cc0000;
+      border-radius: 2px;
+    }
+
+    .hb.h1 { height: 6px; }
+    .hb.h2 { height: 20px; }
+    .hb.h3 { height: 10px; }
+    .hb.h4 { height: 34px; }
+    .hb.h5 { height: 8px; }
+    .hb.h6 { height: 6px; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ HEADER ══ -->
+  <div class="header">
+    <div class="header-band">
+      <span class="cross-icon">🏥</span>
+      <h1>RACE <span>FOR</span> FIRST AID</h1>
+    </div>
+    <div class="header-sub">
+      <h2>Official Heat Sheet</h2>
+      <p>🏃 Track & Field Event · Athletes Seeded Youngest → Oldest · 4 Per Heat</p>
+    </div>
+  </div>
+
+  <div class="pulse-line"></div>
+
+  <!-- ══════════════════════════════════
+       GIRLS SECTION
+  ══════════════════════════════════ -->
+  <div class="gender-section">
+    <div class="gender-title">
+      <h2 class="girls">🌟 Girls Events</h2>
+      <div class="gender-line"></div>
+    </div>
+
+    <!-- GIRLS 100M -->
+    <div class="event-block">
+      <div class="event-label">
+        <span class="event-icon">💨</span>
+        <h3>Girls 100 Meter Dash</h3>
+      </div>
+      <div class="heats-row">
+
+        <div class="heat-card">
+          <div class="heat-header">
+            <span class="heat-num">Heat 1 of 1</span>
+            <span class="heat-badge">ONLY HEAT</span>
+          </div>
+          <div class="heat-body">
+            <div class="lane-row">
+              <div class="lane-num">1</div>
+              <span class="athlete-name">Keily Mendez-Lopez</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">2</div>
+              <span class="athlete-name">Leidy Adonis</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">3</div>
+              <span class="athlete-name">Miley McClellan</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- GIRLS 200M -->
+    <div class="event-block">
+      <div class="event-label">
+        <span class="event-icon">🏃</span>
+        <h3>Girls 200 Meter Dash</h3>
+      </div>
+      <div class="heats-row">
+
+        <div class="heat-card">
+          <div class="heat-header">
+            <span class="heat-num">Heat 1 of 1</span>
+            <span class="heat-badge">ONLY HEAT</span>
+          </div>
+          <div class="heat-body">
+            <div class="lane-row">
+              <div class="lane-num">1</div>
+              <span class="athlete-name">Lyla Hall</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">2</div>
+              <span class="athlete-name">Miley McClellan</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- end girls section -->
+
+  <div class="pulse-line"></div>
+
+  <!-- ══════════════════════════════════
+       BOYS SECTION
+  ══════════════════════════════════ -->
+  <div class="gender-section">
+    <div class="gender-title">
+      <h2 class="boys">⚡ Boys Events</h2>
+      <div class="gender-line"></div>
+    </div>
+
+    <!-- BOYS 100M -->
+    <div class="event-block">
+      <div class="event-label">
+        <span class="event-icon">💨</span>
+        <h3>Boys 100 Meter Dash</h3>
+      </div>
+      <div class="heats-row">
+
+        <!-- Heat 1 -->
+        <div class="heat-card">
+          <div class="heat-header">
+            <span class="heat-num">Heat 1 of 2</span>
+            <span class="heat-badge">FINAL HEAT</span>
+          </div>
+          <div class="heat-body">
+            <div class="lane-row">
+              <div class="lane-num">1</div>
+              <span class="athlete-name">Levi Hall</span>
+              <span class="athlete-age">Age 15</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">2</div>
+              <span class="athlete-name">Connor Fox</span>
+              <span class="athlete-age">Age 16</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">3</div>
+              <span class="athlete-name">Brian Lopez</span>
+              <span class="athlete-age">Age 17</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">4</div>
+              <span class="athlete-name">Gideon Roukas</span>
+              <span class="athlete-age">Age 18</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Heat 2 -->
+        <div class="heat-card">
+          <div class="heat-header">
+            <span class="heat-num">Heat 2 of 2</span>
+            <span class="heat-badge">SECTION 2</span>
+          </div>
+          <div class="heat-body">
+            <div class="lane-row">
+              <div class="lane-num">1</div>
+              <span class="athlete-name">Darris Larkin</span>
+              <span class="note-tag">8th Grade</span>
+              <span class="athlete-age">Age 13</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">2</div>
+              <span class="athlete-name">Christian Minns</span>
+              <span class="athlete-age">Age 17</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">3</div>
+              <span class="athlete-name">Hunter Lindsey</span>
+              <span class="athlete-age">Age 17</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">4</div>
+              <span class="athlete-name">Colin Amini</span>
+              <span class="athlete-age">Age 17</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOYS 200M -->
+    <div class="event-block">
+      <div class="event-label">
+        <span class="event-icon">🏃</span>
+        <h3>Boys 200 Meter Dash</h3>
+      </div>
+      <div class="heats-row">
+
+        <div class="heat-card">
+          <div class="heat-header">
+            <span class="heat-num">Heat 1 of 1</span>
+            <span class="heat-badge">ONLY HEAT</span>
+          </div>
+          <div class="heat-body">
+            <div class="lane-row">
+              <div class="lane-num">1</div>
+              <span class="athlete-name">Levi Hall</span>
+              <span class="athlete-age">Age 15</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">2</div>
+              <span class="athlete-name">Brian Lopez</span>
+              <span class="athlete-age">Age 17</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">3</div>
+              <span class="athlete-name">Hunter Lindsey</span>
+              <span class="athlete-age">Age 17</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">4</div>
+              <span class="athlete-name">Eli Wrightsman</span>
+              <span class="athlete-age">Age 18</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOYS 1600M -->
+    <div class="event-block">
+      <div class="event-label">
+        <span class="event-icon">🌀</span>
+        <h3>Boys 1600 Meter Run</h3>
+      </div>
+      <div class="heats-row">
+
+        <div class="heat-card">
+          <div class="heat-header">
+            <span class="heat-num">Heat 1 of 1</span>
+            <span class="heat-badge">ONLY HEAT</span>
+          </div>
+          <div class="heat-body">
+            <div class="lane-row">
+              <div class="lane-num">1</div>
+              <span class="athlete-name">Jesus Gomez</span>
+              <span class="athlete-age">Age 16</span>
+            </div>
+            <div class="lane-row">
+              <div class="lane-num">2</div>
+              <span class="athlete-name">Rohan Norris</span>
+              <span class="athlete-age">Age 16</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- end boys section -->
+
+  <!-- ══ FOOTER ══ -->
+  <div class="footer">
+    <div class="heartbeat-bar">
+      <span class="hb h1"></span><span class="hb h1"></span>
+      <span class="hb h3"></span><span class="hb h4"></span>
+      <span class="hb h2"></span><span class="hb h1"></span>
+      <span class="hb h3"></span><span class="hb h1"></span>
+      <span class="hb h1"></span>
+    </div>
+    <p class="logo-text">RACE <span>FOR</span> FIRST AID</p>
+    <p>Official Event Heat Assignments · Youngest to Oldest Seeding · 4 Per Heat</p>
+  </div>
+
+</body>
+</html>
