@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Race for First Aid – Volunteer Assignments</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0d0d0d;
+      color: #fff;
+      font-family: 'Open Sans', sans-serif;
+      min-height: 100vh;
+      padding: 30px 20px;
+    }
+
+    /* ── Header ── */
+    .header { text-align: center; margin-bottom: 36px; }
+
+    .header-top {
+      background: linear-gradient(135deg, #8b0000 0%, #cc0000 40%, #8b0000 100%);
+      border-radius: 12px 12px 0 0;
+      padding: 20px 20px 14px;
+      border-top: 5px solid #ff4444;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-top::before {
+      content: '✚';
+      position: absolute;
+      font-size: 160px;
+      color: rgba(255,255,255,0.04);
+      right: -20px;
+      top: -20px;
+    }
+
+    .header-top::after {
+      content: '✚';
+      position: absolute;
+      font-size: 100px;
+      color: rgba(255,255,255,0.04);
+      left: -10px;
+      bottom: -20px;
+    }
+
+    .header-top h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    }
+
+    .header-top h1 span { color: #aaddff; }
+
+    .header-top .subtitle-line {
+      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+      letter-spacing: 2px;
+      margin-top: 4px;
+    }
+
+    .header-bottom {
+      background: #111;
+      border: 2px solid #cc0000;
+      border-top: none;
+      border-radius: 0 0 12px 12px;
+      padding: 12px 20px 16px;
+    }
+
+    .header-bottom h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 24px;
+      color: #eee;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+    }
+
+    .header-bottom p {
+      color: #777;
+      font-size: 12px;
+      margin-top: 5px;
+      letter-spacing: 1px;
+    }
+
+    /* ── Pulse line ── */
+    .pulse-line {
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #1a6fc4 20%, #fff 40%, #cc0000 60%, transparent);
+      margin: 22px 0;
+      border-radius: 2px;
+    }
+
+    /* ── Assignment table ── */
+    .assignment-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #111;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+    }
+
+    .assignment-table thead tr {
+      background: linear-gradient(135deg, #1a0000, #cc0000);
+      border-bottom: 3px solid #ff4444;
+    }
+
+    .assignment-table thead th {
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #fff;
+      padding: 14px 24px;
+      text-align: left;
+    }
+
+    .assignment-table tbody tr {
+      border-bottom: 1px solid #1e1e1e;
+      transition: background 0.15s;
+    }
+
+    .assignment-table tbody tr:last-child { border-bottom: none; }
+    .assignment-table tbody tr:hover { background: #181818; }
+
+    /* Alternating subtle stripe */
+    .assignment-table tbody tr:nth-child(even) { background: #141414; }
+    .assignment-table tbody tr:nth-child(even):hover { background: #1a1a1a; }
+
+    .assignment-table tbody td {
+      padding: 14px 24px;
+      vertical-align: middle;
+    }
+
+    .name-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .name-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8b0000, #cc0000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Oswald', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.1);
+    }
+
+    .name-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: #eee;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .role-photographer  { background: rgba(138,43,226,0.15); color: #cc88ff; border: 1px solid rgba(138,43,226,0.3); }
+    .role-donation      { background: rgba(212,168,0,0.15);  color: #ffd966; border: 1px solid rgba(212,168,0,0.3); }
+    .role-heat-readers  { background: rgba(26,111,196,0.15); color: #66bbff; border: 1px solid rgba(26,111,196,0.3); }
+    .role-water         { background: rgba(26,170,85,0.15);  color: #66dd99; border: 1px solid rgba(26,170,85,0.3); }
+    .role-timer         { background: rgba(204,0,0,0.15);    color: #ff7777; border: 1px solid rgba(204,0,0,0.3); }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      padding-top: 20px;
+      margin-top: 30px;
+      border-top: 1px solid #1f1f1f;
+    }
+
+    .footer .logo-text {
+      font-family: 'Oswald', sans-serif;
+      font-size: 18px;
+      color: #cc0000;
+      letter-spacing: 3px;
+      margin-bottom: 6px;
+    }
+
+    .footer .logo-text span { color: #1a6fc4; }
+    .footer p { color: #444; font-size: 11px; letter-spacing: 1px; }
+
+    .heartbeat-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      margin: 10px 0;
+    }
+    .hb { display: inline-block; width: 3px; background: #cc0000; border-radius: 2px; }
+    .hb.h1 { height: 6px; }
+    .hb.h2 { height: 20px; }
+    .hb.h3 { height: 10px; }
+    .hb.h4 { height: 36px; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ HEADER ══ -->
+  <div class="header">
+    <div class="header-top">
+      <h1>RACE <span>FOR</span> FIRST AID</h1>
+      <p class="subtitle-line">🏥 TRACK & FIELD · VOLUNTEER COMMAND CENTER 🏥</p>
+    </div>
+    <div class="header-bottom">
+      <h2>Volunteer Assignments</h2>
+      <p>All volunteers report to their assigned station 30 minutes before the event begins</p>
+    </div>
+  </div>
+
+  <!-- ══ TABLE ══ -->
+  <table class="assignment-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Volunteer</th>
+        <th>Role</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td style="color:#555; font-family:'Oswald',sans-serif; font-size:13px;">01</td>
+        <td>
+          <div class="name-cell">
+            <div class="name-avatar">BL</div>
+            <span class="name-text">Brian Lopez</span>
+          </div>
+        </td>
+        <td><span class="role-badge role-photographer">📷 Photographer</span></td>
+      </tr>
+
+      <tr>
+        <td style="color:#555; font-family:'Oswald',sans-serif; font-size:13px;">02</td>
+        <td>
+          <div class="name-cell">
+            <div class="name-avatar">HL</div>
+            <span class="name-text">Hunter Lindsey</span>
+          </div>
+        </td>
+        <td><span class="role-badge role-donation">💰 Donation Handling</span></td>
+      </tr>
+
+      <tr>
+        <td style="color:#555; font-family:'Oswald',sans-serif; font-size:13px;">03</td>
+        <td>
+          <div class="name-cell">
+            <div class="name-avatar">CF</div>
+            <span class="name-text">Connor Fox</span>
+          </div>
+        </td>
+        <td><span class="role-badge role-heat-readers">📋 Heat Readers</span></td>
+      </tr>
+
+      <tr>
+        <td style="color:#555; font-family:'Oswald',sans-serif; font-size:13px;">04</td>
+        <td>
+          <div class="name-cell">
+            <div class="name-avatar">AL</div>
+            <span class="name-text">Aiden Le</span>
+          </div>
+        </td>
+        <td><span class="role-badge role-water">💧 Water Handouts</span></td>
+      </tr>
+
+      <tr>
+        <td style="color:#555; font-family:'Oswald',sans-serif; font-size:13px;">05</td>
+        <td>
+          <div class="name-cell">
+            <div class="name-avatar">GM</div>
+            <span class="name-text">Gabe Marsh</span>
+          </div>
+        </td>
+        <td><span class="role-badge role-timer">⏱️ Timer</span></td>
+      </tr>
+
+      <tr>
+        <td style="color:#555; font-family:'Oswald',sans-serif; font-size:13px;">06</td>
+        <td>
+          <div class="name-cell">
+            <div class="name-avatar">AA</div>
+            <span class="name-text">Arhant Awale</span>
+          </div>
+        </td>
+        <td><span class="role-badge role-timer">⏱️ Timer</span></td>
+      </tr>
+
+      <tr>
+        <td style="color:#555; font-family:'Oswald',sans-serif; font-size:13px;">07</td>
+        <td>
+          <div class="name-cell">
+            <div class="name-avatar">EK</div>
+            <span class="name-text">Evan King</span>
+          </div>
+        </td>
+        <td><span class="role-badge role-timer">⏱️ Timer</span></td>
+      </tr>
+
+      <tr>
+        <td style="color:#555; font-family:'Oswald',sans-serif; font-size:13px;">08</td>
+        <td>
+          <div class="name-cell">
+            <div class="name-avatar">WM</div>
+            <span class="name-text">Wako Matsuda</span>
+          </div>
+        </td>
+        <td><span class="role-badge role-timer">⏱️ Timer</span></td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="footer">
+    <div class="heartbeat-bar">
+      <span class="hb h1"></span><span class="hb h1"></span>
+      <span class="hb h3"></span><span class="hb h4"></span>
+      <span class="hb h2"></span><span class="hb h1"></span>
+      <span class="hb h3"></span><span class="hb h1"></span>
+      <span class="hb h1"></span>
+    </div>
+    <p class="logo-text">RACE <span>FOR</span> FIRST AID</p>
+    <p>Volunteer Assignment Sheet · 8 Volunteers · Thank you for your service!</p>
+  </div>
+
+</body>
+</html>
